@@ -29,7 +29,7 @@ REQUIRED = [
         'properties': {
             'type': str,
             'required': True,
-            'help': '',
+            'help': 'path to the folder containing all maf files, with SAMPLE_ID.maf as file names',
         }
     },
 ]
