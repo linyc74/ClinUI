@@ -17,6 +17,14 @@ REQUIRED = [
         }
     },
     {
+        'keys': ['-s', '--patient-table-xlsx'],
+        'properties': {
+            'type': str,
+            'required': True,
+            'help': 'path to the patient table Excel file',
+        }
+    },
+    {
         'keys': ['-s', '--sample-table-xlsx'],
         'properties': {
             'type': str,
@@ -102,6 +110,7 @@ class EntryPoint:
         print(f'Start cBioPortal data ingestion version {__VERSION__}\n', flush=True)
         cbio_ingest.main(
             study_info_xlsx=args.study_info_xlsx,
+            patient_table_xlsx=args.patient_table_xlsx,
             sample_table_xlsx=args.sample_table_xlsx,
             maf_dir=args.maf_dir,
             tags_json=args.tags_json,
