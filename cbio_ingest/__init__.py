@@ -1,3 +1,4 @@
+import os
 from .template import Settings
 from .cbio_ingest import cBioIngest
 
@@ -9,6 +10,8 @@ def main(
         maf_dir: str,
         tags_json: str,
         outdir: str):
+
+    os.makedirs(outdir)
 
     settings = Settings(
         workdir='workdir',
