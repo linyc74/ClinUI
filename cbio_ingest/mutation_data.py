@@ -1,0 +1,137 @@
+import os.path
+import pandas as pd
+from typing import Dict, List
+from .template import Processor
+from .constant import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY
+
+
+class IngestMafs(Processor):
+
+    META_FNAME = 'meta_mutations_extended.txt'
+    DATA_FNAME = 'data_mutations_extended.txt'
+
+    maf_dir: str
+    study_info_dict: Dict[str, str]
+    sample_ids: List[str]
+
+    mafs: List[str]
+    df: pd.DataFrame
+
+    def main(
+            self,
+            maf_dir: str,
+            study_info_dict: Dict[str, str],
+            sample_ids: List[str]):
+
+        self.maf_dir = maf_dir
+        self.study_info_dict = study_info_dict
+        self.sample_ids = sample_ids
+
+        self.write_meta_file()
+        self.set_mafs()
+        self.read_first_maf()
+        self.read_the_rest_mafs()
+        self.write_data_file()
+
+    def write_meta_file(self):
+        text = f'''\
+cancer_study_identifier: {self.study_info_dict[STUDY_IDENTIFIER_KEY]}
+genetic_alteration_type: MUTATION_EXTENDED
+stable_id: mutations
+datatype: MAF
+show_profile_in_analysis_tab: true
+profile_description: {self.study_info_dict[DESCRIPTION_KEY]}
+profile_name: Mutations
+data_filename: {self.DATA_FNAME}'''
+
+        with open(f'{self.outdir}/{self.META_FNAME}', 'w') as fh:
+            fh.write(text)
+
+    def set_mafs(self):
+        self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_ids]
+
+    def read_first_maf(self):
+        self.df = ReadAndProcessMaf(self.settings).main(maf=self.mafs[0])
+
+    def read_the_rest_mafs(self):
+        for maf in self.mafs[1:]:
+            df = ReadAndProcessMaf(self.settings).main(maf=maf)
+            self.df = pd.concat([self.df, df], ignore_index=True)
+
+    def write_data_file(self):
+        self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', sep='\t', index=False)
+
+
+class ReadAndProcessMaf(Processor):
+    """
+    https://docs.cbioportal.org/file-formats/#mutation-data
+    """
+    COLUMNS = [
+        'Hugo_Symbol',
+        'Entrez_Gene_Id',
+        'Center',
+        'NCBI_Build',
+        'Chromosome',
+        'Start_Position',
+        'End_Position',
+        'Strand',
+        'Variant_Classification',
+        'Variant_Type',
+        'Reference_Allele',
+        'Tumor_Seq_Allele1',
+        'Tumor_Seq_Allele2',
+        'dbSNP_RS',
+        'dbSNP_Val_Status',
+        'Tumor_Sample_Barcode',
+        'Matched_Norm_Sample_Barcode',
+        'Match_Norm_Seq_Allele1',
+        'Match_Norm_Seq_Allele2',
+        'Tumor_Validation_Allele1',
+        'Tumor_Validation_Allele2',
+        'Match_Norm_Validation_Allele1',
+        'Match_Norm_Validation_Allele2',
+        'Match_Norm_Validation_Allele1',
+        'Match_Norm_Validation_Allele2',
+        'Verification_Status',
+        'Validation_Status',
+        'Mutation_Status',
+        'Sequencing_Phase',
+        'Sequence_Source',
+        'Validation_Method',
+        'Score',
+        'BAM_File',
+        'Sequencer',
+        'HGVSp_Short',
+        't_alt_count',
+        't_ref_count',
+        'n_alt_count',
+        'n_ref_count',
+    ]
+    REQUIRED_COLUMNs = [
+        'Hugo_Symbol',
+        'NCBI_Build',
+        'Chromosome',
+        'Variant_Classification',
+        'Reference_Allele',
+        'Tumor_Seq_Allele2',
+        'Tumor_Sample_Barcode',
+        'HGVSp_Short',
+    ]
+
+    maf: str
+    df: pd.DataFrame
+
+    def main(self, maf: str) -> pd.DataFrame:
+        self.maf = maf
+        self.logger.info(f'Processing {self.maf}')
+        self.read_maf()
+        self.set_tumor_sample_id()
+        return self.df
+
+    def read_maf(self):
+        self.df = pd.read_csv(self.maf, sep='\t', skiprows=1, usecols=self.COLUMNS)
+
+    def set_tumor_sample_id(self):
+        # The name of the maf file should be the sample id
+        filename = os.path.basename(self.maf[:-len('.maf')])
+        self.df['Tumor_Sample_Barcode'] = filename
