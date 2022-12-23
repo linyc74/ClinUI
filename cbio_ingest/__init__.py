@@ -11,7 +11,7 @@ def main(
         tags_json: str,
         outdir: str):
 
-    os.makedirs(outdir)
+    os.makedirs(outdir, exist_ok=True)
 
     settings = Settings(
         workdir='workdir',
