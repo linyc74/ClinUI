@@ -17,7 +17,7 @@ REQUIRED = [
         }
     },
     {
-        'keys': ['-s', '--patient-table-xlsx'],
+        'keys': ['-p', '--patient-table-xlsx'],
         'properties': {
             'type': str,
             'required': True,
