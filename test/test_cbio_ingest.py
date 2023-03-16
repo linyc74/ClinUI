@@ -13,8 +13,7 @@ class TestcBioIngest(TestCase):
     def test_main(self):
         cBioIngest(self.settings).main(
             study_info_xlsx=f'{self.indir}/study-info.xlsx',
-            patient_table_xlsx=f'{self.indir}/patient-table.xlsx',
-            sample_table_xlsx=f'{self.indir}/sample-table.xlsx',
+            clinical_data_xlsx=f'{self.indir}/clinical-data.xlsx',
             maf_dir=f'{self.indir}/maf-dir',
             tags_json='{"source": "PATH/TO/SOURCE"}'
         )

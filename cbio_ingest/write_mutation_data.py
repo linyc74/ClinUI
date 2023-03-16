@@ -2,17 +2,17 @@ import os.path
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .constant import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY
+from .constant import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY, SAMPLE_ID
 
 
-class IngestMafs(Processor):
+class WriteMutationData(Processor):
 
     META_FNAME = 'meta_mutations_extended.txt'
     DATA_FNAME = 'data_mutations_extended.txt'
 
     maf_dir: str
     study_info_dict: Dict[str, str]
-    sample_ids: List[str]
+    sample_df: pd.DataFrame
 
     mafs: List[str]
     df: pd.DataFrame
@@ -21,11 +21,11 @@ class IngestMafs(Processor):
             self,
             maf_dir: str,
             study_info_dict: Dict[str, str],
-            sample_ids: List[str]):
+            sample_df: pd.DataFrame):
 
         self.maf_dir = maf_dir
         self.study_info_dict = study_info_dict
-        self.sample_ids = sample_ids
+        self.sample_df = sample_df
 
         self.write_meta_file()
         self.set_mafs()
@@ -48,7 +48,7 @@ data_filename: {self.DATA_FNAME}'''
             fh.write(text)
 
     def set_mafs(self):
-        self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_ids]
+        self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_df[SAMPLE_ID]]
 
     def read_first_maf(self):
         self.df = ReadAndProcessMaf(self.settings).main(maf=self.mafs[0])

@@ -3,70 +3,69 @@ import os.path
 import pandas as pd
 from typing import Dict, List, Optional
 from .template import Processor
-from .mutation_data import IngestMafs
-from .constant import STUDY_IDENTIFIER_KEY
-from .clinical_data import IngestPatientTable, IngestSampleTable
+from .write_clinical_data import WriteClinicalData
+from .write_mutation_data import WriteMutationData
+from .constant import STUDY_IDENTIFIER_KEY, SAMPLE_ID
+from .preprocess_normalize import PreprocessNormalize
 
 
 class cBioIngest(Processor):
 
     study_info_xlsx: str
-    patient_table_xlsx: str
-    sample_table_xlsx: str
+    clinical_data_xlsx: str
     maf_dir: str
     tags_json: Optional[str]
 
     study_info_dict: Dict[str, str]
-    sample_ids: List[str]
+    patient_df: pd.DataFrame
+    sample_df: pd.DataFrame
 
     def main(
             self,
             study_info_xlsx: str,
-            patient_table_xlsx: str,
-            sample_table_xlsx: str,
+            clinical_data_xlsx: str,
             maf_dir: str,
             tags_json: Optional[str]):
 
         self.study_info_xlsx = study_info_xlsx
-        self.patient_table_xlsx = patient_table_xlsx
-        self.sample_table_xlsx = sample_table_xlsx
+        self.clinical_data_xlsx = clinical_data_xlsx
         self.maf_dir = maf_dir
         self.tags_json = tags_json
 
-        self.ingest_study_info()
-        self.ingest_patient_table()
-        self.ingest_sample_table()
-        self.ingest_mafs()
+        self.read_study_info()
+        self.preprocess_normalize()
+        self.write_clinical_data()
+        self.write_mutation_data()
         self.create_case_lists()
 
-    def ingest_study_info(self):
-        self.study_info_dict = IngestStudyInfo(self.settings).main(
+    def read_study_info(self):
+        self.study_info_dict = ReadStudyInfo(self.settings).main(
             xlsx=self.study_info_xlsx,
             tags_json=self.tags_json)
 
-    def ingest_patient_table(self):
-        IngestPatientTable(self.settings).main(
-            xlsx=self.patient_table_xlsx,
-            study_info_dict=self.study_info_dict)
+    def preprocess_normalize(self):
+        self.patient_df, self.sample_df = PreprocessNormalize(self.settings).main(
+            xlsx=self.clinical_data_xlsx)
 
-    def ingest_sample_table(self):
-        self.sample_ids = IngestSampleTable(self.settings).main(
-            xlsx=self.sample_table_xlsx,
-            study_info_dict=self.study_info_dict)
+    def write_clinical_data(self):
+        WriteClinicalData(self.settings).main(
+            study_info_dict=self.study_info_dict,
+            patient_df=self.patient_df,
+            sample_df=self.sample_df)
 
-    def ingest_mafs(self):
-        IngestMafs(self.settings).main(
+    def write_mutation_data(self):
+        WriteMutationData(self.settings).main(
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
-            sample_ids=self.sample_ids)
+            sample_df=self.sample_df)
 
     def create_case_lists(self):
         CreateCaseLists(self.settings).main(
             study_info_dict=self.study_info_dict,
-            sample_ids=self.sample_ids)
+            sample_df=self.sample_df)
 
 
-class IngestStudyInfo(Processor):
+class ReadStudyInfo(Processor):
 
     FNAME = 'meta_study.txt'
     TAGS_JSON_FNAME = 'tags.json'
@@ -119,25 +118,30 @@ class CreateCaseLists(Processor):
     SEQUENCED_TXT = 'cases_sequenced.txt'
 
     study_info_dict: Dict[str, str]
-    sample_ids: List[str]
+    sample_df: pd.DataFrame
 
     case_dir: str
+    sample_ids: List[str]
 
     def main(
             self,
             study_info_dict: Dict[str, str],
-            sample_ids: List[str]):
+            sample_df: pd.DataFrame):
 
         self.study_info_dict = study_info_dict
-        self.sample_ids = sample_ids
+        self.sample_df = sample_df
 
         self.make_case_dir()
+        self.set_sample_ids()
         self.write_all_txt()
         self.write_sequenced_txt()
 
     def make_case_dir(self):
         self.case_dir = f'{self.outdir}/{self.CASE_DIRNAME}'
         os.makedirs(self.case_dir, exist_ok=True)
+
+    def set_sample_ids(self):
+        self.sample_ids = self.sample_df[SAMPLE_ID].tolist()
 
     def write_all_txt(self):
         ids = '\t'.join(self.sample_ids)

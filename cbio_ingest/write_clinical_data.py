@@ -4,15 +4,37 @@ from .template import Processor
 from .constant import STUDY_IDENTIFIER_KEY
 
 
-PATIENT_ID_COLUMN = 'PATIENT_ID'
-SAMPLE_ID_COLUMN = 'SAMPLE_ID'
+class WriteClinicalData(Processor):
+
+    study_info_dict: Dict[str, str]
+    patient_df: pd.DataFrame
+    sample_df: pd.DataFrame
+
+    def main(
+            self,
+            study_info_dict: Dict[str, str],
+            patient_df: pd.DataFrame,
+            sample_df: pd.DataFrame):
+
+        self.study_info_dict = study_info_dict
+        self.patient_df = patient_df
+        self.sample_df = sample_df
+
+        WritePatientData(self.settings).main(
+            patient_df=self.patient_df,
+            study_info_dict=self.study_info_dict)
+
+        WriteSampleData(self.settings).main(
+            sample_df=self.sample_df,
+            study_info_dict=self.study_info_dict)
 
 
-class IngestClinicalTable(Processor):
+class BaseWriter(Processor):
 
     DATA_FNAME: str
 
     df: pd.DataFrame
+    study_info_dict: Dict[str, str]
 
     def write_data_file_1st_2nd_lines(self):
         line = '#' + '\t'.join(self.df.columns) + '\n'
@@ -36,7 +58,7 @@ class IngestClinicalTable(Processor):
             fh.write(line)
 
 
-class IngestPatientTable(IngestClinicalTable):
+class WritePatientData(BaseWriter):
 
     META_FNAME = 'meta_clinical_patient.txt'
     DATA_FNAME = 'data_clinical_patient.txt'
@@ -55,19 +77,13 @@ class IngestPatientTable(IngestClinicalTable):
         'IHC Anti-PDL1',
     ]
 
-    xlsx: str
-    study_info_dict: Dict[str, str]
-
     def main(
             self,
-            xlsx: str,
+            patient_df: pd.DataFrame,
             study_info_dict: Dict[str, str]):
-        self.xlsx = xlsx
+
+        self.df = patient_df
         self.study_info_dict = study_info_dict
-
-        self.logger.info(f'Patient table: {self.xlsx}')
-
-        self.df = pd.read_excel(self.xlsx)
 
         self.write_meta_file()
         self.write_data_file_1st_2nd_lines()
@@ -91,7 +107,7 @@ data_filename: {self.DATA_FNAME}'''
         self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', mode='a', sep='\t', index=False)
 
 
-class IngestSampleTable(IngestClinicalTable):
+class WriteSampleData(BaseWriter):
 
     META_FNAME = 'meta_clinical_sample.txt'
     DATA_FNAME = 'data_clinical_sample.txt'
@@ -110,29 +126,19 @@ class IngestSampleTable(IngestClinicalTable):
         'IHC Anti-PDL1',
     ]
 
-    xlsx: str
-    study_info_dict: Dict[str, str]
-
-    df: pd.DataFrame
-
     def main(
             self,
-            xlsx: str,
-            study_info_dict: Dict[str, str]) -> List[str]:
-        self.xlsx = xlsx
+            sample_df: pd.DataFrame,
+            study_info_dict: Dict[str, str]):
+
+        self.df = sample_df
         self.study_info_dict = study_info_dict
-
-        self.logger.info(f'Sample table: {self.xlsx}')
-
-        self.df = pd.read_excel(self.xlsx)
 
         self.write_meta_file()
         self.write_data_file_1st_2nd_lines()
         self.write_data_file_3rd_line()
         self.write_data_file_4th_line()
         self.write_data_file()
-
-        return self.df[SAMPLE_ID_COLUMN].to_list()
 
     def write_meta_file(self):
         text = f'''\
