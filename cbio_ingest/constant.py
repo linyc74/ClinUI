@@ -5,7 +5,6 @@ DESCRIPTION_KEY = 'description'
 # column names
 PATIENT_ID = 'Patient ID'
 SAMPLE_ID = 'Sample ID'
-SAMPLE_TYPE = 'Sample Type'
 
 BIRTH_DATE = 'Birth Date'
 CLINICAL_DIAGNOSIS_DATE = 'Clinical Diagnosis Date'

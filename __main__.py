@@ -17,7 +17,7 @@ REQUIRED = [
         }
     },
     {
-        'keys': ['-s', '--clinical-data-xlsx'],
+        'keys': ['-c', '--clinical-data-xlsx'],
         'properties': {
             'type': str,
             'required': True,
