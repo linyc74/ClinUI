@@ -17,11 +17,15 @@ class PreprocessNormalize(Processor):
 
         self.df = pd.read_excel(self.xlsx)
 
+        self.check_input_columns()
         self.calculate_survival()
         self.drop_identifiable_information()
         self.normalize_patient_sample_data()
 
         return self.patient_df, self.sample_df
+
+    def check_input_columns(self):
+        CheckInputColumns(self.settings).main(self.df)
 
     def calculate_survival(self):
         self.df = CalculateSurvival(self.settings).main(self.df)
@@ -31,6 +35,97 @@ class PreprocessNormalize(Processor):
 
     def normalize_patient_sample_data(self):
         self.patient_df, self.sample_df = NormalizePatientSampleData(self.settings).main(self.df)
+
+
+class CheckInputColumns(Processor):
+
+    INPUT_COLUMNS = [
+        'Study ID',
+        'Lab Sample ID',
+        'Sample ID',
+        'Sex',
+        'Patient Weight (Kg)',
+        'Patient Height (cm)',
+        'Ethnicity Category',
+        'Birth Date',
+        'Clinical Diagnosis Date',
+        'Pathological Diagnosis Date',
+        'Cancer Type',
+        'Cancer Type Detailed',
+        'Sample Type',
+        'Oncotree Code',
+        'Somatic status',
+        'Center',
+        'Tumor Disease Anatomic Site',
+        'ICD-O-3 Site Code',
+        'Alcohol Consumption',
+        'Alcohol Consumption Frequency (Days Per Week)',
+        'Alcohol Consumption Duration (Years)',
+        'Alcohol Consumption Quit (Years)',
+        'Betel Nut Chewing',
+        'Betel Nut Chewing Frequency (Pieces Per Day)',
+        'Betel Nut Chewing Duration (Years)',
+        'Betel Nut Chewing Quit (Years)',
+        'Cigarette Smoking',
+        'Cigarette Smoking Frequency (Packs Per Day)',
+        'Cigarette Smoking Duration (Years)',
+        'Cigarette Smoking Quit (Years)',
+        'Histologic Grade',
+        'Surgery',
+        'Neoadjuvant/Induction Chemotherapy',
+        'Neoadjuvant/Induction Chemotherapy Drug',
+        'Adjuvant Chemotherapy',
+        'Adjuvant Chemotherapy Drug',
+        'Palliative Chemotherapy',
+        'Palliative Chemotherapy Drug',
+        'Adjuvant Targeted Therapy',
+        'Adjuvant Targeted Therapy Drug',
+        'Palliative Targeted Therapy',
+        'Palliative Targeted Therapy Drug',
+        'Immunotherapy',
+        'Immunotherapy Drug',
+        'Radiation Therapy',
+        'Radiation Therapy Dose (cGY)',
+        'IHC Anti-PDL1 mAb 22C3 TPS (%)',
+        'IHC Anti-PDL1 mAb 22C3 CPS (%)',
+        'IHC Anti-PDL1 mAb 28-8 TPS (%)',
+        'IHC Anti-PDL1 mAb 28-8 CPS (%)',
+        'Lymph Node Level I',
+        'Lymph Node Level Ia',
+        'Lymph Node Level Ib',
+        'Lymph Node Level II',
+        'Lymph Node Level IIa',
+        'Lymph Node Level IIb',
+        'Lymph Node Level III',
+        'Lymph Node Level IV',
+        'Lymph Node Level V',
+        'Lymphovascular Invasion (LVI)',
+        'Perineural Invasion (PNI)',
+        'Clinical Overt Extranodal Extension',
+        'Pathological Extranodal Extension (ENE)',
+        'Depth of Invasion (mm)',
+        'Tumor Margin',
+        'Clinical TNM (cTNM)',
+        'Pathological TNM (pTNM)',
+        'Postneoadjuvant Clinical TNM (ycTNM)',
+        'Postneoadjuvant Pathological TNM (ypTNM)',
+        'Neoplasm Disease Stage American Joint Committee on Cancer Code',
+        'ICD-10 Classification',
+        'Subtype',
+        'Initial Treatment Completion Date',
+        'Last Follow-up Date',
+        'Recur Date after Initial Treatment',
+        'Expire Date',
+        'Cause of Death',
+    ]
+
+    df: pd.DataFrame
+
+    def main(self, df: pd.DataFrame):
+        self.df = df
+
+        for c in self.INPUT_COLUMNS:
+            assert c in self.df.columns, f'Column "{c}" not in the clinical data Excel file'
 
 
 class CalculateSurvival(Processor):
