@@ -2,7 +2,7 @@ import argparse
 import cbio_ingest
 
 
-__VERSION__ = '1.0.0'
+__VERSION__ = '1.1.0-alpha'
 
 
 PROG = 'python cbio_ingest'
