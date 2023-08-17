@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from .template import Processor
 from .write_clinical_data import WriteClinicalData
 from .write_mutation_data import WriteMutationData
-from .constant import STUDY_IDENTIFIER_KEY, SAMPLE_ID
+from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 from .preprocess_normalize import PreprocessNormalize
 
 

@@ -2,7 +2,7 @@ import os.path
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .constant import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY, SAMPLE_ID
+from .schema import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY, SAMPLE_ID
 
 
 class WriteMutationData(Processor):

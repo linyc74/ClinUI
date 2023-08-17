@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import Tuple, Hashable
-from .constant import *
+from .schema import *
 from .template import Processor
 
 

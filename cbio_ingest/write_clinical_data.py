@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .constant import STUDY_IDENTIFIER_KEY
+from .schema import STUDY_IDENTIFIER_KEY
 
 
 class WriteClinicalData(Processor):
