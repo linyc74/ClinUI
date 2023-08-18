@@ -1,9 +1,10 @@
 import os
+import pandas as pd
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, \
     QFileDialog, QMessageBox, QGridLayout, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
-from typing import List, Union
+from typing import List, Union, Any
 from .model import Model
 
 
@@ -25,7 +26,8 @@ class Table(QTableWidget):
         self.setHorizontalHeaderLabels(df.columns)
         for i in range(len(df.index)):
             for j in range(len(df.columns)):
-                item = QTableWidgetItem(str(df.iloc[i, j]))
+                value = df.iloc[i, j]
+                item = QTableWidgetItem(to_str(value))
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # makes the item immutable, i.e. user cannot edit it
                 self.setItem(i, j, item)
 
@@ -49,16 +51,35 @@ class Table(QTableWidget):
         return ret
 
 
+def to_str(value: Any) -> str:
+    if pd.isna(value):
+        return ''
+    elif type(value) == pd.Timestamp:
+        return value.strftime('%Y-%m-%d')
+    else:
+        return str(value)
+
+
 class View(QWidget):
 
     TITLE = 'cBioIngest'
     ICON_PNG = f'{os.getcwd()}/icon/logo.ico'
     WIDTH, HEIGHT = 1280, 768
     BUTTON_NAME_TO_LABEL = {
-        'button_1': 'Button 1',
+        'read_clinical_data_table': 'Read Clinical Data Table',
+
+        'sort_ascending': 'Sort (A to Z)',
+        'sort_descending': 'Sort (Z to A)',
+        'delete_selected_rows': 'Delete Selected Rows',
+        'reset_table': 'Reset Table',
     }
     BUTTON_NAME_TO_POSITION = {
-        'button_1': (0, 0),
+        'read_clinical_data_table': (0, 0),
+
+        'sort_ascending': (0, 1),
+        'sort_descending': (1, 1),
+        'delete_selected_rows': (2, 1),
+        'reset_table': (3, 1),
     }
 
     model: Model
@@ -104,8 +125,6 @@ class View(QWidget):
         self.message_box_info = MessageBoxInfo(self)
         self.message_box_error = MessageBoxError(self)
         self.message_box_yes_no = MessageBoxYesNo(self)
-        self.dialog_read1_read2_suffix = DialogRead1Read2Suffix(self)
-        self.dialog_bed_file = DialogBedFile(self)
 
     def refresh_table(self):
         self.table.refresh_table()
@@ -253,25 +272,3 @@ class DialogLineEdits:
             ret = tuple('' for _ in self.LINE_DEFAULTS)
 
         return ret if len(ret) > 1 else ret[0]
-
-
-class DialogRead1Read2Suffix(DialogLineEdits):
-
-    LINE_TITLES = [
-        'Read 1 Suffix:',
-        'Read 2 Suffix:',
-    ]
-    LINE_DEFAULTS = [
-        '_R1.fastq.gz',
-        '_R2.fastq.gz',
-    ]
-
-
-class DialogBedFile(DialogLineEdits):
-
-    LINE_TITLES = [
-        'BED File:',
-    ]
-    LINE_DEFAULTS = [
-        '*.bed',
-    ]

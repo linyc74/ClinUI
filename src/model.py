@@ -7,7 +7,7 @@ from .schema import USER_INPUT_COLUMNS
 
 class Model:
 
-    dataframe: pd.DataFrame  # this is the main sequencing table
+    dataframe: pd.DataFrame  # this is the main clinical data table
 
     def __init__(self):
         self.reset_dataframe()
