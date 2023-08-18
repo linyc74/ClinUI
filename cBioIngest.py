@@ -1,4 +1,4 @@
-from cbio_ingest import Main
+from src import Main
 
 
 if __name__ == '__main__':

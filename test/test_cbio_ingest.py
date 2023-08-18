@@ -1,4 +1,4 @@
-from cbio_ingest.cbio_ingest import cBioIngest
+from src.cbio_ingest import cBioIngest
 from .setup import TestCase
 
 

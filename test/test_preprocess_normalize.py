@@ -1,4 +1,4 @@
-from cbio_ingest.preprocess_normalize import PreprocessNormalize
+from src.preprocess_normalize import PreprocessNormalize
 from .setup import TestCase
 
 
