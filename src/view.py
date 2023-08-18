@@ -67,19 +67,31 @@ class View(QWidget):
     WIDTH, HEIGHT = 1280, 768
     BUTTON_NAME_TO_LABEL = {
         'read_clinical_data_table': 'Read Clinical Data Table',
+        'import_sequencing_table': 'Import Sequencing Table',
+        'save_clinical_data_table': 'Save Clinical Data Table',
 
+        'add_new_sample': 'Add New Sample',
+        'edit_sample': 'Edit Sample',
         'sort_ascending': 'Sort (A to Z)',
         'sort_descending': 'Sort (Z to A)',
         'delete_selected_rows': 'Delete Selected Rows',
         'reset_table': 'Reset Table',
+
+        'export_cbioportal_study': 'Export cBioPortal Study',
     }
     BUTTON_NAME_TO_POSITION = {
         'read_clinical_data_table': (0, 0),
+        'import_sequencing_table': (1, 0),
+        'save_clinical_data_table': (2, 0),
 
-        'sort_ascending': (0, 1),
-        'sort_descending': (1, 1),
-        'delete_selected_rows': (2, 1),
-        'reset_table': (3, 1),
+        'add_new_sample': (0, 1),
+        'edit_sample': (1, 1),
+        'sort_ascending': (2, 1),
+        'sort_descending': (3, 1),
+        'delete_selected_rows': (4, 1),
+        'reset_table': (5, 1),
+
+        'export_cbioportal_study': (0, 2),
     }
 
     model: Model

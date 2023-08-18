@@ -16,6 +16,7 @@ class Controller:
 
     def __init_actions(self):
         self.action_read_clinical_data_table = ActionReadClinicalDataTable(self)
+        self.action_save_clinical_data_table = ActionSaveClinicalDataTable(self)
         self.action_sort_ascending = ActionSortAscending(self)
         self.action_sort_descending = ActionSortDescending(self)
         self.action_delete_selected_rows = ActionDeleteSelectedRows(self)
@@ -53,6 +54,15 @@ class ActionReadClinicalDataTable(Action):
             self.view.message_box_error(msg=msg)
 
         self.view.refresh_table()
+
+
+class ActionSaveClinicalDataTable(Action):
+
+    def __call__(self):
+        file = self.view.file_dialog_save_table(filename='clinical_data_table.csv')
+        if file == '':
+            return
+        self.model.save_sequencing_table(file=file)
 
 
 class ActionSort(Action):
