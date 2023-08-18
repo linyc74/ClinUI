@@ -4,6 +4,10 @@ from .schema import *
 from .template import Processor
 
 
+CANCER = 'Cancer'
+OTHER_DISEASE = 'Other Disease'
+
+
 class PreprocessNormalize(Processor):
 
     xlsx: str
@@ -159,13 +163,13 @@ class CalculateSurvival(Processor):
                 self.df.loc[i, CAUSE_OF_DEATH] = OTHER_DISEASE
 
     def calculate_disease_free_survival(self, i: Hashable, row: pd.Series):
-        recurred = pd.notna(row[RECUR_DATE])
+        recurred = pd.notna(row[RECUR_DATE_AFTER_INITIAL_TREATMENT])
         alive = pd.isna(row[EXPIRE_DATE])
 
         t0 = row[INITIAL_TREATMENT_COMPLETION_DATE]
 
         if recurred:
-            duration = row[RECUR_DATE] - t0
+            duration = row[RECUR_DATE_AFTER_INITIAL_TREATMENT] - t0
             status = '1:Recurred/Progressed'
         else:
             if alive:

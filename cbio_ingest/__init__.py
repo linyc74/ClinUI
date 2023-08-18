@@ -1,6 +1,21 @@
 import os
 from .template import Settings
 from .cbio_ingest import cBioIngest
+from .view import View
+from .model import Model
+from .controller import Controller
+
+
+import sys
+from PyQt5.QtWidgets import QApplication
+
+
+def gui():
+    app = QApplication(sys.argv)
+    model = Model()
+    view = View(model)
+    controller = Controller(model, view)
+    sys.exit(app.exec_())
 
 
 def main(

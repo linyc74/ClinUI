@@ -109,4 +109,5 @@ class EntryPoint:
 
 
 if __name__ == '__main__':
-    EntryPoint().main()
+    # EntryPoint().main()
+    cbio_ingest.gui()
