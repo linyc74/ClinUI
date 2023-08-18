@@ -14,9 +14,14 @@ class Controller:
         self.__connect_button_actions()
         self.view.show()
 
+        self.model.read_sequencing_table(file='C:/Users/linyc74/Desktop/Clinical Data Table - 22_1223_clinical_data_transcript.csv')
+        self.view.refresh_table()
+
     def __init_actions(self):
         self.action_read_clinical_data_table = ActionReadClinicalDataTable(self)
         self.action_save_clinical_data_table = ActionSaveClinicalDataTable(self)
+        self.action_add_new_sample = ActionAddNewSample(self)
+        self.action_edit_sample = ActionEditSample(self)
         self.action_sort_ascending = ActionSortAscending(self)
         self.action_sort_descending = ActionSortDescending(self)
         self.action_delete_selected_rows = ActionDeleteSelectedRows(self)
@@ -63,6 +68,40 @@ class ActionSaveClinicalDataTable(Action):
         if file == '':
             return
         self.model.save_sequencing_table(file=file)
+
+
+class ActionAddNewSample(Action):
+
+    def __call__(self):
+        attributes = self.view.dialog_edit_sample()
+
+        if attributes is None:
+            return
+
+        self.model.append_row(attributes=attributes)
+        self.view.refresh_table()
+
+
+class ActionEditSample(Action):
+
+    def __call__(self):
+        rows = self.view.get_selected_rows()
+
+        if len(rows) == 0:
+            self.view.message_box_error(msg='Please select a row')
+            return
+        elif len(rows) > 1:
+            self.view.message_box_error(msg='Please select only one row')
+            return
+
+        attributes = self.model.get_row(row=rows[0])
+        attributes = self.view.dialog_edit_sample(attributes)
+
+        if attributes is None:
+            return
+
+        self.model.update_row(row=rows[0], attributes=attributes)
+        self.view.refresh_table()
 
 
 class ActionSort(Action):

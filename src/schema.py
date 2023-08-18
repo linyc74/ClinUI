@@ -198,377 +198,338 @@ PATIENT_LEVEL_COLUMNS = [
 ]
 
 
-SCHEMA = {
+COLUMN_ATTRIBUTES = {
     STUDY_ID: {
-        'nullable': False,
         'type': 'string',
+        'options': ['hnsc_nycu_2022'],
     },
     SAMPLE_ID: {
-        'nullable': False,
         'type': 'string',
+        'options': ['000-00000-0000-E-X00-00'],
+    },
+    LAB_ID: {
+        'type': 'string',
+        'options': ['XXX_LAB'],
     },
     LAB_SAMPLE_ID: {
-        'nullable': False,
         'type': 'string',
+        'options': ['VGH_001_T', 'NYCUH_001_T'],
     },
     PATIENT_ID: {
-        'nullable': False,
         'type': 'string',
+        'options': ['000-00000'],
     },
     SEX: {
-        'nullable': True,
         'type': 'string',
         'options': ['Male', 'Female'],
     },
     PATIENT_WEIGHT: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
+    },
+    PATIENT_HEIGHT: {
+        'type': 'float',
+        'options': [0.0],
     },
     ETHNICITY_CATEGORY: {
-        'nullable': True,
         'type': 'string',
         'options': ['Han', 'Aboriginal'],
     },
     BIRTH_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['1900-01-01'],
     },
     CLINICAL_DIAGNOSIS_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['2020-01-01'],
     },
     PATHOLOGICAL_DIAGNOSIS_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['2020-01-01'],
     },
     DIAGNOSIS_AGE: {
-        'nullable': True,
         'type': 'float',
     },
     CANCER_TYPE: {
-        'nullable': True,
         'type': 'string',
         'options': ['Head and Neck Cancer'],
     },
     CANCER_TYPE_DETAILED: {
-        'nullable': True,
         'type': 'string',
         'options': ['Oral Cavity Squamous Cell Carcinoma', 'Head and Neck Squamous Cell Carcinoma'],
     },
     SAMPLE_TYPE: {
-        'nullable': True,
         'type': 'string',
         'options': ['Primary', 'Precancer', 'Recurrent'],
     },
     ONCOTREE_CODE: {
-        'nullable': True,
         'type': 'string',
         'options': ['OCSC', 'OPHSC'],
     },
     SOMATIC_STATUS: {
-        'nullable': True,
         'type': 'string',
         'options': ['Matched Adjacent Normal', 'Matched Blood Normal', 'Tumor Only'],
     },
     CENTER: {
-        'nullable': True,
         'type': 'string',
         'options': ['Taipei Veterans General Hospital', 'National Yang Ming Chiao Tung University Hospital'],
     },
     TUMOR_DISEASE_ANATOMIC_SITE: {
-        'nullable': True,
         'type': 'string',
+        'options': ['Buccal Mucosa', 'Floor of Mouth', 'Tongue', 'Gingiva', 'Lip', 'Hard Palate'],
     },
     ICD_O_3_SITE_CODE: {
-        'nullable': True,
         'type': 'string',
+        'options': ['C02.1', 'C03.0', 'C03.1', 'C06.0'],
     },
     ALCOHOL_CONSUMPTION: {
-        'nullable': True,
         'type': 'string',
         'options': ['Current', 'Ex', 'Never'],
     },
     ALCOHOL_CONSUMPTION_FREQUENCY: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     ALCOHOL_CONSUMPTION_DURATION: {
-
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     ALCOHOL_CONSUMPTION_QUIT: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     BETEL_NUT_CHEWING: {
-        'nullable': True,
         'type': 'string',
         'options': ['Current', 'Ex', 'Never'],
     },
     BETEL_NUT_CHEWING_FREQUENCY: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     BETEL_NUT_CHEWING_DURATION: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     BETEL_NUT_CHEWING_QUIT: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     CIGARETTE_SMOKING: {
-        'nullable': True,
         'type': 'string',
         'options': ['Current', 'Ex', 'Never']
     },
     CIGARETTE_SMOKING_FREQUENCY: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     CIGARETTE_SMOKING_DURATION: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     CIGARETTE_SMOKING_QUIT: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     HISTOLOGIC_GRADE: {
-        'nullable': True,
         'type': 'string',
         'options': ['Well Differentiated', 'Moderately Differentiated', 'Poorly Differentiated', 'Undifferentated Anaplastic'],
     },
     SURGERY: {
-        'nullable': True,
         'type': 'string',
         'options': ['Wide Excision', 'Neck Dissection', 'Wide Excision and Neck Dissection'],
     },
     NEOADJUVANT_INDUCTION_CHEMOTHERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
     },
     ADJUVANT_CHEMOTHERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     ADJUVANT_CHEMOTHERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
     },
     PALLIATIVE_CHEMOTHERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     PALLIATIVE_CHEMOTHERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
     },
     ADJUVANT_TARGETED_THERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     ADJUVANT_TARGETED_THERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
     },
     PALLIATIVE_TARGETED_THERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     PALLIATIVE_TARGETED_THERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
     },
     IMMUNOTHERAPY: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     IMMUNOTHERAPY_DRUG: {
-        'nullable': True,
         'type': 'string',
-        'options': ['Pembrolizumab', 'Nivolumab'],
+        'options': ['', 'Pembrolizumab', 'Nivolumab'],
     },
     RADIATION_THERAPY: {
-        'nullable': True,
         'type': 'string',
         'options': ['Definitive', 'Adjuvant', 'Palliative'],
     },
     RADIATION_THERAPY_DOSE: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     IHC_ANTI_PDL1_MAB_22C3_TPS: {
-        'nullable': True,
         'type': 'string',
         'options': ['> 50%', '< 50%'],
     },
     IHC_ANTI_PDL1_MAB_22C3_CPS: {
-        'nullable': True,
         'type': 'string',
         'options': ['> 50%', '< 50%'],
     },
     IHC_ANTI_PDL1_MAB_28_8_TPS: {
-        'nullable': True,
         'type': 'string',
         'options': ['> 50%', '< 50%'],
     },
     IHC_ANTI_PDL1_MAB_28_8_CPS: {
-        'nullable': True,
         'type': 'string',
         'options': ['> 50%', '< 50%'],
     },
     LYMPH_NODE_LEVEL_I: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_IA: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_IB: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_II: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_IIA: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_IIB: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_III: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_IV: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPH_NODE_LEVEL_V: {
-        'nullable': True,
         'type': 'string',
+        'options': ['0/0'],
     },
     LYMPHOVASCULAR_INVASION: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     PERINEURAL_INVASION: {
-        'nullable': True,
         'type': 'string',
         'options': ['Negative', 'Positive', 'Extensive'],
     },
     CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
-        'nullable': True,
         'type': 'boolean',
-        'options': [True, False],
+        'options': [False, True],
     },
     PATHOLOGICAL_EXTRANODAL_EXTENSION: {
-        'nullable': True,
         'type': 'string',
         'options': ['Negative', 'Micro', 'Macro'],
     },
     DEPTH_OF_INVASION: {
-        'nullable': True,
         'type': 'float',
+        'options': [0.0],
     },
     TUMOR_MARGIN: {
-        'nullable': True,
         'type': 'string',
-        'options': ['Negative', 'Close', 'Positive'],
+        'options': ['Positive', 'Close', 'Negative'],
     },
     CLINICAL_TNM: {
-        'nullable': True,
         'type': 'string',
+        'options': ['T1N0M0'],
     },
     PATHOLOGICAL_TNM: {
-        'nullable': True,
         'type': 'string',
+        'options': ['T1N0M0'],
     },
     POSTNEOADJUVANT_CLINICAL_TNM: {
-        'nullable': True,
         'type': 'string',
+        'options': ['', 'T1N0M0'],
     },
     POSTNEOADJUVANT_PATHOLOGICAL_TNM: {
-        'nullable': True,
         'type': 'string',
+        'options': ['', 'T1N0M0'],
     },
     NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE: {
-        'nullable': True,
         'type': 'string',
         'options': ['Stage I', 'Stage II', 'Stage III', 'Stage IVA', 'Stage IVB', 'Stage IVC'],
     },
     ICD_10_CLASSIFICATION: {
-        'nullable': True,
         'type': 'string',
         'options': ['C02.1', 'C03.0', 'C03.1', 'C06.0', 'K13.6', 'K13.29'],
     },
     SUBTYPE: {
-        'nullable': True,
         'type': 'string',
-        'options': ['HNSC HPV+', 'HNSC HPV-'],
+        'options': ['HNSC HPV-', 'HNSC HPV+'],
     },
     INITIAL_TREATMENT_COMPLETION_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['2020-01-01'],
     },
     LAST_FOLLOW_UP_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['2020-01-01'],
     },
     RECUR_DATE_AFTER_INITIAL_TREATMENT: {
-        'nullable': True,
         'type': 'date',
+        'options': ['', '2020-01-01'],
     },
     EXPIRE_DATE: {
-        'nullable': True,
         'type': 'date',
+        'options': ['', '2020-01-01'],
     },
     CAUSE_OF_DEATH: {
-        'nullable': True,
         'type': 'string',
         'options': ['Cancer', 'Other Disease'],
     },
     DISEASE_FREE_SURVIVAL_MONTHS: {
-        'nullable': True,
         'type': 'float',
     },
     DISEASE_FREE_SURVIVAL_STATUS: {
-        'nullable': True,
         'options': ['0:DiseaseFree', '1:Recurred/Progressed'],
     },
     DISEASE_SPECIFIC_SURVIVAL_MONTHS: {
-        'nullable': True,
         'type': 'float',
     },
     DISEASE_SPECIFIC_SURVIVAL_STATUS: {
-        'nullable': True,
         'type': 'string',
         'options': ['0:ALIVE OR DEAD TUMOR FREE', '1:DEAD WITH TUMOR'],
     },
     OVERALL_SURVIVAL_MONTHS: {
-        'nullable': True,
         'type': 'float',
     },
     OVERALL_SURVIVAL_STATUS: {
-        'nullable': True,
         'type': 'string',
         'options': ['0:LIVING', '1:DECEASED'],
     },

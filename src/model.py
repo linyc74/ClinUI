@@ -1,7 +1,6 @@
 import pandas as pd
-from datetime import date
 from os.path import basename
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict, Any
 from .schema import USER_INPUT_COLUMNS
 
 
@@ -22,7 +21,7 @@ class Model:
             if c not in df.columns:
                 return False, f'Column "{c}" not found in "{basename(file)}"'
 
-        self.dataframe = df
+        self.dataframe = df[USER_INPUT_COLUMNS]
         return True, ''
 
     def save_sequencing_table(self, file: str):
@@ -50,6 +49,16 @@ class Model:
         ).reset_index(
             drop=True
         )
+
+    def get_row(self, row: int) -> Dict[str, Any]:
+        return self.dataframe.loc[row, ].to_dict()
+
+    def update_row(self, row: int, attributes: Dict[str, str]):
+        for key, val in attributes.items():
+            self.dataframe.loc[row, key] = val
+
+    def append_row(self, attributes: Dict[str, str]):
+        self.dataframe = append(self.dataframe, pd.Series(attributes))
 
 
 def append(df: pd.DataFrame, s: pd.Series) -> pd.DataFrame:

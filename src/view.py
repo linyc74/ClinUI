@@ -3,9 +3,10 @@ import pandas as pd
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, \
-    QFileDialog, QMessageBox, QGridLayout, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
-from typing import List, Union, Any
+    QFileDialog, QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, QScrollArea
+from typing import List, Optional, Any, Dict
 from .model import Model
+from .schema import USER_INPUT_COLUMNS, COLUMN_ATTRIBUTES
 
 
 class Table(QTableWidget):
@@ -27,7 +28,7 @@ class Table(QTableWidget):
         for i in range(len(df.index)):
             for j in range(len(df.columns)):
                 value = df.iloc[i, j]
-                item = QTableWidgetItem(to_str(value))
+                item = QTableWidgetItem(str_(value))
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # makes the item immutable, i.e. user cannot edit it
                 self.setItem(i, j, item)
 
@@ -51,7 +52,10 @@ class Table(QTableWidget):
         return ret
 
 
-def to_str(value: Any) -> str:
+def str_(value: Any) -> str:
+    """
+    Converts to str for GUI display
+    """
     if pd.isna(value):
         return ''
     elif type(value) == pd.Timestamp:
@@ -70,13 +74,13 @@ class View(QWidget):
         'import_sequencing_table': 'Import Sequencing Table',
         'save_clinical_data_table': 'Save Clinical Data Table',
 
-        'add_new_sample': 'Add New Sample',
-        'edit_sample': 'Edit Sample',
         'sort_ascending': 'Sort (A to Z)',
         'sort_descending': 'Sort (Z to A)',
         'delete_selected_rows': 'Delete Selected Rows',
         'reset_table': 'Reset Table',
 
+        'add_new_sample': 'Add New Sample',
+        'edit_sample': 'Edit Sample',
         'export_cbioportal_study': 'Export cBioPortal Study',
     }
     BUTTON_NAME_TO_POSITION = {
@@ -84,14 +88,15 @@ class View(QWidget):
         'import_sequencing_table': (1, 0),
         'save_clinical_data_table': (2, 0),
 
-        'add_new_sample': (0, 1),
-        'edit_sample': (1, 1),
-        'sort_ascending': (2, 1),
-        'sort_descending': (3, 1),
-        'delete_selected_rows': (4, 1),
-        'reset_table': (5, 1),
+        'sort_ascending': (0, 1),
+        'sort_descending': (1, 1),
+        'delete_selected_rows': (2, 1),
+        'reset_table': (3, 1),
 
-        'export_cbioportal_study': (0, 2),
+        'add_new_sample': (0, 2),
+        'edit_sample': (1, 2),
+
+        'export_cbioportal_study': (2, 2),
     }
 
     model: Model
@@ -137,6 +142,7 @@ class View(QWidget):
         self.message_box_info = MessageBoxInfo(self)
         self.message_box_error = MessageBoxError(self)
         self.message_box_yes_no = MessageBoxYesNo(self)
+        self.dialog_edit_sample = DialogEditSample(self)
 
     def refresh_table(self):
         self.table.refresh_table()
@@ -238,49 +244,98 @@ class MessageBoxYesNo(MessageBox):
         return self.box.exec_() == QMessageBox.Yes
 
 
-class DialogLineEdits:
+class DialogEditSample:
 
-    LINE_TITLES: List[str]
-    LINE_DEFAULTS: List[str]
+    WIDTH, HEIGHT = 1024, 768
 
     parent: QWidget
 
     dialog: QDialog
-    layout: QFormLayout
-    line_edits: List[QLineEdit]
+    main_layout: QVBoxLayout
+    form_layout: QFormLayout
+    field_to_options: Dict[str, List[str]]
+    field_to_combo_boxes: Dict[str, QComboBox]
     button_box: QDialogButtonBox
 
     def __init__(self, parent: QWidget):
         self.parent = parent
+
         self.__init__dialog()
         self.__init__layout()
-        self.__init__line_edits()
+        self.__init__field_to_options()
+        self.__init__field_to_combo_boxes()
         self.__init__button_box()
 
     def __init__dialog(self):
         self.dialog = QDialog(parent=self.parent)
         self.dialog.setWindowTitle(' ')
+        self.dialog.resize(self.WIDTH, self.HEIGHT)
 
     def __init__layout(self):
-        self.layout = QFormLayout(parent=self.dialog)
+        """
+        This method is adapted from ChatGPT's code
+        It's very complicated, and I don't fully understand the construction mechinism
+        """
+        self.main_layout = QVBoxLayout(self.dialog)
 
-    def __init__line_edits(self):
-        self.line_edits = []
-        for title, default in zip(self.LINE_TITLES, self.LINE_DEFAULTS):
-            line_edit = QLineEdit(default, parent=self.dialog)
-            self.line_edits.append(line_edit)
-            self.layout.addRow(title, line_edit)
+        # Create a ScrollArea
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)  # Important: makes the inner widget resize with the scroll area
+
+        # Create a QWidget for the scroll area content
+        scroll_contents = QWidget(scroll)
+        self.form_layout = QFormLayout(scroll_contents)
+
+        # Set the scroll area's widget to be the QWidget with all items
+        scroll.setWidget(scroll_contents)
+
+        # Add ScrollArea to the main layout
+        self.main_layout.addWidget(scroll)
+
+    def __init__field_to_options(self):
+        self.field_to_options = {}
+        for c in USER_INPUT_COLUMNS:
+            options = COLUMN_ATTRIBUTES[c].get('options', [])
+            self.field_to_options[c] = [str(o) for o in options]
+
+    def __init__field_to_combo_boxes(self):
+        self.field_to_combo_boxes = {}
+        for field, options in self.field_to_options.items():
+            combo = QComboBox(parent=self.dialog)
+            combo.addItems(options)
+            combo.setEditable(True)
+            self.field_to_combo_boxes[field] = combo
+            self.form_layout.addRow(field, combo)
 
     def __init__button_box(self):
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, parent=self.dialog)
         self.button_box.accepted.connect(self.dialog.accept)
         self.button_box.rejected.connect(self.dialog.reject)
-        self.layout.addWidget(self.button_box)
+        self.main_layout.addWidget(self.button_box)
 
-    def __call__(self) -> Union[str, tuple]:
-        if self.dialog.exec_() == QDialog.Accepted:
-            ret = tuple(e.text() for e in self.line_edits)
+    def __call__(
+            self,
+            attributes: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, str]]:
+
+        if attributes is None:
+            self.__set_combo_box_default_text()
         else:
-            ret = tuple('' for _ in self.LINE_DEFAULTS)
+            self.__set_combo_box_text(attributes=attributes)
 
-        return ret if len(ret) > 1 else ret[0]
+        if self.dialog.exec_() == QDialog.Accepted:
+            return {
+                field: combo.currentText()
+                for field, combo in self.field_to_combo_boxes.items()
+            }
+        else:
+            return None
+
+    def __set_combo_box_default_text(self):
+        for field, options in self.field_to_options.items():
+            default = str_(options[0]) if len(options) > 0 else ''
+            self.field_to_combo_boxes[field].setCurrentText(default)
+
+    def __set_combo_box_text(self, attributes: Dict[str, Any]):
+        for field, value in attributes.items():
+            if field in self.field_to_combo_boxes.keys():
+                self.field_to_combo_boxes[field].setCurrentText(str_(value))
