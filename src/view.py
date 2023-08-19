@@ -66,7 +66,7 @@ def str_(value: Any) -> str:
 
 class View(QWidget):
 
-    TITLE = 'cBioIngest'
+    TITLE = 'ClinUI'
     ICON_PNG = f'{os.getcwd()}/icon/logo.ico'
     WIDTH, HEIGHT = 1280, 768
     BUTTON_NAME_TO_LABEL = {
