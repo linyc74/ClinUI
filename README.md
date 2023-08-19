@@ -1,3 +1,3 @@
-# cBioIngest
+# ClinUI
 
-**Data ingestion for cBioPortal**
+**Clinical data management for cBioPortal**
