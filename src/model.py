@@ -1,7 +1,7 @@
 import pandas as pd
 from os.path import basename
-from typing import Tuple, List, Optional, Dict, Any
-from .schema import USER_INPUT_COLUMNS
+from typing import Tuple, List, Optional, Dict, Any, Union
+from .schema import USER_INPUT_COLUMNS, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID
 
 
 class Model:
@@ -14,17 +14,38 @@ class Model:
     def reset_dataframe(self):
         self.dataframe = pd.DataFrame(columns=USER_INPUT_COLUMNS)
 
-    def read_sequencing_table(self, file: str) -> Tuple[bool, str]:
-        df = pd.read_excel(file) if file.endswith('.xlsx') else pd.read_csv(file)
+    def read_clinical_data_table(self, file: str) -> Tuple[bool, str]:
+        df = read(file)
 
-        for c in USER_INPUT_COLUMNS:
-            if c not in df.columns:
-                return False, f'Column "{c}" not found in "{basename(file)}"'
+        success, message = check_columns(
+            df=df,
+            columns=USER_INPUT_COLUMNS,
+            file=file)
+
+        if not success:
+            return False, message
 
         self.dataframe = df[USER_INPUT_COLUMNS]
         return True, ''
 
-    def save_sequencing_table(self, file: str):
+    def import_sequencing_table(self, file: str) -> Tuple[bool, str]:
+        seq_df = read(file)
+
+        success, message = check_columns(
+            df=seq_df,
+            columns=['ID', 'Lab', 'Lab Sample ID'],
+            file=file)
+
+        if not success:
+            return False, message
+
+        self.dataframe = AddNewRowsFromSequencingTable().main(
+            dataframe=self.dataframe,
+            seq_df=seq_df)
+
+        return True, ''
+
+    def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):
             self.dataframe.to_excel(file, index=False)
         else:
@@ -61,5 +82,48 @@ class Model:
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
 
-def append(df: pd.DataFrame, s: pd.Series) -> pd.DataFrame:
+class AddNewRowsFromSequencingTable:
+
+    dataframe: pd.DataFrame
+    seq_df: pd.DataFrame
+
+    def main(
+            self,
+            dataframe: pd.DataFrame,
+            seq_df: pd.DataFrame) -> pd.DataFrame:
+
+        self.dataframe = dataframe.copy()
+        self.seq_df = seq_df
+
+        for i, row in self.seq_df.iterrows():
+
+            sequencing_id = row['ID']
+            if sequencing_id in self.dataframe[SAMPLE_ID].values:
+                continue
+
+            new_row = {
+                SAMPLE_ID: sequencing_id,
+                LAB_ID: row['Lab'],
+                LAB_SAMPLE_ID: row['Lab Sample ID'],
+            }
+
+            self.dataframe = append(self.dataframe, new_row)
+
+        return self.dataframe
+
+
+def read(file: str) -> pd.DataFrame:
+    return pd.read_excel(file) if file.endswith('.xlsx') else pd.read_csv(file)
+
+
+def check_columns(df: pd.DataFrame, columns: List[str], file: str) -> Tuple[bool, str]:
+    for c in columns:
+        if c not in df.columns:
+            return False, f'Column "{c}" not found in "{basename(file)}"'
+    return True, ''
+
+
+def append(df: pd.DataFrame, s: Union[dict, pd.Series]) -> pd.DataFrame:
+    if type(s) is dict:
+        s = pd.Series(s)
     return pd.concat([df, pd.DataFrame([s])], ignore_index=True)
