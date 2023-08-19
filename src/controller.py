@@ -14,9 +14,6 @@ class Controller:
         self.__connect_button_actions()
         self.view.show()
 
-        self.model.read_clinical_data_table(file='C:/Users/linyc74/Desktop/Clinical Data Table - 22_1223_clinical_data_transcript.csv')
-        self.view.refresh_table()
-
     def __init_actions(self):
         self.action_read_clinical_data_table = ActionReadClinicalDataTable(self)
         self.action_import_sequencing_table = ActionImportSequencingTable(self)
