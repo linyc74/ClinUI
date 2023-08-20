@@ -16,10 +16,9 @@ class PreprocessNormalize(Processor):
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
 
-    def main(self, xlsx: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        self.xlsx = xlsx
+    def main(self, clinical_data_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
-        self.df = pd.read_excel(self.xlsx)
+        self.df = clinical_data_df
 
         self.check_input_columns()
         self.calculate_survival()

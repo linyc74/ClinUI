@@ -1,3 +1,4 @@
+import pandas as pd
 from src.preprocess_normalize import PreprocessNormalize
 from .setup import TestCase
 
@@ -12,7 +13,7 @@ class TestPreprocessNormalize(TestCase):
 
     def test_main(self):
         patient_df, sample_df = PreprocessNormalize(self.settings).main(
-            xlsx=f'{self.indir}/clinical-data.xlsx',
+            clinical_data_df=pd.read_excel(f'{self.indir}/clinical-data.xlsx')
         )
         patient_df.to_csv(f'{self.outdir}/patient_df.csv', index=False)
         sample_df.to_csv(f'{self.outdir}/sample_df.csv', index=False)
