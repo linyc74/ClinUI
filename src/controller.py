@@ -1,3 +1,4 @@
+from typing import Dict, Optional
 from .view import View
 from .model import Model
 
@@ -166,30 +167,52 @@ class ActionEditSample(Action):
 
 class ActionExportCbioportalStudy(Action):
 
+    maf_dir: Optional[str]
+    dstdir: Optional[str]
+    project_info_dict: Optional[Dict[str, str]]
+    study_info_dict: Dict[str, str]
+    tags_dict: Optional[Dict[str, str]]
+
     def __call__(self):
-        maf_dir = self.view.file_dialog_open_directory(caption='Select MAF directory')
-        if maf_dir == '':
+        self.set_maf_dir()
+        if self.maf_dir == '':
             return
 
-        dstdir = self.view.file_dialog_open_directory(caption='Select destination directory')
-        if dstdir == '':
+        self.set_project_info_dict()
+        if self.project_info_dict is None:
             return
 
-        try:
-            study_info_dict = {
-                'type_of_cancer': 'hnsc',
-                'cancer_study_identifier': 'hnsc_nycu_2022',
-                'name': 'Head and Neck Squamous Cell Carcinomas (NYCU, 2022)',
-                'description': 'Whole exome sequencing of 11 precancer and OSCC tumor/normal pairs',
-                'groups': 'PUBLIC',
-                'reference_genome': 'hg38',
-            }
-            tags_dict = {'key': 'val'}
+        self.set_dstdir()
+        if self.dstdir == '':
+            return
 
-            self.model.export_cbioportal_study(
-                maf_dir=maf_dir,
-                study_info_dict=study_info_dict,
-                tags_dict=tags_dict,
-                dstdir=dstdir)
-        except Exception as e:
-            self.view.message_box_error(msg=str(e))
+        self.set_study_info_dict()
+        self.set_tags_dict()
+        self.export_cbioportal_study()
+
+    def set_maf_dir(self):
+        self.maf_dir = self.view.file_dialog_open_directory(caption='Select MAF directory')
+
+    def set_project_info_dict(self):
+        self.project_info_dict = self.view.dialog_project_info()
+
+    def set_dstdir(self):
+        self.dstdir = self.view.file_dialog_open_directory(caption='Select Destination Directory')
+
+    def set_study_info_dict(self):
+        self.study_info_dict = self.project_info_dict.copy()
+        self.study_info_dict.pop('source_data')
+
+    def set_tags_dict(self):
+        s = self.project_info_dict.get('source_data')
+        if s == '':
+            self.tags_dict = None
+        else:
+            self.tags_dict = {'source_data': s}
+
+    def export_cbioportal_study(self):
+        self.model.export_cbioportal_study(
+            maf_dir=self.maf_dir,
+            study_info_dict=self.study_info_dict,
+            tags_dict=self.tags_dict,
+            dstdir=self.dstdir)

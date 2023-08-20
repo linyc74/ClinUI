@@ -143,6 +143,7 @@ class View(QWidget):
         self.message_box_error = MessageBoxError(self)
         self.message_box_yes_no = MessageBoxYesNo(self)
         self.dialog_edit_sample = DialogEditSample(self)
+        self.dialog_project_info = DialogStudyInfo(self)
 
     def refresh_table(self):
         self.table.refresh_table()
@@ -244,34 +245,36 @@ class MessageBoxYesNo(MessageBox):
         return self.box.exec_() == QMessageBox.Yes
 
 
-class DialogEditSample:
+class DialogComboBoxes:
 
-    WIDTH, HEIGHT = 1024, 768
+    WIDTH: int
+    HEIGHT: int
 
     parent: QWidget
 
     dialog: QDialog
     main_layout: QVBoxLayout
     form_layout: QFormLayout
+
     field_to_options: Dict[str, List[str]]
     field_to_combo_boxes: Dict[str, QComboBox]
+
     button_box: QDialogButtonBox
 
     def __init__(self, parent: QWidget):
         self.parent = parent
+        self.init_dialog()
+        self.init_layout()
+        self.init_field_to_options()
+        self.init_field_to_combo_boxes()
+        self.init_button_box()
 
-        self.__init__dialog()
-        self.__init__layout()
-        self.__init__field_to_options()
-        self.__init__field_to_combo_boxes()
-        self.__init__button_box()
-
-    def __init__dialog(self):
+    def init_dialog(self):
         self.dialog = QDialog(parent=self.parent)
         self.dialog.setWindowTitle(' ')
         self.dialog.resize(self.WIDTH, self.HEIGHT)
 
-    def __init__layout(self):
+    def init_layout(self):
         """
         This method is adapted from ChatGPT's code
         It's very complicated, and I don't fully understand the construction mechinism
@@ -292,35 +295,48 @@ class DialogEditSample:
         # Add ScrollArea to the main layout
         self.main_layout.addWidget(scroll)
 
-    def __init__field_to_options(self):
-        self.field_to_options = {}
-        for c in USER_INPUT_COLUMNS:
-            options = COLUMN_ATTRIBUTES[c].get('options', [])
-            self.field_to_options[c] = [str(o) for o in options]
+    def init_field_to_options(self):
+        raise NotImplementedError
 
-    def __init__field_to_combo_boxes(self):
+    def init_field_to_combo_boxes(self):
         self.field_to_combo_boxes = {}
         for field, options in self.field_to_options.items():
             combo = QComboBox(parent=self.dialog)
             combo.addItems(options)
             combo.setEditable(True)
             self.field_to_combo_boxes[field] = combo
-            self.form_layout.addRow(field, combo)
+            self.form_layout.addRow(to_title(field), combo)
 
-    def __init__button_box(self):
+    def init_button_box(self):
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, parent=self.dialog)
         self.button_box.accepted.connect(self.dialog.accept)
         self.button_box.rejected.connect(self.dialog.reject)
         self.main_layout.addWidget(self.button_box)
+
+    def set_combo_box_default_text(self):
+        for field, options in self.field_to_options.items():
+            default = str_(options[0]) if len(options) > 0 else ''
+            self.field_to_combo_boxes[field].setCurrentText(default)
+
+
+class DialogEditSample(DialogComboBoxes):
+
+    WIDTH, HEIGHT = 1024, 768
+
+    def init_field_to_options(self):
+        self.field_to_options = {}
+        for c in USER_INPUT_COLUMNS:
+            options = COLUMN_ATTRIBUTES[c].get('options', [])
+            self.field_to_options[c] = [str(o) for o in options]
 
     def __call__(
             self,
             attributes: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, str]]:
 
         if attributes is None:
-            self.__set_combo_box_default_text()
+            self.set_combo_box_default_text()
         else:
-            self.__set_combo_box_text(attributes=attributes)
+            self.set_combo_box_text(attributes=attributes)
 
         if self.dialog.exec_() == QDialog.Accepted:
             return {
@@ -330,12 +346,55 @@ class DialogEditSample:
         else:
             return None
 
-    def __set_combo_box_default_text(self):
-        for field, options in self.field_to_options.items():
-            default = str_(options[0]) if len(options) > 0 else ''
-            self.field_to_combo_boxes[field].setCurrentText(default)
-
-    def __set_combo_box_text(self, attributes: Dict[str, Any]):
+    def set_combo_box_text(self, attributes: Dict[str, Any]):
         for field, value in attributes.items():
             if field in self.field_to_combo_boxes.keys():
                 self.field_to_combo_boxes[field].setCurrentText(str_(value))
+
+
+class DialogStudyInfo(DialogComboBoxes):
+
+    WIDTH, HEIGHT = 600, 300
+
+    def init_field_to_options(self):
+        self.field_to_options = {
+            'type_of_cancer': ['hnsc'],
+            'cancer_study_identifier': ['hnsc_nycu_2022'],
+            'name': ['Head and Neck Squamous Cell Carcinomas (NYCU, 2022)'],
+            'description': ['Whole exome sequencing of OSCC tumor/normal pairs'],
+            'groups': ['PUBLIC'],
+            'reference_genome': ['hg38', 'hg19'],
+            'source_data': ['yy_mmdd_dataset'],
+        }
+
+    def __call__(self) -> Optional[Dict[str, str]]:
+
+        self.set_combo_box_default_text()
+
+        if self.dialog.exec_() == QDialog.Accepted:
+            return {
+                field: combo.currentText()
+                for field, combo in self.field_to_combo_boxes.items()
+            }
+        else:
+            return None
+
+
+def to_title(s: str) -> str:
+    skip = [
+        'of',
+        'and',
+        'or',
+        'on',
+        'after',
+        'mAb',  # monoclonal antibody
+    ]
+
+    words = s.replace('_', ' ').split(' ')
+
+    for i, word in enumerate(words):
+        if word in skip:
+            continue
+        words[i] = word[0].upper() + word[1:]  # only capitalize the first letter
+
+    return ' '.join(words)
