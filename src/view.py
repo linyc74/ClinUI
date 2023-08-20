@@ -261,6 +261,8 @@ class DialogComboBoxes:
 
     button_box: QDialogButtonBox
 
+    output_dict: Dict[str, str]
+
     def __init__(self, parent: QWidget):
         self.parent = parent
         self.init_dialog()
@@ -318,6 +320,12 @@ class DialogComboBoxes:
             default = str_(options[0]) if len(options) > 0 else ''
             self.field_to_combo_boxes[field].setCurrentText(default)
 
+    def get_output_dict(self) -> Dict[str, str]:
+        return {
+            field: combo.currentText()
+            for field, combo in self.field_to_combo_boxes.items()
+        }
+
 
 class DialogEditSample(DialogComboBoxes):
 
@@ -338,13 +346,7 @@ class DialogEditSample(DialogComboBoxes):
         else:
             self.set_combo_box_text(attributes=attributes)
 
-        if self.dialog.exec_() == QDialog.Accepted:
-            return {
-                field: combo.currentText()
-                for field, combo in self.field_to_combo_boxes.items()
-            }
-        else:
-            return None
+        return self.get_output_dict() if self.dialog.exec_() == QDialog.Accepted else None
 
     def set_combo_box_text(self, attributes: Dict[str, Any]):
         for field, value in attributes.items():
@@ -368,16 +370,8 @@ class DialogStudyInfo(DialogComboBoxes):
         }
 
     def __call__(self) -> Optional[Dict[str, str]]:
-
         self.set_combo_box_default_text()
-
-        if self.dialog.exec_() == QDialog.Accepted:
-            return {
-                field: combo.currentText()
-                for field, combo in self.field_to_combo_boxes.items()
-            }
-        else:
-            return None
+        return self.get_output_dict() if self.dialog.exec_() == QDialog.Accepted else None
 
 
 def to_title(s: str) -> str:
