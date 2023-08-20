@@ -15,5 +15,11 @@ class TestPreprocessNormalize(TestCase):
         patient_df, sample_df = PreprocessNormalize(self.settings).main(
             clinical_data_df=pd.read_csv(f'{self.indir}/clinical-data.csv')
         )
-        patient_df.to_csv(f'{self.outdir}/patient_df.csv', index=False)
-        sample_df.to_csv(f'{self.outdir}/sample_df.csv', index=False)
+        self.assertDataFrameEqual(
+            pd.read_csv(f'{self.indir}/patient_df.csv'),
+            patient_df
+        )
+        self.assertDataFrameEqual(
+            pd.read_csv(f'{self.indir}/sample_df.csv'),
+            sample_df
+        )

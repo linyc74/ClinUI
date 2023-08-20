@@ -144,14 +144,18 @@ def read(file: str) -> pd.DataFrame:
     return pd.read_excel(file) if file.endswith('.xlsx') else pd.read_csv(file)
 
 
-def check_columns(df: pd.DataFrame, columns: List[str], file: str) -> Tuple[bool, str]:
+def check_columns(
+        df: pd.DataFrame,
+        columns: List[str], file: str) -> Tuple[bool, str]:
     for c in columns:
         if c not in df.columns:
             return False, f'Column "{c}" not found in "{basename(file)}"'
     return True, ''
 
 
-def append(df: pd.DataFrame, s: Union[dict, pd.Series]) -> pd.DataFrame:
+def append(
+        df: pd.DataFrame,
+        s: Union[dict, pd.Series]) -> pd.DataFrame:
     if type(s) is dict:
         s = pd.Series(s)
     return pd.concat([df, pd.DataFrame([s])], ignore_index=True)
