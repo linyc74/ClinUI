@@ -1,5 +1,6 @@
+import numpy as np
 import pandas as pd
-from typing import Tuple, Hashable
+from typing import Tuple, Hashable, Union
 from .schema import *
 from .template import Processor
 
@@ -57,12 +58,12 @@ class CheckInputColumns(Processor):
         'Cancer Type Detailed',
         'Sample Type',
         'Oncotree Code',
-        'Somatic status',
+        'Somatic Status',
         'Center',
         'Tumor Disease Anatomic Site',
         'ICD-O-3 Site Code',
         'Alcohol Consumption',
-        'Alcohol Consumption Frequency (Days Per Week)',
+        'Alcohol Consumption Frequency (Bottles Per Day)',
         'Alcohol Consumption Duration (Years)',
         'Alcohol Consumption Quit (Years)',
         'Betel Nut Chewing',
@@ -150,7 +151,7 @@ class CalculateSurvival(Processor):
         return self.df
 
     def calculate_diagnosis_age(self, i: Hashable, row: pd.Series):
-        self.df.loc[i, DIAGNOSIS_AGE] = row[CLINICAL_DIAGNOSIS_DATE] - row[BIRTH_DATE]
+        self.df.loc[i, DIAGNOSIS_AGE] = delta_t(start=row[BIRTH_DATE], end=row[CLINICAL_DIAGNOSIS_DATE])
 
     def check_cause_of_death(self, i: Hashable, row: pd.Series):
         has_expire_date = pd.notna(row[EXPIRE_DATE])
@@ -168,14 +169,14 @@ class CalculateSurvival(Processor):
         t0 = row[INITIAL_TREATMENT_COMPLETION_DATE]
 
         if recurred:
-            duration = row[RECUR_DATE_AFTER_INITIAL_TREATMENT] - t0
+            duration = delta_t(start=t0, end=row[RECUR_DATE_AFTER_INITIAL_TREATMENT])
             status = '1:Recurred/Progressed'
         else:
             if alive:
-                duration = row[LAST_FOLLOW_UP_DATE] - t0
+                duration = delta_t(start=t0, end=row[LAST_FOLLOW_UP_DATE])
                 status = '0:DiseaseFree'
-            else:  # dead
-                duration = row[EXPIRE_DATE] - t0
+            else:  # died
+                duration = delta_t(start=t0, end=row[EXPIRE_DATE])
                 if row[CAUSE_OF_DEATH].capitalize() == CANCER:
                     status = '1:Recurred/Progressed'
                 else:
@@ -189,10 +190,10 @@ class CalculateSurvival(Processor):
         t0 = row[INITIAL_TREATMENT_COMPLETION_DATE]
 
         if alive:
-            duration = row[LAST_FOLLOW_UP_DATE] - t0
+            duration = delta_t(start=t0, end=row[LAST_FOLLOW_UP_DATE])
             status = '0:ALIVE OR DEAD TUMOR FREE'
         else:
-            duration = row[EXPIRE_DATE] - t0
+            duration = delta_t(start=t0, end=row[EXPIRE_DATE])
             if row[CAUSE_OF_DEATH].capitalize() == CANCER:
                 status = '1:DEAD WITH TUMOR'
             else:
@@ -202,11 +203,13 @@ class CalculateSurvival(Processor):
         self.df.loc[i, DISEASE_SPECIFIC_SURVIVAL_STATUS] = status
 
     def calculate_overall_survival(self, i: Hashable, row: pd.Series):
+        t0 = row[INITIAL_TREATMENT_COMPLETION_DATE]
+
         if pd.notna(row[EXPIRE_DATE]):
-            duration = row[EXPIRE_DATE] - row[INITIAL_TREATMENT_COMPLETION_DATE]
+            duration = delta_t(start=t0, end=row[EXPIRE_DATE])
             status = '1:DECEASED'
         else:
-            duration = row[LAST_FOLLOW_UP_DATE] - row[INITIAL_TREATMENT_COMPLETION_DATE]
+            duration = delta_t(start=t0, end=row[LAST_FOLLOW_UP_DATE])
             status = '0:LIVING'
 
         self.df.loc[i, OVERALL_SURVIVAL_MONTHS] = duration
@@ -221,6 +224,23 @@ class CalculateSurvival(Processor):
             OVERALL_SURVIVAL_MONTHS
         ]:
             self.df[c] = self.df[c] / pd.Timedelta(days=30)
+
+
+def delta_t(
+        start: Union[pd.Timestamp, str, type(np.NAN)],
+        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
+
+    if type(start) is str:
+        start = pd.to_datetime(start, format='%m/%d/%Y')
+    elif pd.isna(start):
+        start = pd.NaT
+
+    if type(end) is str:
+        end = pd.to_datetime(end, format='%m/%d/%Y')
+    elif pd.isna(end):
+        end = pd.NaT
+
+    return end - start
 
 
 class DropIdentifiableInformation(Processor):
@@ -248,7 +268,7 @@ class NormalizePatientSampleData(Processor):
         'Patient Height (cm)',
         'Ethnicity Category',
         'Alcohol Consumption',
-        'Alcohol Consumption Frequency (Days Per Week)',
+        'Alcohol Consumption Frequency (Bottles Per Day)',
         'Alcohol Consumption Duration (Years)',
         'Alcohol Consumption Quit (Years)',
         'Betel Nut Chewing',

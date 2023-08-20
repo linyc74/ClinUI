@@ -1,7 +1,10 @@
+import os
 import pandas as pd
 from os.path import basename
 from typing import Tuple, List, Optional, Dict, Any, Union
-from .schema import USER_INPUT_COLUMNS, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID
+from .template import Settings
+from .cbio_ingest import cBioIngest
+from .schema import USER_INPUT_COLUMNS, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID, STUDY_IDENTIFIER_KEY
 
 
 class Model:
@@ -80,6 +83,31 @@ class Model:
 
     def append_row(self, attributes: Dict[str, str]):
         self.dataframe = append(self.dataframe, pd.Series(attributes))
+
+    def export_cbioportal_study(
+            self,
+            maf_dir: str,
+            study_info_dict: Dict[str, str],
+            tags_dict: Dict[str, str],
+            dstdir: str):
+
+        study_id = study_info_dict[STUDY_IDENTIFIER_KEY]
+        outdir = f'{dstdir}/{study_id}'
+
+        os.makedirs(outdir, exist_ok=True)
+
+        settings = Settings(
+            workdir='.',
+            outdir=outdir,
+            threads=1,
+            debug=False,
+            mock=False)
+
+        cBioIngest(settings).main(
+            clinical_data_df=self.dataframe,
+            maf_dir=maf_dir,
+            study_info_dict=study_info_dict,
+            tags_dict=tags_dict)
 
 
 class AddNewRowsFromSequencingTable:

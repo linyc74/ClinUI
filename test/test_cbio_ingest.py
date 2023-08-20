@@ -22,7 +22,7 @@ class TestcBioIngest(TestCase):
                 'groups': 'PUBLIC',
                 'reference_genome': 'hg38',
             },
-            clinical_data_df=pd.read_excel(f'{self.indir}/clinical-data.xlsx'),
+            clinical_data_df=pd.read_csv(f'{self.indir}/clinical-data.csv'),
             maf_dir=f'{self.indir}/maf-dir',
             tags_dict={'key': 'val'},
         )

@@ -13,7 +13,7 @@ class TestPreprocessNormalize(TestCase):
 
     def test_main(self):
         patient_df, sample_df = PreprocessNormalize(self.settings).main(
-            clinical_data_df=pd.read_excel(f'{self.indir}/clinical-data.xlsx')
+            clinical_data_df=pd.read_csv(f'{self.indir}/clinical-data.csv')
         )
         patient_df.to_csv(f'{self.outdir}/patient_df.csv', index=False)
         sample_df.to_csv(f'{self.outdir}/sample_df.csv', index=False)

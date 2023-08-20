@@ -167,4 +167,29 @@ class ActionEditSample(Action):
 class ActionExportCbioportalStudy(Action):
 
     def __call__(self):
-        pass
+        maf_dir = self.view.file_dialog_open_directory(caption='Select MAF directory')
+        if maf_dir == '':
+            return
+
+        dstdir = self.view.file_dialog_open_directory(caption='Select destination directory')
+        if dstdir == '':
+            return
+
+        try:
+            study_info_dict = {
+                'type_of_cancer': 'hnsc',
+                'cancer_study_identifier': 'hnsc_nycu_2022',
+                'name': 'Head and Neck Squamous Cell Carcinomas (NYCU, 2022)',
+                'description': 'Whole exome sequencing of 11 precancer and OSCC tumor/normal pairs',
+                'groups': 'PUBLIC',
+                'reference_genome': 'hg38',
+            }
+            tags_dict = {'key': 'val'}
+
+            self.model.export_cbioportal_study(
+                maf_dir=maf_dir,
+                study_info_dict=study_info_dict,
+                tags_dict=tags_dict,
+                dstdir=dstdir)
+        except Exception as e:
+            self.view.message_box_error(msg=str(e))
