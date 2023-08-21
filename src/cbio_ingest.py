@@ -44,7 +44,9 @@ class cBioIngest(Processor):
 
     def preprocess_normalize(self):
         self.patient_df, self.sample_df = PreprocessNormalize(self.settings).main(
-            clinical_data_df=self.clinical_data_df)
+            clinical_data_df=self.clinical_data_df,
+            study_id=self.study_info_dict[STUDY_IDENTIFIER_KEY]
+        )
 
     def write_clinical_data(self):
         WriteClinicalData(self.settings).main(

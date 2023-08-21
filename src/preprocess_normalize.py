@@ -11,15 +11,16 @@ OTHER_DISEASE = 'Other Disease'
 
 class PreprocessNormalize(Processor):
 
-    xlsx: str
-
     df: pd.DataFrame
+    study_id: str
+
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
 
-    def main(self, clinical_data_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def main(self, clinical_data_df: pd.DataFrame, study_id: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         self.df = clinical_data_df
+        self.study_id = study_id
 
         self.calculate_survival()
         self.drop_identifiable_information()
@@ -34,7 +35,9 @@ class PreprocessNormalize(Processor):
         self.df = DropIdentifiableInformation(self.settings).main(self.df)
 
     def normalize_patient_sample_data(self):
-        self.patient_df, self.sample_df = NormalizePatientSampleData(self.settings).main(self.df)
+        self.patient_df, self.sample_df = NormalizePatientSampleData(self.settings).main(
+            df=self.df,
+            study_id=self.study_id)
 
 
 class CalculateSurvival(Processor):
@@ -195,12 +198,14 @@ class NormalizePatientSampleData(Processor):
     ]
 
     df: pd.DataFrame
+    study_id: str
 
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
 
-    def main(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def main(self, df: pd.DataFrame, study_id: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
         self.df = df
+        self.study_id = study_id
 
         self.extract_patient_data()
         self.extract_sample_data()
@@ -209,7 +214,7 @@ class NormalizePatientSampleData(Processor):
 
     def extract_patient_data(self):
         columns = [SAMPLE_ID] + self.PATIENT_LEVEL_COLUMNS
-        df = self.df[columns]
+        df = self.df[columns].copy()
         df = df.rename(
             columns={SAMPLE_ID: PATIENT_ID}
         )
@@ -219,14 +224,15 @@ class NormalizePatientSampleData(Processor):
         columns = [
             c for c in self.df.columns if c not in self.PATIENT_LEVEL_COLUMNS
         ]
-        df = self.df[columns]
 
+        df = self.df[columns].copy()
+
+        df[STUDY_ID] = self.study_id  # add study id column
         df[PATIENT_ID] = df[SAMPLE_ID]  # add patient id column
 
-        # re-order patient id column
+        # re-order columns
         columns = df.columns.to_list()
-        patient_id_column = columns.pop()
-        columns.insert(1, patient_id_column)
-        df = df[columns]
+        reordered = columns[-2:] + columns[:-2]
+        df = df[reordered]
 
         self.sample_df = df

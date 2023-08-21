@@ -14,7 +14,8 @@ class TestPreprocessNormalize(TestCase):
 
     def test_main(self):
         patient_df, sample_df = PreprocessNormalize(self.settings).main(
-            clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv')
+            clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv'),
+            study_id='hnsc_nycu_2022'
         )
         self.assertDataFrameEqual(
             pd.read_csv(f'{self.indir}/patient_df.csv'),
