@@ -44,8 +44,8 @@ class Model:
         if not success:
             return False, message
 
-        self.dataframe = AddNewRowsFromSequencingTable().main(
-            dataframe=self.dataframe,
+        self.dataframe = ImportSequencingTableIntoClinicalDataTable().main(
+            clinical_data_df=self.dataframe,
             seq_df=seq_df)
 
         return True, ''
@@ -103,23 +103,24 @@ class Model:
         return success, msg
 
 
-class AddNewRowsFromSequencingTable:
+class ImportSequencingTableIntoClinicalDataTable:
 
-    dataframe: pd.DataFrame
+    clinical_data_df: pd.DataFrame
     seq_df: pd.DataFrame
 
     def main(
             self,
-            dataframe: pd.DataFrame,
+            clinical_data_df: pd.DataFrame,
             seq_df: pd.DataFrame) -> pd.DataFrame:
 
-        self.dataframe = dataframe.copy()
+        self.clinical_data_df = clinical_data_df.copy()
         self.seq_df = seq_df
 
         for i, row in self.seq_df.iterrows():
 
             sequencing_id = row['ID']
-            if sequencing_id in self.dataframe[SAMPLE_ID].values:
+            already_exists = sequencing_id in self.clinical_data_df[SAMPLE_ID].values
+            if already_exists:
                 continue
 
             new_row = {
@@ -128,9 +129,9 @@ class AddNewRowsFromSequencingTable:
                 LAB_SAMPLE_ID: row['Lab Sample ID'],
             }
 
-            self.dataframe = append(self.dataframe, new_row)
+            self.clinical_data_df = append(self.clinical_data_df, new_row)
 
-        return self.dataframe
+        return self.clinical_data_df
 
 
 class ExportCbioportalStudy:
