@@ -137,12 +137,12 @@ def delta_t(
         end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
 
     if type(start) is str:
-        start = pd.to_datetime(start, format='%m/%d/%Y')
+        start = pd.to_datetime(start)
     elif pd.isna(start):
         start = pd.NaT
 
     if type(end) is str:
-        end = pd.to_datetime(end, format='%m/%d/%Y')
+        end = pd.to_datetime(end)
     elif pd.isna(end):
         end = pd.NaT
 
