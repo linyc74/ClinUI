@@ -1,4 +1,6 @@
 import os
+import shutil
+
 import pandas as pd
 from os.path import basename
 from typing import Tuple, List, Optional, Dict, Any, Union
@@ -89,25 +91,16 @@ class Model:
             maf_dir: str,
             study_info_dict: Dict[str, str],
             tags_dict: Dict[str, str],
-            dstdir: str):
+            dstdir: str) -> Tuple[bool, str]:
 
-        study_id = study_info_dict[STUDY_IDENTIFIER_KEY]
-        outdir = f'{dstdir}/{study_id}'
-
-        os.makedirs(outdir, exist_ok=True)
-
-        settings = Settings(
-            workdir='.',
-            outdir=outdir,
-            threads=1,
-            debug=False,
-            mock=False)
-
-        cBioIngest(settings).main(
+        success, msg = ExportCbioportalStudy().main(
             clinical_data_df=self.dataframe,
             maf_dir=maf_dir,
             study_info_dict=study_info_dict,
-            tags_dict=tags_dict)
+            tags_dict=tags_dict,
+            dstdir=dstdir)
+
+        return success, msg
 
 
 class AddNewRowsFromSequencingTable:
@@ -138,6 +131,59 @@ class AddNewRowsFromSequencingTable:
             self.dataframe = append(self.dataframe, new_row)
 
         return self.dataframe
+
+
+class ExportCbioportalStudy:
+
+    clinical_data_df: pd.DataFrame
+    maf_dir: str
+    study_info_dict: Dict[str, str]
+    tags_dict: Dict[str, str]
+    dstdir: str
+
+    settings: Settings
+
+    def main(
+            self,
+            clinical_data_df: pd.DataFrame,
+            maf_dir: str,
+            study_info_dict: Dict[str, str],
+            tags_dict: Dict[str, str],
+            dstdir: str) -> Tuple[bool, str]:
+
+        self.clinical_data_df = clinical_data_df
+        self.maf_dir = maf_dir
+        self.study_info_dict = study_info_dict
+        self.tags_dict = tags_dict
+        self.dstdir = dstdir
+
+        self.set_settings()
+        success, msg = self.run_cbio_ingest()
+
+        return success, msg
+
+    def set_settings(self):
+        study_id = self.study_info_dict[STUDY_IDENTIFIER_KEY]
+        outdir = f'{self.dstdir}/{study_id}'
+        os.makedirs(outdir, exist_ok=True)
+        self.settings = Settings(
+            workdir='.',
+            outdir=outdir,
+            threads=1,
+            debug=False,
+            mock=False)
+
+    def run_cbio_ingest(self) -> Tuple[bool, str]:
+        try:
+            cBioIngest(self.settings).main(
+                clinical_data_df=self.clinical_data_df,
+                maf_dir=self.maf_dir,
+                study_info_dict=self.study_info_dict,
+                tags_dict=self.tags_dict)
+            return True, 'Export cBioPortal study complete'
+        except Exception as e:
+            shutil.rmtree(self.settings.outdir)
+            return False, str(e)
 
 
 def read(file: str) -> pd.DataFrame:

@@ -211,8 +211,14 @@ class ActionExportCbioportalStudy(Action):
             self.tags_dict = {'source_data': s}
 
     def export_cbioportal_study(self):
-        self.model.export_cbioportal_study(
+        success, msg = self.model.export_cbioportal_study(
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
             tags_dict=self.tags_dict,
             dstdir=self.dstdir)
+
+        if success:
+            self.view.message_box_info(msg=msg)
+        else:
+            self.view.message_box_error(msg=msg)
+
