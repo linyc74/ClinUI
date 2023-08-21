@@ -356,18 +356,20 @@ class DialogEditSample(DialogComboBoxes):
 
 class DialogStudyInfo(DialogComboBoxes):
 
+    FIELD_TO_OPTIONS = {
+        'type_of_cancer': ['hnsc'],
+        'cancer_study_identifier': ['hnsc_nycu_2023'],
+        'name': ['Head and Neck Squamous Cell Carcinomas (NYCU, 2023)'],
+        'description': ['Whole exome sequencing of OSCC tumor/normal pairs'],
+        'groups': ['PUBLIC'],
+        'reference_genome': ['hg38', 'hg19'],
+        'source_data': ['yy_mmdd_dataset'],
+    }
+
     WIDTH, HEIGHT = 600, 300
 
     def init_field_to_options(self):
-        self.field_to_options = {
-            'type_of_cancer': ['hnsc'],
-            'cancer_study_identifier': ['hnsc_nycu_2022'],
-            'name': ['Head and Neck Squamous Cell Carcinomas (NYCU, 2022)'],
-            'description': ['Whole exome sequencing of OSCC tumor/normal pairs'],
-            'groups': ['PUBLIC'],
-            'reference_genome': ['hg38', 'hg19'],
-            'source_data': ['yy_mmdd_dataset'],
-        }
+        self.field_to_options = self.FIELD_TO_OPTIONS
 
     def __call__(self) -> Optional[Dict[str, str]]:
         self.set_combo_box_default_text()
@@ -375,12 +377,17 @@ class DialogStudyInfo(DialogComboBoxes):
 
 
 def to_title(s: str) -> str:
+    """
+    'Title of good and evil' -> 'Title of Good and Evil'
+    'title_of_good_and_evil' -> 'Title of Good and Evil'
+    """
     skip = [
         'of',
         'and',
         'or',
         'on',
         'after',
+        'about',
         'mAb',  # monoclonal antibody
     ]
 
