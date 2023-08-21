@@ -204,15 +204,15 @@ COLUMN_ATTRIBUTES = {
         'options': ['Han', 'Aboriginal'],
     },
     BIRTH_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['1900-01-01'],
     },
     CLINICAL_DIAGNOSIS_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['2020-01-01'],
     },
     PATHOLOGICAL_DIAGNOSIS_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['2020-01-01'],
     },
     DIAGNOSIS_AGE: {
@@ -462,19 +462,19 @@ COLUMN_ATTRIBUTES = {
         'options': ['HNSC HPV-', 'HNSC HPV+'],
     },
     INITIAL_TREATMENT_COMPLETION_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['2020-01-01'],
     },
     LAST_FOLLOW_UP_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['2020-01-01'],
     },
     RECUR_DATE_AFTER_INITIAL_TREATMENT: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['', '2020-01-01'],
     },
     EXPIRE_DATE: {
-        'type': 'date',
+        'type': 'datetime',
         'options': ['', '2020-01-01'],
     },
     CAUSE_OF_DEATH: {

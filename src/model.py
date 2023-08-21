@@ -6,7 +6,7 @@ from os.path import basename
 from typing import Tuple, List, Optional, Dict, Any, Union
 from .template import Settings
 from .cbio_ingest import cBioIngest
-from .schema import USER_INPUT_COLUMNS, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID, STUDY_IDENTIFIER_KEY
+from .schema import USER_INPUT_COLUMNS, COLUMN_ATTRIBUTES, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID, STUDY_IDENTIFIER_KEY
 
 
 class Model:
@@ -20,18 +20,11 @@ class Model:
         self.dataframe = pd.DataFrame(columns=USER_INPUT_COLUMNS)
 
     def read_clinical_data_table(self, file: str) -> Tuple[bool, str]:
-        df = read(file)
-
-        success, message = check_columns(
-            df=df,
-            columns=USER_INPUT_COLUMNS,
-            file=file)
-
-        if not success:
-            return False, message
-
-        self.dataframe = df[USER_INPUT_COLUMNS]
-        return True, ''
+        try:
+            self.dataframe = ReadClinicalDataTable().main(file=file)
+            return True, ''
+        except AssertionError as e:
+            return False, str(e)
 
     def import_sequencing_table(self, file: str) -> Tuple[bool, str]:
         seq_df = read(file)
@@ -101,6 +94,32 @@ class Model:
             dstdir=dstdir)
 
         return success, msg
+
+
+class ReadClinicalDataTable:
+
+    file: str
+
+    df: pd.DataFrame
+
+    def main(self, file: str) -> pd.DataFrame:
+        self.file = file
+
+        self.df = read(self.file)
+        self.assert_columns()
+        self.df = self.df[USER_INPUT_COLUMNS]
+        self.convert_datetime_columns()
+
+        return self.df
+
+    def assert_columns(self):
+        for c in USER_INPUT_COLUMNS:
+            assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
+
+    def convert_datetime_columns(self):
+        for c in self.df.columns:
+            if COLUMN_ATTRIBUTES[c]['type'] == 'datetime':
+                self.df[c] = pd.to_datetime(self.df[c])
 
 
 class ImportSequencingTableIntoClinicalDataTable:
