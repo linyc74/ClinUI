@@ -90,7 +90,6 @@ OVERALL_SURVIVAL_STATUS = 'Overall Survival Status'
 
 
 USER_INPUT_COLUMNS = [
-    STUDY_ID,
     SAMPLE_ID,
     LAB_ID,
     LAB_SAMPLE_ID,
@@ -172,10 +171,6 @@ USER_INPUT_COLUMNS = [
 
 
 COLUMN_ATTRIBUTES = {
-    STUDY_ID: {
-        'type': 'string',
-        'options': ['hnsc_nycu_2022'],
-    },
     SAMPLE_ID: {
         'type': 'string',
         'options': ['000-00000-0000-E-X00-00'],
