@@ -23,7 +23,7 @@ class TestcBioIngest(TestCase):
                 'reference_genome': 'hg38',
             },
             clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv'),
-            maf_dir=f'{self.indir}/maf-dir',
+            maf_dir=f'{self.indir}/maf_dir',
             tags_dict={'key': 'val'},
         )
         for file in [
