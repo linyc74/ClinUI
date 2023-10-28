@@ -3,7 +3,7 @@ import shutil
 import unittest
 import pandas as pd
 from typing import Tuple
-from cbio_ingest.template import Settings
+from src.template import Settings
 
 
 def get_dirs(py_path: str) -> Tuple[str, str, str]:

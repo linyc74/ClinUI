@@ -1,5 +1,5 @@
 import pandas as pd
-from cbio_ingest.write_mutation_data import WriteMutationData
+from src.write_mutation_data import WriteMutationData
 from .setup import TestCase
 
 
@@ -13,7 +13,7 @@ class TestWriteClinicalData(TestCase):
 
     def test_main(self):
         WriteMutationData(self.settings).main(
-            maf_dir=f'{self.indir}/maf-dir',
+            maf_dir=f'{self.indir}/maf_dir',
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',

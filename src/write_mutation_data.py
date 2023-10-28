@@ -2,7 +2,7 @@ import os.path
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .constant import STUDY_IDENTIFIER_KEY, DESCRIPTION_KEY, SAMPLE_ID
+from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 
 
 class WriteMutationData(Processor):
@@ -40,7 +40,7 @@ genetic_alteration_type: MUTATION_EXTENDED
 stable_id: mutations
 datatype: MAF
 show_profile_in_analysis_tab: true
-profile_description: {self.study_info_dict[DESCRIPTION_KEY]}
+profile_description: {self.study_info_dict['description']}
 profile_name: Mutations
 data_filename: {self.DATA_FNAME}'''
 

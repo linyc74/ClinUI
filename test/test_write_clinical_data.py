@@ -1,5 +1,5 @@
 import pandas as pd
-from cbio_ingest.write_clinical_data import WriteClinicalData
+from src.write_clinical_data import WriteClinicalData
 from .setup import TestCase
 
 

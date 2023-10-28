@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .constant import STUDY_IDENTIFIER_KEY
+from .schema import STUDY_IDENTIFIER_KEY
 
 
 class WriteClinicalData(Processor):
@@ -62,20 +62,6 @@ class WritePatientData(BaseWriter):
 
     META_FNAME = 'meta_clinical_patient.txt'
     DATA_FNAME = 'data_clinical_patient.txt'
-    BOOLEAN_COLUMNS = [
-        'Neoadjuvant/Induction Chemotherapy',
-        'Adjuvant Chemotherapy',
-        'Palliative Chemotherapy',
-        'Adjuvant Targeted Therapy',
-        'Palliative Targeted Therapy',
-        'Immunotherapy',
-        'Lymphovascular Invasion (LVI)',
-        'Clinical Overt Extranodal Extension',
-    ]
-    KEYWORDS_FOR_NUMBER_DATATYPE = [
-        '(Kg)', '(mm)', '(Years)', '(Months)', 'Frequency',
-        'IHC Anti-PDL1',
-    ]
 
     def main(
             self,
@@ -111,20 +97,6 @@ class WriteSampleData(BaseWriter):
 
     META_FNAME = 'meta_clinical_sample.txt'
     DATA_FNAME = 'data_clinical_sample.txt'
-    BOOLEAN_COLUMNS = [
-        'Neoadjuvant/Induction Chemotherapy',
-        'Adjuvant Chemotherapy',
-        'Palliative Chemotherapy',
-        'Adjuvant Targeted Therapy',
-        'Palliative Targeted Therapy',
-        'Immunotherapy',
-        'Lymphovascular Invasion (LVI)',
-        'Clinical Overt Extranodal Extension',
-    ]
-    KEYWORDS_FOR_NUMBER_DATATYPE = [
-        '(Kg)', '(mm)', '(Years)', '(Months)', 'Frequency',
-        'IHC Anti-PDL1',
-    ]
 
     def main(
             self,

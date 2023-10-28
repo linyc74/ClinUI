@@ -13,3 +13,10 @@ __pycache__/
 test/test_*/
 test/*outdir*/
 test/*workdir*/
+
+# PyInstaller
+build/
+dist/
+SeqsUI.spec
+
+todo.md
