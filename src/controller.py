@@ -155,13 +155,15 @@ class ActionEditSample(Action):
             self.view.message_box_error(msg='Please select only one row')
             return
 
-        attributes = self.model.get_row(row=rows[0])
+        row = rows[0]  # only one row is selected
+
+        attributes = self.model.get_row(row=row)
         attributes = self.view.dialog_edit_sample(attributes)
 
         if attributes is None:
             return
 
-        self.model.update_row(row=rows[0], attributes=attributes)
+        self.model.update_row(row=row, attributes=attributes)
         self.view.refresh_table()
 
 

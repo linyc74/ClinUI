@@ -1,12 +1,11 @@
 import os
 import shutil
-
 import pandas as pd
 from os.path import basename
 from typing import Tuple, List, Optional, Dict, Any, Union
+from .schema import *
 from .template import Settings
 from .cbio_ingest import cBioIngest
-from .schema import USER_INPUT_COLUMNS, COLUMN_ATTRIBUTES, SAMPLE_ID, LAB_ID, LAB_SAMPLE_ID, STUDY_IDENTIFIER_KEY
 
 
 class Model:
@@ -17,31 +16,28 @@ class Model:
         self.reset_dataframe()
 
     def reset_dataframe(self):
-        self.dataframe = pd.DataFrame(columns=USER_INPUT_COLUMNS)
+        self.dataframe = pd.DataFrame(columns=DISPLAY_COLUMNS)
 
     def read_clinical_data_table(self, file: str) -> Tuple[bool, str]:
         try:
-            self.dataframe = ReadClinicalDataTable().main(file=file)
+            self.dataframe = ReadTable().main(file=file, columns=DISPLAY_COLUMNS)
             return True, ''
         except AssertionError as e:
             return False, str(e)
 
     def import_sequencing_table(self, file: str) -> Tuple[bool, str]:
-        seq_df = read(file)
-
-        success, message = check_columns(
-            df=seq_df,
-            columns=['ID', 'Lab', 'Lab Sample ID'],
-            file=file)
-
-        if not success:
-            return False, message
-
-        self.dataframe = ImportSequencingTableIntoClinicalDataTable().main(
-            clinical_data_df=self.dataframe,
-            seq_df=seq_df)
-
-        return True, ''
+        try:
+            seq_df = ReadTable().main(
+                file=file,
+                columns=['ID', 'Lab', 'Lab Sample ID']
+            )
+            self.dataframe = MergeSequencingTableIntoClinicalDataTable().main(
+                clinical_data_df=self.dataframe,
+                seq_df=seq_df
+            )
+            return True, ''
+        except AssertionError as e:
+            return False, str(e)
 
     def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):
@@ -73,10 +69,14 @@ class Model:
         return self.dataframe.loc[row, ].to_dict()
 
     def update_row(self, row: int, attributes: Dict[str, str]):
+        attributes = AutogenerateAttributes().main(attributes)
+        attributes = CastDatatypes().main(attributes)
         for key, val in attributes.items():
             self.dataframe.loc[row, key] = val
 
     def append_row(self, attributes: Dict[str, str]):
+        attributes = AutogenerateAttributes().main(attributes)
+        attributes = CastDatatypes().main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
     def export_cbioportal_study(
@@ -96,33 +96,43 @@ class Model:
         return success, msg
 
 
-class ReadClinicalDataTable:
+class ReadTable:
 
     file: str
+    columns: List[str]
 
     df: pd.DataFrame
 
-    def main(self, file: str) -> pd.DataFrame:
-        self.file = file
+    def main(
+            self,
+            file: str,
+            columns: List[str]) -> pd.DataFrame:
 
-        self.df = read(self.file)
+        self.file = file
+        self.columns = columns
+
+        self.read_file()
         self.assert_columns()
-        self.df = self.df[USER_INPUT_COLUMNS]
+        self.df = self.df[self.columns]
         self.convert_datetime_columns()
 
         return self.df
 
+    def read_file(self):
+        self.df = pd.read_excel(self.file) if self.file.endswith('.xlsx') else pd.read_csv(self.file)
+
     def assert_columns(self):
-        for c in USER_INPUT_COLUMNS:
+        for c in self.columns:
             assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
 
     def convert_datetime_columns(self):
         for c in self.df.columns:
-            if COLUMN_ATTRIBUTES[c]['type'] == 'datetime':
+            type_ = COLUMN_ATTRIBUTES.get(c, {}).get('type', None)
+            if type_ == 'datetime':
                 self.df[c] = pd.to_datetime(self.df[c])
 
 
-class ImportSequencingTableIntoClinicalDataTable:
+class MergeSequencingTableIntoClinicalDataTable:
 
     clinical_data_df: pd.DataFrame
     seq_df: pd.DataFrame
@@ -151,6 +161,57 @@ class ImportSequencingTableIntoClinicalDataTable:
             self.clinical_data_df = append(self.clinical_data_df, new_row)
 
         return self.clinical_data_df
+
+
+class AutogenerateAttributes:
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        attributes = CalculateSurvival().main(attributes)
+        attributes = CalculateICD().main(attributes)
+        attributes = CalculateStage().main(attributes)
+        return attributes
+
+
+class CalculateSurvival:
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        attributes[DISEASE_FREE_SURVIVAL_MONTHS] = 0.0
+        attributes[DISEASE_FREE_SURVIVAL_STATUS] = 'X'
+        attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = 0.0
+        attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = 'X'
+        attributes[OVERALL_SURVIVAL_MONTHS] = 0.0
+        attributes[OVERALL_SURVIVAL_STATUS] = 'X'
+        return attributes
+
+
+class CalculateICD:
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        attributes[ICD_O_3_SITE_CODE] = 'C00.0'
+        attributes[ICD_10_CLASSIFICATION] = 'C00.0'
+        return attributes
+
+
+class CalculateStage:
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = 'Stage X'
+        return attributes
+
+
+class CastDatatypes:
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        for key, val in attributes.items():
+            if val == '':
+                attributes[key] = pd.NA
+            elif COLUMN_ATTRIBUTES[key]['type'] == 'int':
+                attributes[key] = int(val)
+            elif COLUMN_ATTRIBUTES[key]['type'] == 'float':
+                attributes[key] = float(val)
+            elif COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
+                attributes[key] = pd.to_datetime(val)
+        return attributes
 
 
 class ExportCbioportalStudy:
@@ -204,19 +265,6 @@ class ExportCbioportalStudy:
         except Exception as e:
             shutil.rmtree(self.settings.outdir)
             return False, str(e)
-
-
-def read(file: str) -> pd.DataFrame:
-    return pd.read_excel(file) if file.endswith('.xlsx') else pd.read_csv(file)
-
-
-def check_columns(
-        df: pd.DataFrame,
-        columns: List[str], file: str) -> Tuple[bool, str]:
-    for c in columns:
-        if c not in df.columns:
-            return False, f'Column "{c}" not found in "{basename(file)}"'
-    return True, ''
 
 
 def append(
