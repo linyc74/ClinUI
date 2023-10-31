@@ -59,7 +59,7 @@ class CalculateSurvival(Processor):
         return self.df
 
     def calculate_diagnosis_age(self, i: Hashable, row: pd.Series):
-        self.df.loc[i, DIAGNOSIS_AGE] = delta_t(start=row[BIRTH_DATE], end=row[CLINICAL_DIAGNOSIS_DATE])
+        self.df.loc[i, CLINICAL_DIAGNOSIS_AGE] = delta_t(start=row[BIRTH_DATE], end=row[CLINICAL_DIAGNOSIS_DATE])
 
     def check_cause_of_death(self, i: Hashable, row: pd.Series):
         has_expire_date = pd.notna(row[EXPIRE_DATE])
@@ -125,7 +125,7 @@ class CalculateSurvival(Processor):
         self.df.loc[i, OVERALL_SURVIVAL_STATUS] = status
 
     def convert_time_units(self):
-        self.df[DIAGNOSIS_AGE] = self.df[DIAGNOSIS_AGE] / pd.Timedelta(days=365)
+        self.df[CLINICAL_DIAGNOSIS_AGE] = self.df[CLINICAL_DIAGNOSIS_AGE] / pd.Timedelta(days=365)
 
         for c in [
             DISEASE_FREE_SURVIVAL_MONTHS,

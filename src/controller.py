@@ -139,7 +139,10 @@ class ActionAddNewSample(Action):
         if attributes is None:
             return
 
-        self.model.append_row(attributes=attributes)
+        success, msg = self.model.append_row(attributes=attributes)
+        if not success:
+            self.view.message_box_error(msg=msg)
+
         self.view.refresh_table()
 
 
@@ -163,7 +166,10 @@ class ActionEditSample(Action):
         if attributes is None:
             return
 
-        self.model.update_row(row=row, attributes=attributes)
+        success, msg = self.model.update_row(row=row, attributes=attributes)
+        if not success:
+            self.view.message_box_error(msg=msg)
+
         self.view.refresh_table()
 
 

@@ -1,4 +1,4 @@
-from src.model import Model
+from src.model import Model, CalculateSurvival
 from .setup import TestCase
 
 
@@ -33,3 +33,42 @@ class TestModel(TestCase):
         success, message = model.import_sequencing_table(file=f'{self.indir}/clinical_data.csv')
         self.assertFalse(success)
         self.assertTrue(message)
+
+
+class TestCalculateSurvival(TestCase):
+
+    def setUp(self):
+        self.set_up(py_path=__file__)
+
+    def tearDown(self):
+        self.tear_down()
+
+    def test_main(self):
+        attributes = {
+            'Birth Date': '1950-01-01',
+            'Clinical Diagnosis Date': '2010-12-17',
+            'Initial Treatment Completion Date': '2011-07-27',
+            'Last Follow-up Date': '2022-08-05',
+            'Recur Date after Initial Treatment': '',
+            'Expire Date': '2022-08-05',
+            'Cause of Death': 'Other Disease'
+        }
+        attributes = CalculateSurvival().main(attributes=attributes)
+        self.assertDictEqual(
+            {
+                'Birth Date': '1950-01-01',
+                'Clinical Diagnosis Date': '2010-12-17',
+                'Initial Treatment Completion Date': '2011-07-27',
+                'Last Follow-up Date': '2022-08-05',
+                'Recur Date after Initial Treatment': '',
+                'Expire Date': '2022-08-05',
+                'Cause of Death': 'Other Disease',
+                'Clinical Diagnosis Age': 61.0,
+                'Disease Free (Months)': 134.23333333333332,
+                'Disease Free Status': '0:DiseaseFree',
+                'Disease-specific Survival (Months)': 134.23333333333332,
+                'Disease-specific Survival Status': '0:ALIVE OR DEAD TUMOR FREE',
+                'Overall Survival (Months)': 134.23333333333332,
+                'Overall Survival Status': '1:DECEASED'
+            }, attributes
+        )

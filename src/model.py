@@ -1,5 +1,6 @@
 import os
 import shutil
+import numpy as np
 import pandas as pd
 from os.path import basename
 from typing import Tuple, List, Optional, Dict, Any, Union
@@ -68,16 +69,24 @@ class Model:
     def get_row(self, row: int) -> Dict[str, Any]:
         return self.dataframe.loc[row, ].to_dict()
 
-    def update_row(self, row: int, attributes: Dict[str, str]):
-        attributes = AutogenerateAttributes().main(attributes)
-        attributes = CastDatatypes().main(attributes)
-        for key, val in attributes.items():
-            self.dataframe.loc[row, key] = val
+    def update_row(self, row: int, attributes: Dict[str, str]) -> Tuple[bool, str]:
+        try:
+            attributes = AutogenerateAttributes().main(attributes)
+            attributes = CastDatatypes().main(attributes)
+            for key, val in attributes.items():
+                self.dataframe.loc[row, key] = val
+            return True, ''
+        except AssertionError as e:
+            return False, str(e)
 
-    def append_row(self, attributes: Dict[str, str]):
-        attributes = AutogenerateAttributes().main(attributes)
-        attributes = CastDatatypes().main(attributes)
-        self.dataframe = append(self.dataframe, pd.Series(attributes))
+    def append_row(self, attributes: Dict[str, str]) -> Tuple[bool, str]:
+        try:
+            attributes = AutogenerateAttributes().main(attributes)
+            attributes = CastDatatypes().main(attributes)
+            self.dataframe = append(self.dataframe, pd.Series(attributes))
+            return True, ''
+        except AssertionError as e:
+            return False, str(e)
 
     def export_cbioportal_study(
             self,
@@ -174,29 +183,109 @@ class AutogenerateAttributes:
 
 class CalculateSurvival:
 
+    attributes: Dict[str, Any]
+
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        attributes[DISEASE_FREE_SURVIVAL_MONTHS] = 0.0
-        attributes[DISEASE_FREE_SURVIVAL_STATUS] = 'X'
-        attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = 0.0
-        attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = 'X'
-        attributes[OVERALL_SURVIVAL_MONTHS] = 0.0
-        attributes[OVERALL_SURVIVAL_STATUS] = 'X'
-        return attributes
+        self.attributes = attributes.copy()
+
+        self.diagnosis_age()
+        self.check_cause_of_death()
+        self.disease_free_survival()
+        self.disease_specific_survival()
+        self.overall_survival()
+
+        return self.attributes
+
+    def diagnosis_age(self):
+        self.attributes[CLINICAL_DIAGNOSIS_AGE] = delta_t(start=self.attributes[BIRTH_DATE], end=self.attributes[CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
+
+    def check_cause_of_death(self):
+        has_expire_date = self.attributes[EXPIRE_DATE] != ''
+
+        if has_expire_date:
+            cause = self.attributes[CAUSE_OF_DEATH]
+            assert cause in COLUMN_ATTRIBUTES[CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
+
+    def disease_free_survival(self):
+        attr = self.attributes
+
+        recurred = attr[RECUR_DATE_AFTER_INITIAL_TREATMENT] != ''
+        alive = attr[EXPIRE_DATE] == ''
+
+        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+
+        if recurred:
+            duration = delta_t(start=t0, end=attr[RECUR_DATE_AFTER_INITIAL_TREATMENT])
+            status = '1:Recurred/Progressed'
+        else:
+            if alive:
+                duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+                status = '0:DiseaseFree'
+            else:  # died
+                duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
+                if attr[CAUSE_OF_DEATH] == 'Cancer':
+                    status = '1:Recurred/Progressed'
+                else:
+                    status = '0:DiseaseFree'
+
+        self.attributes[DISEASE_FREE_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
+        self.attributes[DISEASE_FREE_SURVIVAL_STATUS] = status
+
+    def disease_specific_survival(self):
+        attr = self.attributes
+
+        alive = attr[EXPIRE_DATE] == ''
+        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+
+        if alive:
+            duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+            status = '0:ALIVE OR DEAD TUMOR FREE'
+        else:
+            duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
+            if attr[CAUSE_OF_DEATH] == 'CANCER':
+                status = '1:DEAD WITH TUMOR'
+            else:
+                status = '0:ALIVE OR DEAD TUMOR FREE'
+
+        self.attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
+        self.attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = status
+
+    def overall_survival(self):
+        attr = self.attributes
+
+        alive = attr[EXPIRE_DATE] == ''
+        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+
+        if alive:
+            duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+            status = '0:LIVING'
+        else:
+            duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
+            status = '1:DECEASED'
+
+        self.attributes[OVERALL_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
+        self.attributes[OVERALL_SURVIVAL_STATUS] = status
 
 
 class CalculateICD:
 
+    attributes: Dict[str, Any]
+
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        attributes[ICD_O_3_SITE_CODE] = 'C00.0'
-        attributes[ICD_10_CLASSIFICATION] = 'C00.0'
-        return attributes
+        self.attributes = attributes.copy()
+        self.attributes[ICD_O_3_SITE_CODE] = 'C00.0'
+        self.attributes[ICD_10_CLASSIFICATION] = 'C00.0'
+        return self.attributes
 
 
 class CalculateStage:
 
+    attributes: Dict[str, Any]
+
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = 'Stage X'
-        return attributes
+        self.attributes = attributes.copy()
+        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = 'Stage X'
+        return self.attributes
 
 
 class CastDatatypes:
@@ -273,3 +362,20 @@ def append(
     if type(s) is dict:
         s = pd.Series(s)
     return pd.concat([df, pd.DataFrame([s])], ignore_index=True)
+
+
+def delta_t(
+        start: Union[pd.Timestamp, str, type(np.NAN)],
+        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
+
+    if type(start) is str:
+        start = pd.to_datetime(start)
+    elif pd.isna(start):
+        start = pd.NaT
+
+    if type(end) is str:
+        end = pd.to_datetime(end)
+    elif pd.isna(end):
+        end = pd.NaT
+
+    return end - start
