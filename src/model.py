@@ -32,7 +32,7 @@ class Model:
                 file=file,
                 columns=['ID', 'Lab', 'Lab Sample ID']
             )
-            self.dataframe = MergeSequencingTableIntoClinicalDataTable().main(
+            self.dataframe = MergeSeqDfIntoClinicalDataDf().main(
                 clinical_data_df=self.dataframe,
                 seq_df=seq_df
             )
@@ -141,7 +141,7 @@ class ReadTable:
                 self.df[c] = pd.to_datetime(self.df[c])
 
 
-class MergeSequencingTableIntoClinicalDataTable:
+class MergeSeqDfIntoClinicalDataDf:
 
     clinical_data_df: pd.DataFrame
     seq_df: pd.DataFrame
@@ -197,7 +197,9 @@ class CalculateSurvival:
         return self.attributes
 
     def diagnosis_age(self):
-        self.attributes[CLINICAL_DIAGNOSIS_AGE] = delta_t(start=self.attributes[BIRTH_DATE], end=self.attributes[CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
+        self.attributes[CLINICAL_DIAGNOSIS_AGE] = delta_t(
+            start=self.attributes[BIRTH_DATE],
+            end=self.attributes[CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
 
     def check_cause_of_death(self):
         has_expire_date = self.attributes[EXPIRE_DATE] != ''
@@ -223,7 +225,7 @@ class CalculateSurvival:
                 status = '0:DiseaseFree'
             else:  # died
                 duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
-                if attr[CAUSE_OF_DEATH] == 'Cancer':
+                if attr[CAUSE_OF_DEATH].upper() == 'CANCER':
                     status = '1:Recurred/Progressed'
                 else:
                     status = '0:DiseaseFree'
@@ -242,7 +244,7 @@ class CalculateSurvival:
             status = '0:ALIVE OR DEAD TUMOR FREE'
         else:
             duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
-            if attr[CAUSE_OF_DEATH] == 'CANCER':
+            if attr[CAUSE_OF_DEATH].upper() == 'CANCER':
                 status = '1:DEAD WITH TUMOR'
             else:
                 status = '0:ALIVE OR DEAD TUMOR FREE'
@@ -268,6 +270,12 @@ class CalculateSurvival:
 
 
 class CalculateICD:
+
+    # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
+    ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {}
+
+    # https://www.icd10data.com/ICD10CM/Codes (2023 edition)
+    ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION = {}
 
     attributes: Dict[str, Any]
 

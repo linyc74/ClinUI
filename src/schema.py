@@ -6,6 +6,7 @@ PATIENT_ID = 'Patient ID'
 SAMPLE_ID = 'Sample ID'
 LAB_ID = 'Lab ID'
 LAB_SAMPLE_ID = 'Lab Sample ID'
+SAMPLE_COLLECTION_DATE = 'Sample Collection Date'
 SEX = 'Sex'
 PATIENT_WEIGHT = 'Patient Weight (Kg)'
 PATIENT_HEIGHT = 'Patient Height (cm)'
@@ -93,6 +94,7 @@ DISPLAY_COLUMNS = [
     SAMPLE_ID,
     LAB_ID,
     LAB_SAMPLE_ID,
+    SAMPLE_COLLECTION_DATE,
     SEX,
     PATIENT_WEIGHT,
     PATIENT_HEIGHT,
@@ -207,6 +209,10 @@ COLUMN_ATTRIBUTES = {
     PATIENT_ID: {
         'type': 'string',
         'options': ['000-00000'],
+    },
+    SAMPLE_COLLECTION_DATE: {
+        'type': 'datetime',
+        'options': ['2020-01-01'],
     },
     SEX: {
         'type': 'string',
