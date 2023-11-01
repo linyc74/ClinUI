@@ -71,8 +71,7 @@ class Model:
 
     def update_row(self, row: int, attributes: Dict[str, str]) -> Tuple[bool, str]:
         try:
-            attributes = AutogenerateAttributes().main(attributes)
-            attributes = CastDatatypes().main(attributes)
+            attributes = ProcessAttributes().main(attributes)
             for key, val in attributes.items():
                 self.dataframe.loc[row, key] = val
             return True, ''
@@ -81,8 +80,7 @@ class Model:
 
     def append_row(self, attributes: Dict[str, str]) -> Tuple[bool, str]:
         try:
-            attributes = AutogenerateAttributes().main(attributes)
-            attributes = CastDatatypes().main(attributes)
+            attributes = ProcessAttributes().main(attributes)
             self.dataframe = append(self.dataframe, pd.Series(attributes))
             return True, ''
         except AssertionError as e:
@@ -172,12 +170,14 @@ class MergeSeqDfIntoClinicalDataDf:
         return self.clinical_data_df
 
 
-class AutogenerateAttributes:
+class ProcessAttributes:
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         attributes = CalculateSurvival().main(attributes)
         attributes = CalculateICD().main(attributes)
+        attributes = CalculateTotalLymphNodes().main(attributes)
         attributes = CalculateStage().main(attributes)
+        attributes = CastDatatypes().main(attributes)
         return attributes
 
 
@@ -286,6 +286,16 @@ class CalculateICD:
         return self.attributes
 
 
+class CalculateTotalLymphNodes:
+
+    attributes: Dict[str, Any]
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+        self.attributes[TOTAL_LYMPH_NODE] = '0/0'
+        return self.attributes
+
+
 class CalculateStage:
 
     attributes: Dict[str, Any]
@@ -308,6 +318,8 @@ class CastDatatypes:
                 attributes[key] = float(val)
             elif COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
                 attributes[key] = pd.to_datetime(val)
+            elif COLUMN_ATTRIBUTES[key]['type'] == 'boolean':
+                attributes[key] = bool(val)
         return attributes
 
 

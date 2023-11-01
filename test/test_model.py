@@ -1,4 +1,4 @@
-from src.model import Model, CalculateSurvival
+from src.model import Model, CalculateSurvival, CalculateICD, CalculateStage, CalculateTotalLymphNodes
 from .setup import TestCase
 
 
@@ -189,6 +189,72 @@ class TestCalculateSurvival(TestCase):
             'Disease-specific Survival Status': '0:ALIVE OR DEAD TUMOR FREE',
             'Overall Survival (Months)': 12.0,
             'Overall Survival Status': '1:DECEASED',
+        })
+
+        self.assertDictEqual(expected, actual)
+
+
+class TestCalculateICD(TestCase):
+
+    def setUp(self):
+        self.set_up(py_path=__file__)
+
+    def tearDown(self):
+        self.tear_down()
+
+    def test_(self):
+        attributes = {
+            '': '',
+        }
+        actual = CalculateICD().main(attributes=attributes)
+
+        expected = attributes.copy()
+        expected.update({
+            '': '',
+        })
+
+        self.assertDictEqual(expected, actual)
+
+
+class TestCalculateStage(TestCase):
+
+    def setUp(self):
+        self.set_up(py_path=__file__)
+
+    def tearDown(self):
+        self.tear_down()
+
+    def test_(self):
+        attributes = {
+            '': '',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+
+        expected = attributes.copy()
+        expected.update({
+            '': '',
+        })
+
+        self.assertDictEqual(expected, actual)
+
+
+class TestCalculateTotalLymphNodes(TestCase):
+
+    def setUp(self):
+        self.set_up(py_path=__file__)
+
+    def tearDown(self):
+        self.tear_down()
+
+    def test_(self):
+        attributes = {
+            '': '',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+
+        expected = attributes.copy()
+        expected.update({
+            '': '',
         })
 
         self.assertDictEqual(expected, actual)
