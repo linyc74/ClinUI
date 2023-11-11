@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import Dict, List
 from .template import Processor
-from .schema import STUDY_IDENTIFIER_KEY
+from .schema import STUDY_IDENTIFIER_KEY, PATIENT_ID
 
 
 class WriteClinicalData(Processor):
@@ -20,13 +20,42 @@ class WriteClinicalData(Processor):
         self.patient_df = patient_df
         self.sample_df = sample_df
 
-        WritePatientData(self.settings).main(
-            patient_df=self.patient_df,
-            study_info_dict=self.study_info_dict)
+        self.remove_empty_columns_from_patient_df()
+        self.write_patient_data()
+        self.write_sample_data()
 
+    def remove_empty_columns_from_patient_df(self):
+        self.patient_df = RemoveEmptyColumns(self.settings).main(self.patient_df)
+
+    def write_patient_data(self):
+        # only the "Patient ID" column was left
+        columns = self.patient_df.columns.to_list()
+        empty_patient_data = columns == [PATIENT_ID]
+
+        if empty_patient_data:
+            self.logger.info('WARNING! Empty patient data, skipping writing patient data file')
+        else:
+            WritePatientData(self.settings).main(
+                patient_df=self.patient_df,
+                study_info_dict=self.study_info_dict)
+
+    def write_sample_data(self):
         WriteSampleData(self.settings).main(
             sample_df=self.sample_df,
             study_info_dict=self.study_info_dict)
+
+
+class RemoveEmptyColumns(Processor):
+
+    df: pd.DataFrame
+
+    def main(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.df = df.copy()
+        for column in self.df.columns:
+            if all(pd.isna(self.df[column])):
+                self.logger.info(f'Removing empty column: "{column}"')
+                self.df.drop(columns=column, inplace=True)
+        return self.df
 
 
 class BaseWriter(Processor):
