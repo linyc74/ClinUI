@@ -1,5 +1,5 @@
 import pandas as pd
-from src.write_mutation_data import WriteMutationData
+from src.cbio_write_mutation_data import WriteMutationData
 from .setup import TestCase
 
 

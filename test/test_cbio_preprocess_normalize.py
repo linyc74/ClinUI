@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from src.preprocess_normalize import PreprocessNormalize, delta_t
-from .setup import TestCase
+from src.cbio_preprocess_normalize import PreprocessNormalize, delta_t
+from test.setup import TestCase
 
 
 class TestPreprocessNormalize(TestCase):

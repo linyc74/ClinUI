@@ -3,10 +3,10 @@ import os.path
 import pandas as pd
 from typing import Dict, List, Optional
 from .template import Processor
-from .write_clinical_data import WriteClinicalData
-from .write_mutation_data import WriteMutationData
+from .cbio_write_clinical_data import WriteClinicalData
+from .cbio_write_mutation_data import WriteMutationData
 from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
-from .preprocess_normalize import PreprocessNormalize
+from .cbio_preprocess_normalize import PreprocessNormalize
 
 
 class cBioIngest(Processor):
