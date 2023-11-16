@@ -370,6 +370,16 @@ COLUMN_ATTRIBUTES = {
     },
     NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG: {
         'type': 'string',
+        'options': [
+            '',
+            'Cisplatin',
+            '5-FU',
+            'Docetaxel',
+            'Cisplatin and 5-FU',
+            'Docetaxel and Cisplatin',
+            'Docetaxel, Cisplatin and 5-FU (TPF)',
+            'Cisplatin, Methylmethcathinone and 5-FU (PMU)',
+        ],
     },
     ADJUVANT_CHEMOTHERAPY: {
         'type': 'boolean',
