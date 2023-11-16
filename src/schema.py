@@ -313,8 +313,8 @@ COLUMN_ATTRIBUTES = {
         'options': ['Current', 'Ex', 'Never'],
     },
     ALCOHOL_CONSUMPTION_FREQUENCY: {
-        'type': 'float',
-        'options': [0.0],
+        'type': 'string',
+        'options': ['0.0', 'Occasional'],
     },
     ALCOHOL_CONSUMPTION_DURATION: {
         'type': 'float',
@@ -329,8 +329,8 @@ COLUMN_ATTRIBUTES = {
         'options': ['Current', 'Ex', 'Never'],
     },
     BETEL_NUT_CHEWING_FREQUENCY: {
-        'type': 'float',
-        'options': [0.0],
+        'type': 'string',
+        'options': ['0.0', 'Occasional'],
     },
     BETEL_NUT_CHEWING_DURATION: {
         'type': 'float',
@@ -345,8 +345,8 @@ COLUMN_ATTRIBUTES = {
         'options': ['Current', 'Ex', 'Never']
     },
     CIGARETTE_SMOKING_FREQUENCY: {
-        'type': 'float',
-        'options': [0.0],
+        'type': 'sting',
+        'options': ['0.0', 'Occasional'],
     },
     CIGARETTE_SMOKING_DURATION: {
         'type': 'float',
