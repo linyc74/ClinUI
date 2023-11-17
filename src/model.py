@@ -292,7 +292,8 @@ class CalculateTotalLymphNodes:
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
-        self.attributes[TOTAL_LYMPH_NODE] = '0/0'
+        if self.attributes[TOTAL_LYMPH_NODE] == '':
+            self.attributes[TOTAL_LYMPH_NODE] = '0/0'
         return self.attributes
 
 
