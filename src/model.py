@@ -320,7 +320,7 @@ class CastDatatypes:
             elif COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
                 attributes[key] = pd.to_datetime(val)
             elif COLUMN_ATTRIBUTES[key]['type'] == 'boolean':
-                attributes[key] = bool(val)
+                attributes[key] = True if val.upper() == 'TRUE' else False
         return attributes
 
 
