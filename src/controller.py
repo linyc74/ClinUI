@@ -54,9 +54,11 @@ class ActionReadClinicalDataTable(Action):
         if file == '':
             return
 
-        success, msg = self.model.read_clinical_data_table(file=file)
-        if not success:
-            self.view.message_box_error(msg=msg)
+        try:
+            self.model.read_clinical_data_table(file=file)
+        except Exception as e:
+            self.view.message_box_error(msg=str(e))
+            return
 
         self.view.refresh_table()
 

@@ -19,12 +19,8 @@ class Model:
     def reset_dataframe(self):
         self.dataframe = pd.DataFrame(columns=DISPLAY_COLUMNS)
 
-    def read_clinical_data_table(self, file: str) -> Tuple[bool, str]:
-        try:
-            self.dataframe = ReadTable().main(file=file, columns=DISPLAY_COLUMNS)
-            return True, ''
-        except AssertionError as e:
-            return False, str(e)
+    def read_clinical_data_table(self, file: str):
+        self.dataframe = ReadTable().main(file=file, columns=DISPLAY_COLUMNS)
 
     def import_sequencing_table(self, file: str) -> Tuple[bool, str]:
         try:
