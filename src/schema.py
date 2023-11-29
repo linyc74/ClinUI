@@ -6,6 +6,9 @@ PATIENT_ID = 'Patient ID'
 SAMPLE_ID = 'Sample ID'
 LAB_ID = 'Lab ID'
 LAB_SAMPLE_ID = 'Lab Sample ID'
+MEDICAL_RECORD_ID = 'Medical Record ID'
+PATHOLOGICAL_RECORD_ID = 'Pathological Record ID'
+PATIENT_NAME = 'Patient Name'
 SAMPLE_COLLECTION_DATE = 'Sample Collection Date'
 SEX = 'Sex'
 PATIENT_WEIGHT = 'Patient Weight (Kg)'
@@ -95,6 +98,9 @@ OVERALL_SURVIVAL_STATUS = 'Overall Survival Status'
 
 DISPLAY_COLUMNS = [
     SAMPLE_ID,
+    MEDICAL_RECORD_ID,
+    PATHOLOGICAL_RECORD_ID,
+    PATIENT_NAME,
     LAB_ID,
     LAB_SAMPLE_ID,
     SAMPLE_COLLECTION_DATE,
@@ -203,6 +209,15 @@ COLUMN_ATTRIBUTES = {
     SAMPLE_ID: {
         'type': 'string',
         'options': ['000-00000-0000-E-X00-00'],
+    },
+    MEDICAL_RECORD_ID: {
+        'type': 'string',
+    },
+    PATHOLOGICAL_RECORD_ID: {
+            'type': 'string',
+    },
+    PATIENT_NAME: {
+        'type': 'string',
     },
     LAB_ID: {
         'type': 'string',

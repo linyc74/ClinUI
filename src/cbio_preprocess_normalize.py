@@ -52,6 +52,9 @@ def delta_t(
 class DropIdentifiableInformation(Processor):
 
     DROP_COLUMNS = [
+        MEDICAL_RECORD_ID,
+        PATHOLOGICAL_RECORD_ID,
+        PATIENT_NAME,
         LAB_SAMPLE_ID,
         BIRTH_DATE,
         CLINICAL_DIAGNOSIS_DATE,
@@ -124,8 +127,8 @@ class NormalizePatientSampleData(Processor):
 
         df = self.df[columns].copy()
 
-        df[STUDY_ID] = self.study_id  # add study id column
-        df[PATIENT_ID] = df[SAMPLE_ID]  # add patient id column
+        df[STUDY_ID] = self.study_id  # add Study ID column
+        df[PATIENT_ID] = df[SAMPLE_ID]  # add Patient ID column, Patient ID = Sample ID
 
         # re-order columns
         columns = df.columns.to_list()
