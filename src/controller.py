@@ -1,6 +1,8 @@
+import shutil
 from typing import Dict, Optional
 from .view import View
 from .model import Model
+from .schema import STUDY_IDENTIFIER_KEY
 
 
 class Controller:
@@ -191,7 +193,7 @@ class ActionExportCbioportalStudy(Action):
 
     def __call__(self):
         self.set_maf_dir()
-        if self.maf_dir == '':
+        if self.maf_dir is None:
             return
 
         self.set_project_info_dict()
@@ -199,7 +201,7 @@ class ActionExportCbioportalStudy(Action):
             return
 
         self.set_dstdir()
-        if self.dstdir == '':
+        if self.dstdir is None:
             return
 
         self.set_study_info_dict()
@@ -207,13 +209,22 @@ class ActionExportCbioportalStudy(Action):
         self.export_cbioportal_study()
 
     def set_maf_dir(self):
-        self.maf_dir = self.view.file_dialog_open_directory(caption='Select MAF directory')
+        d = self.view.file_dialog_open_directory(caption='Select MAF directory')
+        if d == '':
+            self.maf_dir = None
+        else:
+            self.maf_dir = d
 
     def set_project_info_dict(self):
         self.project_info_dict = self.view.dialog_project_info()
 
     def set_dstdir(self):
-        self.dstdir = self.view.file_dialog_open_directory(caption='Select Destination Directory')
+        d = self.view.file_dialog_open_directory(caption='Select Destination Directory')
+        study_id = self.project_info_dict[STUDY_IDENTIFIER_KEY]
+        if d == '':
+            self.dstdir = None
+        else:
+            self.dstdir = f'{d}/{study_id}'
 
     def set_study_info_dict(self):
         self.study_info_dict = self.project_info_dict.copy()
@@ -227,14 +238,13 @@ class ActionExportCbioportalStudy(Action):
             self.tags_dict = {'source_data': s}
 
     def export_cbioportal_study(self):
-        success, msg = self.model.export_cbioportal_study(
-            maf_dir=self.maf_dir,
-            study_info_dict=self.study_info_dict,
-            tags_dict=self.tags_dict,
-            dstdir=self.dstdir)
-
-        if success:
-            self.view.message_box_info(msg=msg)
-        else:
-            self.view.message_box_error(msg=msg)
-
+        try:
+            self.model.export_cbioportal_study(
+                maf_dir=self.maf_dir,
+                study_info_dict=self.study_info_dict,
+                tags_dict=self.tags_dict,
+                dstdir=self.dstdir)
+            self.view.message_box_info(msg='Export cBioPortal study complete')
+        except Exception as e:
+            shutil.rmtree(self.dstdir)
+            self.view.message_box_error(msg=str(e))

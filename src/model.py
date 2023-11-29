@@ -1,9 +1,8 @@
 import os
-import shutil
 import numpy as np
 import pandas as pd
 from os.path import basename
-from typing import Tuple, List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any, Union
 from .schema import *
 from .template import Settings
 from .cbio_ingest import cBioIngest
@@ -75,16 +74,14 @@ class Model:
             maf_dir: str,
             study_info_dict: Dict[str, str],
             tags_dict: Dict[str, str],
-            dstdir: str) -> Tuple[bool, str]:
+            dstdir: str):
 
-        success, msg = ExportCbioportalStudy().main(
+        ExportCbioportalStudy().main(
             clinical_data_df=self.dataframe,
             maf_dir=maf_dir,
             study_info_dict=study_info_dict,
             tags_dict=tags_dict,
             dstdir=dstdir)
-
-        return success, msg
 
 
 class ReadTable:
@@ -324,7 +321,7 @@ class ExportCbioportalStudy:
             maf_dir: str,
             study_info_dict: Dict[str, str],
             tags_dict: Dict[str, str],
-            dstdir: str) -> Tuple[bool, str]:
+            dstdir: str):
 
         self.clinical_data_df = clinical_data_df
         self.maf_dir = maf_dir
@@ -333,32 +330,23 @@ class ExportCbioportalStudy:
         self.dstdir = dstdir
 
         self.set_settings()
-        success, msg = self.run_cbio_ingest()
-
-        return success, msg
+        self.run_cbio_ingest()
 
     def set_settings(self):
-        study_id = self.study_info_dict[STUDY_IDENTIFIER_KEY]
-        outdir = f'{self.dstdir}/{study_id}'
-        os.makedirs(outdir, exist_ok=True)
+        os.makedirs(self.dstdir, exist_ok=True)
         self.settings = Settings(
             workdir='.',
-            outdir=outdir,
+            outdir=self.dstdir,
             threads=1,
             debug=False,
             mock=False)
 
-    def run_cbio_ingest(self) -> Tuple[bool, str]:
-        try:
-            cBioIngest(self.settings).main(
-                clinical_data_df=self.clinical_data_df,
-                maf_dir=self.maf_dir,
-                study_info_dict=self.study_info_dict,
-                tags_dict=self.tags_dict)
-            return True, 'Export cBioPortal study complete'
-        except Exception as e:
-            shutil.rmtree(self.settings.outdir)
-            return False, str(e)
+    def run_cbio_ingest(self):
+        cBioIngest(self.settings).main(
+            clinical_data_df=self.clinical_data_df,
+            maf_dir=self.maf_dir,
+            study_info_dict=self.study_info_dict,
+            tags_dict=self.tags_dict)
 
 
 def append(
