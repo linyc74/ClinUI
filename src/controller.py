@@ -170,9 +170,11 @@ class ActionEditSample(Action):
         if attributes is None:
             return
 
-        success, msg = self.model.update_row(row=row, attributes=attributes)
-        if not success:
-            self.view.message_box_error(msg=msg)
+        try:
+            self.model.update_row(row=row, attributes=attributes)
+        except Exception as e:
+            self.view.message_box_error(msg=str(e))
+            return
 
         self.view.refresh_table()
 

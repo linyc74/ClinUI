@@ -61,21 +61,17 @@ class Model:
     def get_row(self, row: int) -> Dict[str, Any]:
         return self.dataframe.loc[row, ].to_dict()
 
-    def update_row(self, row: int, attributes: Dict[str, str]) -> Tuple[bool, str]:
-        try:
-            attributes = ProcessAttributes().main(attributes)
-            for key, val in attributes.items():
-                self.dataframe.loc[row, key] = val
-            return True, ''
-        except AssertionError as e:
-            return False, str(e)
+    def update_row(self, row: int, attributes: Dict[str, str]):
+        attributes = ProcessAttributes().main(attributes)
+        for key, val in attributes.items():
+            self.dataframe.loc[row, key] = val
 
     def append_row(self, attributes: Dict[str, str]) -> Tuple[bool, str]:
         try:
             attributes = ProcessAttributes().main(attributes)
             self.dataframe = append(self.dataframe, pd.Series(attributes))
             return True, ''
-        except AssertionError as e:
+        except Exception as e:
             return False, str(e)
 
     def export_cbioportal_study(
