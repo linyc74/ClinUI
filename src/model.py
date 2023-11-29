@@ -22,19 +22,15 @@ class Model:
     def read_clinical_data_table(self, file: str):
         self.dataframe = ReadTable().main(file=file, columns=DISPLAY_COLUMNS)
 
-    def import_sequencing_table(self, file: str) -> Tuple[bool, str]:
-        try:
-            seq_df = ReadTable().main(
-                file=file,
-                columns=['ID', 'Lab', 'Lab Sample ID']
-            )
-            self.dataframe = MergeSeqDfIntoClinicalDataDf().main(
-                clinical_data_df=self.dataframe,
-                seq_df=seq_df
-            )
-            return True, ''
-        except AssertionError as e:
-            return False, str(e)
+    def import_sequencing_table(self, file: str):
+        seq_df = ReadTable().main(
+            file=file,
+            columns=['ID', 'Lab', 'Lab Sample ID']
+        )
+        self.dataframe = MergeSeqDfIntoClinicalDataDf().main(
+            clinical_data_df=self.dataframe,
+            seq_df=seq_df
+        )
 
     def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):

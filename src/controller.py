@@ -70,9 +70,11 @@ class ActionImportSequencingTable(Action):
         if file == '':
             return
 
-        success, msg = self.model.import_sequencing_table(file=file)
-        if not success:
-            self.view.message_box_error(msg=msg)
+        try:
+            self.model.import_sequencing_table(file=file)
+        except Exception as e:
+            self.view.message_box_error(msg=str(e))
+            return
 
         self.view.refresh_table()
 
