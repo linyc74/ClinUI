@@ -66,13 +66,9 @@ class Model:
         for key, val in attributes.items():
             self.dataframe.loc[row, key] = val
 
-    def append_row(self, attributes: Dict[str, str]) -> Tuple[bool, str]:
-        try:
-            attributes = ProcessAttributes().main(attributes)
-            self.dataframe = append(self.dataframe, pd.Series(attributes))
-            return True, ''
-        except Exception as e:
-            return False, str(e)
+    def append_row(self, attributes: Dict[str, str]):
+        attributes = ProcessAttributes().main(attributes)
+        self.dataframe = append(self.dataframe, pd.Series(attributes))
 
     def export_cbioportal_study(
             self,

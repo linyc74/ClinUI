@@ -143,9 +143,11 @@ class ActionAddNewSample(Action):
         if attributes is None:
             return
 
-        success, msg = self.model.append_row(attributes=attributes)
-        if not success:
-            self.view.message_box_error(msg=msg)
+        try:
+            self.model.append_row(attributes=attributes)
+        except Exception as e:
+            self.view.message_box_error(msg=str(e))
+            return
 
         self.view.refresh_table()
 
