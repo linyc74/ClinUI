@@ -5,7 +5,7 @@ from .model import Model
 from .controller import Controller
 
 
-__VERSION__ = '1.1.0-alpha.2'
+__VERSION__ = 'v1.1.0-alpha.2'
 
 
 class Main:
