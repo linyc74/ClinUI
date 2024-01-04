@@ -257,52 +257,193 @@ class CalculateICD:
         # Lip
         'External upper lip': 'C00.0',
         'External lower lip': 'C00.1',
-        'External lip, NOS': 'C00.2',
+        'External lip': 'C00.2',
         'Mucosa of upper lip': 'C00.3',
         'Mucosa of lower lip': 'C00.4',
-        'Mucosa of lip, NOS': 'C00.5',
+        'Mucosa of lip': 'C00.5',
         'Commissure of lip': 'C00.6',
         'Overlapping lesion of lip': 'C00.8',
-        'Lip, NOS (excludes Skin of lip C44.0)': 'C00.9',
+        'Lip': 'C00.9',
 
         # Base of tongue
-        'Base of tongue, NOS': 'C01.9',
+        'Base of tongue': 'C01.9',
 
         # Other and unspecified parts of tongue
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
-        '': '',
+        'Dorsal surface of tongue': 'C02.0',
+        'Border of tongue': 'C02.1',
+        'Ventral surface of tongue': 'C02.2',
+        'Anterior 2/3 of tongue': 'C02.3',
+        'Lingual tonsil': 'C02.4',
+        'Overlapping lesion of tongue': 'C02.8',
+        'Tongue': 'C02.9',
+
+        # Gum
+        'Upper gum': 'C03.0',
+        'Lower gum': 'C03.1',
+        'Gum': 'C03.9',
+
+        # Floor of mouth
+        'Anterior floor of mouth': 'C04.0',
+        'Lateral floor of mouth': 'C04.1',
+        'Overlapping lesion of floor of mouth': 'C04.8',
+        'Floor of mouth': 'C04.9',
+
+        # Palate
+        'Hard palate': 'C05.0',
+        'Soft palate': 'C05.1',
+        'Uvula': 'C05.2',
+        'Overlapping lesion of palate': 'C05.8',
+        'Palate': 'C05.9',
+
+        # Other and unspecified parts of mouth
+        'Cheek mucosa': 'C06.0',
+        'Vestibule of mouth': 'C06.1',
+        'Retromolar area': 'C06.2',
+        'Overlapping lesion of other and unspecified parts of mouth': 'C06.8',
+        'Mouth': 'C06.9',
+
+        # Parotid gland
+        'Parotid gland': 'C07.9',
+
+        # Other and unspecified major salivary gland
+        'Submandibular gland': 'C08.0',
+        'Sublingual gland': 'C08.1',
+        'Overlapping lesion of major salivary glands': 'C08.8',
+        'Major salivary gland': 'C08.9',
+
+        # Custom
+        'Retromolar Triangle': 'C06.2',
+        'Right Tongue': 'C02.9',
+        'Left Tongue': 'C02.9',
+        'Cross Midline (CM) Tongue': 'C02.9',
+        'Left Upper Gingiva': 'C03.0',
+        'Left Lower Gingiva': 'C03.1',
+        'Right Upper Gingiva': 'C03.0',
+        'Right Lower Gingiva': 'C03.1',
+        'Cross Midline (CM) Left Upper Gingiva': 'C03.0',
+        'Cross Midline (CM) Right Lower Gingiva': 'C03.1',
+        'Cross Midline (CM) Gingiva': 'C03.9',
+        'Left Palate': 'C05.9',
+        'Right Palate': 'C05.9',
+        'Cross Midline (CM) Palate': 'C05.9',
+        'Upper Lip': 'C00.9',
+        'Lower Lip': 'C00.9',
+        'External Upper Lip': 'C00.0',
+        'External Lower Lip': 'C00.1',
+        'Upper Lip Inner Aspect': 'C00.3',
+        'Lower Lip Inner Aspect': 'C00.4',
+        'Cross Midline (CM) Lip': 'C00.9',
+        'Left Buccal Mucosa': 'C06.0',
+        'Right Buccal Mucosa': 'C06.0',
     }
 
     # https://www.icd10data.com/ICD10CM/Codes (2023 edition)
-    ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION = {}
+    # I manually checked ICD-10 and found it to be identical to ICD-O-3,
+    #   although the wordings of ICD-10 and ICD-O-3 are slightly different
+    # Here I use the description from ICD-O-3
+    # Note that "C08.8" is not present in ICD-10 (maybe they just forgot to add it?)
+    ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION = {
+        # Lip
+        'External upper lip': 'C00.0',
+        'External lower lip': 'C00.1',
+        'External lip': 'C00.2',
+        'Mucosa of upper lip': 'C00.3',
+        'Mucosa of lower lip': 'C00.4',
+        'Mucosa of lip': 'C00.5',
+        'Commissure of lip': 'C00.6',
+        'Overlapping lesion of lip': 'C00.8',
+        'Lip': 'C00.9',
+
+        # Base of tongue
+        'Base of tongue': 'C01.9',
+
+        # Other and unspecified parts of tongue
+        'Dorsal surface of tongue': 'C02.0',
+        'Border of tongue': 'C02.1',
+        'Ventral surface of tongue': 'C02.2',
+        'Anterior 2/3 of tongue': 'C02.3',
+        'Lingual tonsil': 'C02.4',
+        'Overlapping lesion of tongue': 'C02.8',
+        'Tongue': 'C02.9',
+
+        # Gum
+        'Upper gum': 'C03.0',
+        'Lower gum': 'C03.1',
+        'Gum': 'C03.9',
+
+        # Floor of mouth
+        'Anterior floor of mouth': 'C04.0',
+        'Lateral floor of mouth': 'C04.1',
+        'Overlapping lesion of floor of mouth': 'C04.8',
+        'Floor of mouth': 'C04.9',
+
+        # Palate
+        'Hard palate': 'C05.0',
+        'Soft palate': 'C05.1',
+        'Uvula': 'C05.2',
+        'Overlapping lesion of palate': 'C05.8',
+        'Palate': 'C05.9',
+
+        # Other and unspecified parts of mouth
+        'Cheek mucosa': 'C06.0',
+        'Vestibule of mouth': 'C06.1',
+        'Retromolar area': 'C06.2',
+        'Overlapping lesion of other and unspecified parts of mouth': 'C06.8',
+        'Mouth': 'C06.9',
+
+        # Parotid gland
+        'Parotid gland': 'C07.9',
+
+        # Other and unspecified major salivary gland
+        'Submandibular gland': 'C08.0',
+        'Sublingual gland': 'C08.1',
+        'Major salivary gland': 'C08.9',
+
+        # Custom
+        'Retromolar Triangle': 'C06.2',
+        'Right Tongue': 'C02.9',
+        'Left Tongue': 'C02.9',
+        'Cross Midline (CM) Tongue': 'C02.9',
+        'Left Upper Gingiva': 'C03.0',
+        'Left Lower Gingiva': 'C03.1',
+        'Right Upper Gingiva': 'C03.0',
+        'Right Lower Gingiva': 'C03.1',
+        'Cross Midline (CM) Left Upper Gingiva': 'C03.0',
+        'Cross Midline (CM) Right Lower Gingiva': 'C03.1',
+        'Cross Midline (CM) Gingiva': 'C03.9',
+        'Left Palate': 'C05.9',
+        'Right Palate': 'C05.9',
+        'Cross Midline (CM) Palate': 'C05.9',
+        'Upper Lip': 'C00.9',
+        'Lower Lip': 'C00.9',
+        'External Upper Lip': 'C00.0',
+        'External Lower Lip': 'C00.1',
+        'Upper Lip Inner Aspect': 'C00.3',
+        'Lower Lip Inner Aspect': 'C00.4',
+        'Cross Midline (CM) Lip': 'C00.9',
+        'Left Buccal Mucosa': 'C06.0',
+        'Right Buccal Mucosa': 'C06.0',
+    }
 
     attributes: Dict[str, Any]
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
-        self.attributes[ICD_O_3_SITE_CODE] = 'C00.0'
-        self.attributes[ICD_10_CLASSIFICATION] = 'C00.0'
+        self.add_icd_o_3()
+        self.add_icd_10()
         return self.attributes
+
+    def add_icd_o_3(self):
+        site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
+        icd_o_3 = self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE.get(site, None)
+        if icd_o_3 is not None:
+            self.attributes[ICD_O_3_SITE_CODE] = icd_o_3
+
+    def add_icd_10(self):
+        site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
+        icd_10 = self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION.get(site, None)
+        if icd_10 is not None:
+            self.attributes[ICD_10_CLASSIFICATION] = icd_10
 
 
 class CalculateTotalLymphNodes:

@@ -202,18 +202,24 @@ class TestCalculateICD(TestCase):
     def tearDown(self):
         self.tear_down()
 
-    def test_(self):
+    def test_main(self):
         attributes = {
-            'Tumor Disease Anatomic Site': 'Right Tongue',
+            'Tumor Disease Anatomic Site': 'External upper lip',
         }
         actual = CalculateICD().main(attributes=attributes)
-
-        expected = attributes.copy()
-        expected.update({
-            'ICD-O-3 Site Code': '',
-        })
-
+        expected = {
+            'Tumor Disease Anatomic Site': 'External upper lip',
+            'ICD-O-3 Site Code': 'C00.0',
+            'ICD-10 Classification': 'C00.0',
+        }
         self.assertDictEqual(expected, actual)
+
+    def test_not_recognized_site(self):
+        attributes = {
+            'Tumor Disease Anatomic Site': 'Cat tongue',
+        }
+        actual = CalculateICD().main(attributes=attributes)
+        self.assertDictEqual(attributes, actual)
 
 
 class TestCalculateStage(TestCase):
