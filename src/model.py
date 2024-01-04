@@ -253,7 +253,45 @@ class CalculateSurvival:
 class CalculateICD:
 
     # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
-    ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {}
+    ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {
+        # Lip
+        'External upper lip': 'C00.0',
+        'External lower lip': 'C00.1',
+        'External lip, NOS': 'C00.2',
+        'Mucosa of upper lip': 'C00.3',
+        'Mucosa of lower lip': 'C00.4',
+        'Mucosa of lip, NOS': 'C00.5',
+        'Commissure of lip': 'C00.6',
+        'Overlapping lesion of lip': 'C00.8',
+        'Lip, NOS (excludes Skin of lip C44.0)': 'C00.9',
+
+        # Base of tongue
+        'Base of tongue, NOS': 'C01.9',
+
+        # Other and unspecified parts of tongue
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+        '': '',
+    }
 
     # https://www.icd10data.com/ICD10CM/Codes (2023 edition)
     ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION = {}

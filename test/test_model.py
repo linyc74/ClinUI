@@ -204,13 +204,13 @@ class TestCalculateICD(TestCase):
 
     def test_(self):
         attributes = {
-            '': '',
+            'Tumor Disease Anatomic Site': 'Right Tongue',
         }
         actual = CalculateICD().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
-            '': '',
+            'ICD-O-3 Site Code': '',
         })
 
         self.assertDictEqual(expected, actual)
