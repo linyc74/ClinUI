@@ -34,9 +34,18 @@ Run the app from the command line. It can also be run by double clicking the app
 dist/ClinUI.app/Contents/MacOS/ClinUI
 ```
 
+Zip the app.
+
+```zsh
+mv ./dist/ClinUI.app ./ && zip -r ClinUI-mac-v0.0.0.zip ClinUI.app
+```
+
 Remove unused build files.
 
 ```zsh
 rm -r build
+rm -r dist
 rm setup.py
 ```
+
+
