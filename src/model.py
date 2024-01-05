@@ -447,14 +447,115 @@ class CalculateICD:
 
 
 class CalculateTotalLymphNodes:
+    """
+    LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
+    LYMPH_NODE_LEVEL_IA = 'Lymph Node Level Ia'
+    LYMPH_NODE_LEVEL_IB = 'Lymph Node Level Ib'
+    LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
+    LYMPH_NODE_LEVEL_IIA = 'Lymph Node Level IIa'
+    LYMPH_NODE_LEVEL_IIB = 'Lymph Node Level IIb'
+    LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
+    LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
+    LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
+    LYMPH_NODE_RIGHT = 'Lymph Node (Right)'
+    LYMPH_NODE_LEFT = 'Lymph Node (Left)'
+    TOTAL_LYMPH_NODE = 'Total Lymph Node'
+    """
 
     attributes: Dict[str, Any]
 
+    numerator: int
+    denominator: int
+
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
-        if self.attributes[TOTAL_LYMPH_NODE] == '':
-            self.attributes[TOTAL_LYMPH_NODE] = '0/0'
+
+        self.numerator, self.denominator = 0, 0
+        self.add_level_1()
+        self.add_level_2()
+        self.add_level_3()
+        self.add_level_4()
+        self.add_level_5()
+        self.add_right_left()
+        self.attributes[TOTAL_LYMPH_NODE] = f'{self.numerator}/{self.denominator}'
+
         return self.attributes
+
+    def add_level_1(self):
+        level_1 = self.attributes.get(LYMPH_NODE_LEVEL_I, '')
+        level_1a = self.attributes.get(LYMPH_NODE_LEVEL_IA, '')
+        level_1b = self.attributes.get(LYMPH_NODE_LEVEL_IB, '')
+
+        if level_1 != '':
+            a, b = level_1.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+            return  # no need to check level 1a and 1b
+
+        if level_1a != '':
+            a, b = level_1a.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+        if level_1b != '':
+            a, b = level_1b.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+
+    def add_level_2(self):
+        level_2 = self.attributes.get(LYMPH_NODE_LEVEL_II, '')
+        level_2a = self.attributes.get(LYMPH_NODE_LEVEL_IIA, '')
+        level_2b = self.attributes.get(LYMPH_NODE_LEVEL_IIB, '')
+
+        if level_2 != '':
+            a, b = level_2.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+            return  # no need to check level 2a and 2b
+
+        if level_2a != '':
+            a, b = level_2a.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+        if level_2b != '':
+            a, b = level_2b.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+
+    def add_level_3(self):
+        level_3 = self.attributes.get(LYMPH_NODE_LEVEL_III, '')
+        if level_3 != '':
+            a, b = level_3.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+
+    def add_level_4(self):
+        level_4 = self.attributes.get(LYMPH_NODE_LEVEL_IV, '')
+        if level_4 != '':
+            a, b = level_4.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+
+    def add_level_5(self):
+        level_5 = self.attributes.get(LYMPH_NODE_LEVEL_V, '')
+        if level_5 != '':
+            a, b = level_5.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+
+    def add_right_left(self):
+        if self.numerator + self.denominator > 0:
+            return  # no need to check right and left
+
+        right = self.attributes.get(LYMPH_NODE_RIGHT, '')
+        left = self.attributes.get(LYMPH_NODE_LEFT, '')
+        if right != '':
+            a, b = right.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
+        if left != '':
+            a, b = left.split('/')
+            self.numerator += int(a)
+            self.denominator += int(b)
 
 
 class CalculateStage:

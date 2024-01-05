@@ -323,15 +323,99 @@ class TestCalculateTotalLymphNodes(TestCase):
     def tearDown(self):
         self.tear_down()
 
-    def test_(self):
+    def test_level_1(self):
         attributes = {
-            '': '',
+            'Lymph Node Level I': '1/2',
+            'Lymph Node Level Ia': '1/1',
+            'Lymph Node Level Ib': '0/1',
         }
         actual = CalculateTotalLymphNodes().main(attributes=attributes)
-
         expected = attributes.copy()
         expected.update({
-            '': '',
+            'Total Lymph Node': '1/2',
         })
+        self.assertDictEqual(expected, actual)
 
+    def test_level_1a_1b(self):
+        attributes = {
+            'Lymph Node Level I': '',
+            'Lymph Node Level Ia': '1/1',
+            'Lymph Node Level Ib': '0/1',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_2(self):
+        attributes = {
+            'Lymph Node Level II': '1/2',
+            'Lymph Node Level IIa': '1/1',
+            'Lymph Node Level IIb': '0/1',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_2a_2b(self):
+        attributes = {
+            'Lymph Node Level II': '',
+            'Lymph Node Level IIa': '1/1',
+            'Lymph Node Level IIb': '0/1',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_3(self):
+        attributes = {
+            'Lymph Node Level III': '1/2',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_4(self):
+        attributes = {
+            'Lymph Node Level IV': '1/2',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_5(self):
+        attributes = {
+            'Lymph Node Level V': '1/2',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+    def test_level_right_left(self):
+        attributes = {
+            'Lymph Node (Right)': '0/1',
+            'Lymph Node (Left)': '1/1',
+        }
+        actual = CalculateTotalLymphNodes().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Total Lymph Node': '1/2',
+        })
         self.assertDictEqual(expected, actual)
