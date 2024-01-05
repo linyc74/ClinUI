@@ -459,12 +459,54 @@ class CalculateTotalLymphNodes:
 
 class CalculateStage:
 
+    # https://www.cancer.org/cancer/types/oral-cavity-and-oropharyngeal-cancer/detection-diagnosis-staging/staging.html
+
     attributes: Dict[str, Any]
+
+    t: str
+    n: str
+    m: str
+    stage: str
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
-        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = 'Stage X'
+
+        self.set_tnm()
+        self.set_stage()
+        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = self.stage
+
         return self.attributes
+
+    def set_tnm(self):
+        tnm = self.attributes[CLINICAL_TNM]
+        self.t = tnm.split('T')[1].split('N')[0]
+        self.n = tnm.split('N')[1].split('M')[0]
+        self.m = tnm.split('M')[1]
+
+    def set_stage(self):
+        t, n, m = self.t, self.n, self.m
+        if m == '1':
+            self.stage = 'Stage IVC'
+        elif t == '4b' and m == '0':
+            self.stage = 'Stage IVB'
+        elif n == '3' and m == '0':
+            self.stage = 'Stage IVB'
+        elif t in ['1', '2', '3', '4a'] and n == '2' and m == '0':
+            self.stage = 'Stage IVA'
+        elif t == '4a' and n in ['0', '1'] and m == '0':
+            self.stage = 'Stage IVA'
+        elif t in ['1', '2', '3'] and n == '1' and m == '0':
+            self.stage = 'Stage III'
+        elif t == '3' and n == '0' and m == '0':
+            self.stage = 'Stage III'
+        elif t == '2' and n == '0' and m == '0':
+            self.stage = 'Stage II'
+        elif t == '1' and n == '0' and m == '0':
+            self.stage = 'Stage I'
+        elif t == 'is' and n == '0' and m == '0':
+            self.stage = 'Stage 0'
+        else:
+            raise ValueError(f'Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
 
 
 class CastDatatypes:

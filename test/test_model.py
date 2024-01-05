@@ -230,18 +230,89 @@ class TestCalculateStage(TestCase):
     def tearDown(self):
         self.tear_down()
 
-    def test_(self):
+    def test_stage_4c(self):
         attributes = {
-            '': '',
+            'Clinical TNM (cTNM)': 'T4bN3M1',
         }
         actual = CalculateStage().main(attributes=attributes)
-
-        expected = attributes.copy()
-        expected.update({
-            '': '',
-        })
-
+        expected = {
+            'Clinical TNM (cTNM)': 'T4bN3M1',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVC',
+        }
         self.assertDictEqual(expected, actual)
+
+    def test_stage_4b(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T4bN3M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T4bN3M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVB',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_stage_4a(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T4aN2M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T4aN2M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVA',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_stage_3(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T2N1M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T2N1M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage III',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_stage_2(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T2N0M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T2N0M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage II',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_stage_1(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T1N0M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T1N0M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage I',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_stage_0(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'TisN0M0',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'TisN0M0',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage 0',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_invalid_tnm(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'TXN0M0',
+        }
+        with self.assertRaises(ValueError):
+            CalculateStage().main(attributes=attributes)
 
 
 class TestCalculateTotalLymphNodes(TestCase):
