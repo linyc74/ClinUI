@@ -14,9 +14,10 @@ test/test_*/
 test/*outdir*/
 test/*workdir*/
 
-# PyInstaller
+# PyInstaller / py2app
 build/
 dist/
-SeqsUI.spec
+ClinUI.spec
+setup.py
 
 todo.md

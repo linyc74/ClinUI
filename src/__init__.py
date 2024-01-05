@@ -10,7 +10,7 @@ __VERSION__ = 'v1.1.0-alpha.2'
 
 class Main:
 
-    APP_ID = f'NYCU.Dentistry.cBioIngest.{__VERSION__}'
+    APP_ID = f'NYCU.Dentistry.ClinUI.{__VERSION__}'
 
     model: Model
     view: View
