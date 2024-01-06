@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from os.path import basename
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any, Union, Tuple
 from .schema import *
 from .template import Settings
 from .cbio_ingest import cBioIngest
@@ -68,6 +68,28 @@ class Model:
     def append_row(self, attributes: Dict[str, str]):
         attributes = ProcessAttributes().main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
+
+    def find(
+            self,
+            text: str,
+            start: Optional[Tuple[int, str]]) \
+            -> Optional[Tuple[int, str]]:
+
+        if start is None:
+            start_irow = 0
+            start_icol = 0
+        else:
+            start_irow = start[0]
+            start_icol = self.dataframe.columns.to_list().index(start[1])
+
+        nrows, ncols = self.dataframe.shape
+
+        for r in range(nrows):
+            for c in range(ncols):
+                if r <= start_irow and c <= start_icol:
+                    continue
+                if text.lower() in str(self.dataframe.iloc[r, c]).lower():
+                    return r, self.dataframe.columns[c]
 
     def export_cbioportal_study(
             self,

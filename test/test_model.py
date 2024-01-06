@@ -34,6 +34,18 @@ class TestModel(TestCase):
         self.assertFalse(success)
         self.assertTrue(message)
 
+    def test_find_without_start(self):
+        model = Model()
+        model.read_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
+        actual = model.find(text='Lin', start=None)
+        self.assertTupleEqual((1, 'Lab Sample ID'), actual)
+
+    def test_find_with_start(self):
+        model = Model()
+        model.read_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
+        actual = model.find(text='2011-11-03', start=(1, 'Sample Collection Date'))
+        self.assertTupleEqual((2, 'Lab Sample ID'), actual)
+
 
 class TestCalculateSurvival(TestCase):
 

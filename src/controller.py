@@ -28,6 +28,7 @@ class Controller:
         self.action_add_new_sample = ActionAddNewSample(self)
         self.action_edit_sample = ActionEditSample(self)
         self.action_export_cbioportal_study = ActionExportCbioportalStudy(self)
+        self.action_find = ActionFind(self)
 
     def __connect_button_actions(self):
         for name in self.view.BUTTON_NAME_TO_LABEL.keys():
@@ -88,6 +89,26 @@ class ActionSaveClinicalDataTable(Action):
         if file == '':
             return
         self.model.save_clinical_data_table(file=file)
+
+
+class ActionFind(Action):
+
+    def __call__(self):
+        text = self.view.dialog_find()
+        if text == '':
+            return
+
+        selected_cells = self.view.get_selected_cells()
+        start = None if len(selected_cells) == 0 else selected_cells[0]
+
+        found_cell = self.model.find(text=text, start=start)
+
+        if found_cell is None:
+            self.view.message_box_info(msg='Couldn\'t find what you were looking for')
+            return
+
+        index, column = found_cell
+        self.view.select_cell(index=index, column=column)
 
 
 class ActionSort(Action):
