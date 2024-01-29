@@ -17,9 +17,8 @@ class TestModel(TestCase):
 
     def test_wrong_clinical_data_table(self):
         model = Model()
-        success, message = model.read_clinical_data_table(file=f'{self.indir}/error_clinical_data.csv')
-        self.assertFalse(success)
-        self.assertTrue(message)
+        with self.assertRaises(AssertionError):
+            model.read_clinical_data_table(file=f'{self.indir}/error_clinical_data.csv')
 
     def test_import_sequencing_table(self):
         model = Model()
@@ -30,9 +29,8 @@ class TestModel(TestCase):
     def test_wrong_sequencing_table(self):
         model = Model()
         model.read_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        success, message = model.import_sequencing_table(file=f'{self.indir}/clinical_data.csv')
-        self.assertFalse(success)
-        self.assertTrue(message)
+        with self.assertRaises(AssertionError):
+            model.import_sequencing_table(file=f'{self.indir}/error_sequencing.csv')
 
     def test_find_without_start(self):
         model = Model()
@@ -43,7 +41,7 @@ class TestModel(TestCase):
     def test_find_with_start(self):
         model = Model()
         model.read_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        actual = model.find(text='2011-11-03', start=(1, 'Sample Collection Date'))
+        actual = model.find(text='Lin', start=(1, 'Sample Collection Date'))
         self.assertTupleEqual((2, 'Lab Sample ID'), actual)
 
 

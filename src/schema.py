@@ -96,6 +96,13 @@ OVERALL_SURVIVAL_MONTHS = 'Overall Survival (Months)'
 OVERALL_SURVIVAL_STATUS = 'Overall Survival Status'
 
 
+DATA_SCHEMA_NAMES = [
+    'NYCU OSCC',
+    'TPVGH HNSCC',
+    'TPVGH NSCLC',
+]
+
+
 DISPLAY_COLUMNS = [
     SAMPLE_ID,
     MEDICAL_RECORD_ID,

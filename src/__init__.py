@@ -1,29 +1,30 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from .view import View
 from .model import Model
+from .view import View, SelectDataSchemaDialog
 from .controller import Controller
 
 
-__VERSION__ = 'v1.1.0-alpha.3'
+__VERSION__ = 'v1.1.0-beta.1'
 
 
 class Main:
 
     APP_ID = f'NYCU.Dentistry.ClinUI.{__VERSION__}'
 
-    model: Model
-    view: View
-    controller: Controller
-
     def main(self):
         self.config_taskbar_icon()
 
         app = QApplication(sys.argv)
 
-        self.model = Model()
-        self.view = View(self.model)
-        self.controller = Controller(self.model, self.view)
+        dialog = SelectDataSchemaDialog()
+        result = None
+        while result is None:
+            result = dialog.get_result()
+
+        m = Model()
+        v = View(model=m)
+        c = Controller(model=m, view=v)
 
         sys.exit(app.exec_())
 

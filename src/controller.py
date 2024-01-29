@@ -15,7 +15,6 @@ class Controller:
         self.view = view
         self.__init_actions()
         self.__connect_button_actions()
-        self.view.show()
 
     def __init_actions(self):
         self.action_read_clinical_data_table = ActionReadClinicalDataTable(self)
