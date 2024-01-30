@@ -3,37 +3,26 @@ import shutil
 import unittest
 import pandas as pd
 from typing import Tuple
-from src.schema import NycuOscc
-from src.template import Settings
+from src.schema import NycuOsccSchema
+from src.cbio_base import Settings
 
 
-def get_dirs(py_path: str) -> Tuple[str, str, str]:
+def get_dirs(py_path: str) -> Tuple[str, str]:
     indir = os.path.relpath(path=py_path[:-3], start=os.getcwd())
     basedir = os.path.dirname(indir)
-    workdir = os.path.join(basedir, 'workdir')
     outdir = os.path.join(basedir, 'outdir')
-    return indir, workdir, outdir
+    return indir, outdir
 
 
 class TestCase(unittest.TestCase):
 
     def set_up(self, py_path: str):
-        self.indir, self.workdir, self.outdir = get_dirs(py_path=py_path)
-
-        for d in [self.workdir, self.outdir]:
-            os.makedirs(d, exist_ok=True)
-
-        self.settings = Settings(
-            workdir=self.workdir,
-            outdir=self.outdir,
-            threads=6,
-            debug=True,
-            mock=False)
-
-        self.schema = NycuOscc
+        self.indir, self.outdir = get_dirs(py_path=py_path)
+        os.makedirs(self.outdir, exist_ok=True)
+        self.settings = Settings(outdir=self.outdir, debug=True)
+        self.schema = NycuOsccSchema
 
     def tear_down(self):
-        shutil.rmtree(self.workdir)
         shutil.rmtree(self.outdir)
 
     def assertFileEqual(self, first: str, second: str):
@@ -50,7 +39,3 @@ class TestCase(unittest.TestCase):
                 if pd.isna(a) and pd.isna(b):
                     continue
                 self.assertAlmostEqual(a, b)
-
-    def assertFileExists(self, expected: str, actual: str):
-        self.assertEqual(expected, actual)
-        assert os.path.exists(actual)

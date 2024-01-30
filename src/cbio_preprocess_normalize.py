@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Union
 from .schema import *
-from .template import Processor
+from .cbio_base import Processor
 
 
 class PreprocessNormalize(Processor):

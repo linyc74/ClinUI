@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import Dict, List
-from .template import Processor
+from .cbio_base import Processor
 from .schema import STUDY_IDENTIFIER_KEY, PATIENT_ID
 
 

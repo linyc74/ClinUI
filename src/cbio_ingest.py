@@ -2,7 +2,7 @@ import json
 import os.path
 import pandas as pd
 from typing import Dict, List, Optional
-from .template import Processor
+from .cbio_base import Processor
 from .cbio_write_clinical_data import WriteClinicalData
 from .cbio_write_mutation_data import WriteMutationData
 from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID

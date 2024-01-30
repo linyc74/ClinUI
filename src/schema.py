@@ -15,7 +15,7 @@ class Schema:
     ]
 
 
-class NycuOscc(Schema):
+class NycuOsccSchema(Schema):
 
     DISPLAY_COLUMNS = [
         SAMPLE_ID,
@@ -641,7 +641,7 @@ class NycuOscc(Schema):
     }
 
 
-class TpvghHnscc(Schema):
+class TpvghHnsccSchema(Schema):
 
     DISPLAY_COLUMNS = [
         SAMPLE_ID,
@@ -739,6 +739,6 @@ class TpvghHnscc(Schema):
 
 
 DATA_SCHEMA_DICT: Dict[str, Schema] = {
-    'NYCU OSCC': NycuOscc,
-    'TPVGH HNSCC': TpvghHnscc,
+    'NYCU OSCC': NycuOsccSchema,
+    'TPVGH HNSCC': TpvghHnsccSchema,
 }

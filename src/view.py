@@ -18,7 +18,7 @@ class SelectDataSchemaDialog:
 
     dialog: QDialog
     layout: QVBoxLayout
-    schema: Optional[str]
+    result: Optional[str]
 
     def __init__(self):
         self.__init__dialog()
@@ -42,12 +42,12 @@ class SelectDataSchemaDialog:
     def button_clicked(self):
         sender_button = self.dialog.sender()
         if sender_button:
-            self.schema = sender_button.text()
+            self.result = sender_button.text()
             self.dialog.accept()  # accept and close the dialog
 
-    def get_schema(self) -> str:
+    def show(self) -> str:
         self.dialog.exec_()  # show the dialog in modal state, i.e. the user must choose and close the dialog
-        return self.schema
+        return self.result
 
 
 class Table(QTableWidget):
