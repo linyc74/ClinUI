@@ -3,6 +3,7 @@ import shutil
 import unittest
 import pandas as pd
 from typing import Tuple
+from src.schema import NycuOscc
 from src.template import Settings
 
 
@@ -28,6 +29,8 @@ class TestCase(unittest.TestCase):
             threads=6,
             debug=True,
             mock=False)
+
+        self.schema = NycuOscc
 
     def tear_down(self):
         shutil.rmtree(self.workdir)

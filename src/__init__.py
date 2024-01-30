@@ -5,7 +5,7 @@ from .view import View, SelectDataSchemaDialog
 from .controller import Controller
 
 
-__VERSION__ = 'v1.1.0-beta.1'
+__VERSION__ = 'v1.2.0-alpha.1'
 
 
 class Main:
@@ -18,11 +18,11 @@ class Main:
         app = QApplication(sys.argv)
 
         dialog = SelectDataSchemaDialog()
-        result = None
-        while result is None:
-            result = dialog.get_result()
+        schema = None
+        while schema is None:
+            schema = dialog.get_schema()
 
-        m = Model()
+        m = Model(schema=schema)
         v = View(model=m)
         c = Controller(model=m, view=v)
 

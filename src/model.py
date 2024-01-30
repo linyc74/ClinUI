@@ -3,30 +3,35 @@ import numpy as np
 import pandas as pd
 from os.path import basename
 from typing import List, Optional, Dict, Any, Union, Tuple
-from .schema import *
+from .columns import *
+from .schema import DATA_SCHEMA_DICT, Schema
 from .template import Settings
 from .cbio_ingest import cBioIngest
 
 
 class Model:
 
+    schema: Schema
     dataframe: pd.DataFrame  # this is the main clinical data table
 
-    def __init__(self):
+    def __init__(self, schema: str):
+        self.schema = DATA_SCHEMA_DICT[schema]
         self.reset_dataframe()
 
     def reset_dataframe(self):
-        self.dataframe = pd.DataFrame(columns=DISPLAY_COLUMNS)
+        self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
 
     def read_clinical_data_table(self, file: str):
-        self.dataframe = ReadTable().main(file=file, columns=DISPLAY_COLUMNS)
+        self.dataframe = ReadTable(self.schema).main(
+            file=file,
+            columns=self.schema.DISPLAY_COLUMNS)
 
     def import_sequencing_table(self, file: str):
-        seq_df = ReadTable().main(
+        seq_df = ReadTable(self.schema).main(
             file=file,
             columns=['ID', 'Lab', 'Lab Sample ID']
         )
-        self.dataframe = MergeSeqDfIntoClinicalDataDf().main(
+        self.dataframe = MergeSeqDfIntoClinicalDataDf(self.schema).main(
             clinical_data_df=self.dataframe,
             seq_df=seq_df
         )
@@ -61,12 +66,12 @@ class Model:
         return self.dataframe.loc[row, ].to_dict()
 
     def update_row(self, row: int, attributes: Dict[str, str]):
-        attributes = ProcessAttributes().main(attributes)
+        attributes = ProcessAttributes(self.schema).main(attributes)
         for key, val in attributes.items():
             self.dataframe.loc[row, key] = val
 
     def append_row(self, attributes: Dict[str, str]):
-        attributes = ProcessAttributes().main(attributes)
+        attributes = ProcessAttributes(self.schema).main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
     def find(
@@ -106,12 +111,18 @@ class Model:
             dstdir=dstdir)
 
 
-class ReadTable:
+class ModelTool:
+
+    schema: Schema
+
+    def __init__(self, schema: Schema):
+        self.schema = schema
+
+
+class ReadTable(ModelTool):
 
     file: str
     columns: List[str]
-
-    df: pd.DataFrame
 
     def main(
             self,
@@ -128,6 +139,8 @@ class ReadTable:
 
         return self.df
 
+    df: pd.DataFrame
+
     def read_file(self):
         self.df = pd.read_excel(self.file) if self.file.endswith('.xlsx') else pd.read_csv(self.file)
 
@@ -137,12 +150,12 @@ class ReadTable:
 
     def convert_datetime_columns(self):
         for c in self.df.columns:
-            type_ = COLUMN_ATTRIBUTES.get(c, {}).get('type', None)
+            type_ = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', None)
             if type_ == 'datetime':
                 self.df[c] = pd.to_datetime(self.df[c])
 
 
-class MergeSeqDfIntoClinicalDataDf:
+class MergeSeqDfIntoClinicalDataDf(ModelTool):
 
     clinical_data_df: pd.DataFrame
     seq_df: pd.DataFrame
@@ -173,29 +186,50 @@ class MergeSeqDfIntoClinicalDataDf:
         return self.clinical_data_df
 
 
-class ProcessAttributes:
+#
+
+
+class ProcessAttributes(ModelTool):
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        attributes = CalculateSurvival().main(attributes)
-        attributes = CalculateICD().main(attributes)
-        attributes = CalculateTotalLymphNodes().main(attributes)
-        attributes = CalculateStage().main(attributes)
-        attributes = CastDatatypes().main(attributes)
+        attributes = CalculateDiagnosisAge(self.schema).main(attributes)
+        attributes = CalculateSurvival(self.schema).main(attributes)
+        attributes = CalculateICD(self.schema).main(attributes)
+        attributes = CalculateTotalLymphNodes(self.schema).main(attributes)
+        attributes = CalculateStage(self.schema).main(attributes)
+        attributes = CastDatatypes(self.schema).main(attributes)
         return attributes
 
 
-class CalculateSurvival:
+class Calculate(ModelTool):
+
+    REQUIRED_KEYS: List[str]
 
     attributes: Dict[str, Any]
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+    def has_required_keys(self) -> bool:
+        for key in self.REQUIRED_KEYS:
+            if key not in self.schema.DISPLAY_COLUMNS:
+                return False
+        return True
+
+
+class CalculateDiagnosisAge(Calculate):
+
+    REQUIRED_KEYS = [
+        BIRTH_DATE,
+        CLINICAL_DIAGNOSIS_DATE,
+        CLINICAL_DIAGNOSIS_AGE,
+    ]
+
+    def main(self,attributes: Dict[str, Any]) -> Dict[str, Any]:
+
         self.attributes = attributes.copy()
 
+        if not self.has_required_keys():
+            return self.attributes
+
         self.diagnosis_age()
-        self.check_cause_of_death()
-        self.disease_free_survival()
-        self.disease_specific_survival()
-        self.overall_survival()
 
         return self.attributes
 
@@ -204,12 +238,45 @@ class CalculateSurvival:
             start=self.attributes[BIRTH_DATE],
             end=self.attributes[CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
 
+
+class CalculateSurvival(Calculate):
+
+    REQUIRED_KEYS = [
+        INITIAL_TREATMENT_COMPLETION_DATE,
+        LAST_FOLLOW_UP_DATE,
+        RECUR_DATE_AFTER_INITIAL_TREATMENT,
+        EXPIRE_DATE,
+        CAUSE_OF_DEATH,
+        DISEASE_FREE_SURVIVAL_MONTHS,
+        DISEASE_FREE_SURVIVAL_STATUS,
+        DISEASE_SPECIFIC_SURVIVAL_MONTHS,
+        DISEASE_SPECIFIC_SURVIVAL_STATUS,
+        OVERALL_SURVIVAL_MONTHS,
+        OVERALL_SURVIVAL_STATUS,
+    ]
+
+    def main(
+            self,
+            attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        self.attributes = attributes.copy()
+
+        if not self.has_required_keys():
+            return self.attributes
+
+        self.check_cause_of_death()
+        self.disease_free_survival()
+        self.disease_specific_survival()
+        self.overall_survival()
+
+        return self.attributes
+
     def check_cause_of_death(self):
         has_expire_date = self.attributes[EXPIRE_DATE] != ''
 
         if has_expire_date:
             cause = self.attributes[CAUSE_OF_DEATH]
-            assert cause in COLUMN_ATTRIBUTES[CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
+            assert cause in self.schema.COLUMN_ATTRIBUTES[CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
 
     def disease_free_survival(self):
         attr = self.attributes
@@ -272,7 +339,7 @@ class CalculateSurvival:
         self.attributes[OVERALL_SURVIVAL_STATUS] = status
 
 
-class CalculateICD:
+class CalculateICD(Calculate):
 
     # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
     ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {
@@ -447,12 +514,24 @@ class CalculateICD:
         'Right Buccal Mucosa': 'C06.0',
     }
 
+    REQUIRED_KEYS = [
+        TUMOR_DISEASE_ANATOMIC_SITE,
+        ICD_O_3_SITE_CODE,
+        ICD_10_CLASSIFICATION
+    ]
+
     attributes: Dict[str, Any]
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
         self.attributes = attributes.copy()
+
+        if not self.has_required_keys():
+            return self.attributes
+
         self.add_icd_o_3()
         self.add_icd_10()
+
         return self.attributes
 
     def add_icd_o_3(self):
@@ -468,21 +547,83 @@ class CalculateICD:
             self.attributes[ICD_10_CLASSIFICATION] = icd_10
 
 
-class CalculateTotalLymphNodes:
+class CalculateStage(Calculate):
     """
-    LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
-    LYMPH_NODE_LEVEL_IA = 'Lymph Node Level Ia'
-    LYMPH_NODE_LEVEL_IB = 'Lymph Node Level Ib'
-    LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
-    LYMPH_NODE_LEVEL_IIA = 'Lymph Node Level IIa'
-    LYMPH_NODE_LEVEL_IIB = 'Lymph Node Level IIb'
-    LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
-    LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
-    LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
-    LYMPH_NODE_RIGHT = 'Lymph Node (Right)'
-    LYMPH_NODE_LEFT = 'Lymph Node (Left)'
-    TOTAL_LYMPH_NODE = 'Total Lymph Node'
+    https://www.cancer.org/cancer/types/oral-cavity-and-oropharyngeal-cancer/detection-diagnosis-staging/staging.html
     """
+
+    REQUIRED_KEYS = [
+        CLINICAL_TNM,
+        NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
+    ]
+
+    attributes: Dict[str, Any]
+
+    t: str
+    n: str
+    m: str
+    stage: str
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
+        if not self.has_required_keys():
+            return self.attributes
+
+        self.set_tnm()
+        self.set_stage()
+        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = self.stage
+
+        return self.attributes
+
+    def set_tnm(self):
+        tnm = self.attributes[CLINICAL_TNM]
+        self.t = tnm.split('T')[1].split('N')[0]
+        self.n = tnm.split('N')[1].split('M')[0]
+        self.m = tnm.split('M')[1]
+
+    def set_stage(self):
+        t, n, m = self.t, self.n, self.m
+        if m == '1':
+            self.stage = 'Stage IVC'
+        elif t == '4b' and m == '0':
+            self.stage = 'Stage IVB'
+        elif n == '3' and m == '0':
+            self.stage = 'Stage IVB'
+        elif t in ['1', '2', '3', '4a'] and n == '2' and m == '0':
+            self.stage = 'Stage IVA'
+        elif t == '4a' and n in ['0', '1'] and m == '0':
+            self.stage = 'Stage IVA'
+        elif t in ['1', '2', '3'] and n == '1' and m == '0':
+            self.stage = 'Stage III'
+        elif t == '3' and n == '0' and m == '0':
+            self.stage = 'Stage III'
+        elif t == '2' and n == '0' and m == '0':
+            self.stage = 'Stage II'
+        elif t == '1' and n == '0' and m == '0':
+            self.stage = 'Stage I'
+        elif t == 'is' and n == '0' and m == '0':
+            self.stage = 'Stage 0'
+        else:
+            raise ValueError(f'Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
+
+
+class CalculateTotalLymphNodes(Calculate):
+
+    REQUIRED_KEYS = [
+        LYMPH_NODE_LEVEL_I,
+        LYMPH_NODE_LEVEL_IA,
+        LYMPH_NODE_LEVEL_IB,
+        LYMPH_NODE_LEVEL_II,
+        LYMPH_NODE_LEVEL_IIA,
+        LYMPH_NODE_LEVEL_IIB,
+        LYMPH_NODE_LEVEL_III,
+        LYMPH_NODE_LEVEL_IV,
+        LYMPH_NODE_LEVEL_V,
+        LYMPH_NODE_RIGHT,
+        LYMPH_NODE_LEFT,
+        TOTAL_LYMPH_NODE,
+    ]
 
     attributes: Dict[str, Any]
 
@@ -491,6 +632,9 @@ class CalculateTotalLymphNodes:
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
+
+        if not self.has_required_keys():
+            return self.attributes
 
         self.numerator, self.denominator = 0, 0
         self.add_level_1()
@@ -580,73 +724,27 @@ class CalculateTotalLymphNodes:
             self.denominator += int(b)
 
 
-class CalculateStage:
-
-    # https://www.cancer.org/cancer/types/oral-cavity-and-oropharyngeal-cancer/detection-diagnosis-staging/staging.html
-
-    attributes: Dict[str, Any]
-
-    t: str
-    n: str
-    m: str
-    stage: str
+class CastDatatypes(Calculate):
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        self.attributes = attributes.copy()
 
-        self.set_tnm()
-        self.set_stage()
-        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = self.stage
-
-        return self.attributes
-
-    def set_tnm(self):
-        tnm = self.attributes[CLINICAL_TNM]
-        self.t = tnm.split('T')[1].split('N')[0]
-        self.n = tnm.split('N')[1].split('M')[0]
-        self.m = tnm.split('M')[1]
-
-    def set_stage(self):
-        t, n, m = self.t, self.n, self.m
-        if m == '1':
-            self.stage = 'Stage IVC'
-        elif t == '4b' and m == '0':
-            self.stage = 'Stage IVB'
-        elif n == '3' and m == '0':
-            self.stage = 'Stage IVB'
-        elif t in ['1', '2', '3', '4a'] and n == '2' and m == '0':
-            self.stage = 'Stage IVA'
-        elif t == '4a' and n in ['0', '1'] and m == '0':
-            self.stage = 'Stage IVA'
-        elif t in ['1', '2', '3'] and n == '1' and m == '0':
-            self.stage = 'Stage III'
-        elif t == '3' and n == '0' and m == '0':
-            self.stage = 'Stage III'
-        elif t == '2' and n == '0' and m == '0':
-            self.stage = 'Stage II'
-        elif t == '1' and n == '0' and m == '0':
-            self.stage = 'Stage I'
-        elif t == 'is' and n == '0' and m == '0':
-            self.stage = 'Stage 0'
-        else:
-            raise ValueError(f'Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
-
-
-class CastDatatypes:
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         for key, val in attributes.items():
+
             if val == '':
                 attributes[key] = pd.NA
-            elif COLUMN_ATTRIBUTES[key]['type'] == 'int':
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'int':
                 attributes[key] = int(val)
-            elif COLUMN_ATTRIBUTES[key]['type'] == 'float':
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'float':
                 attributes[key] = float(val)
-            elif COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
                 attributes[key] = pd.to_datetime(val)
-            elif COLUMN_ATTRIBUTES[key]['type'] == 'boolean':
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'boolean':
                 attributes[key] = True if val.upper() == 'TRUE' else False
+
         return attributes
+
+
+#
 
 
 class ExportCbioportalStudy:
