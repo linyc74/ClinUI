@@ -2,7 +2,13 @@ from typing import List, Dict, Any, Type
 from .columns import *
 
 
+NYCU_OSCC = 'NYCU OSCC'
+TPVGH_HNSCC = 'TPVGH HNSCC'
+
+
 class Schema:
+
+    NAME: str
 
     DISPLAY_COLUMNS: List[str]
 
@@ -16,6 +22,8 @@ class Schema:
 
 
 class NycuOsccSchema(Schema):
+
+    NAME = NYCU_OSCC
 
     DISPLAY_COLUMNS = [
         SAMPLE_ID,
@@ -643,6 +651,8 @@ class NycuOsccSchema(Schema):
 
 class TpvghHnsccSchema(Schema):
 
+    NAME = TPVGH_HNSCC
+
     DISPLAY_COLUMNS = [
         SAMPLE_ID,
         MEDICAL_RECORD_ID,
@@ -754,6 +764,6 @@ class TpvghHnsccSchema(Schema):
 
 
 DATA_SCHEMA_DICT: Dict[str, Type[Schema]] = {
-    'NYCU OSCC': NycuOsccSchema,
-    'TPVGH HNSCC': TpvghHnsccSchema,
+    NYCU_OSCC: NycuOsccSchema,
+    TPVGH_HNSCC: TpvghHnsccSchema,
 }

@@ -3,9 +3,24 @@ import pandas as pd
 from typing import List, Dict, Any, Union
 from .columns import *
 from .model_base import AbstractModel
+from .schema import NYCU_OSCC, TPVGH_HNSCC
 
 
 class ProcessAttributes(AbstractModel):
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        if self.schema.NAME == NYCU_OSCC:
+            return ProcessAttributesNycuOscc(self.schema).main(attributes)
+
+        elif self.schema.NAME == TPVGH_HNSCC:
+            return ProcessAttributesTpvghHnscc(self.schema).main(attributes)
+
+        else:
+            raise ValueError(f'Invalid schema name: "{self.schema.NAME}"')
+
+
+class ProcessAttributesNycuOscc(AbstractModel):
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
 
@@ -15,6 +30,16 @@ class ProcessAttributes(AbstractModel):
         attributes = CalculateTotalLymphNodes(self.schema).main(attributes)
         attributes = CalculateStage(self.schema).main(attributes)
         attributes = CastDatatypes(self.schema).main(attributes)
+
+        return attributes
+
+
+class ProcessAttributesTpvghHnscc(AbstractModel):
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        attributes = CalculateDiagnosisAge(self.schema).main(attributes)
+        attributes = CalculateSurvival(self.schema).main(attributes)
 
         return attributes
 
