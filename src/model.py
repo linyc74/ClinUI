@@ -21,20 +21,15 @@ class Model(AbstractModel):
     def reset_dataframe(self):
         self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
 
-    def read_clinical_data_table(self, file: str):
-        self.dataframe = ReadTable(self.schema).main(
-            file=file,
-            columns=self.schema.DISPLAY_COLUMNS)
+    def import_clinical_data_table(self, file: str):
+        self.dataframe = ImportClinicalDataTable(self.schema).main(
+            clinical_data_df=self.dataframe,
+            file=file)
 
     def import_sequencing_table(self, file: str):
-        seq_df = ReadTable(self.schema).main(
-            file=file,
-            columns=['ID', 'Lab', 'Lab Sample ID']
-        )
-        self.dataframe = MergeSeqDfIntoClinicalDataDf(self.schema).main(
+        self.dataframe = ImportSequencingTable(self.schema).main(
             clinical_data_df=self.dataframe,
-            seq_df=seq_df
-        )
+            file=file)
 
     def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):
@@ -111,6 +106,77 @@ class Model(AbstractModel):
             dstdir=dstdir)
 
 
+class ImportClinicalDataTable(AbstractModel):
+
+    clinical_data_df: pd.DataFrame
+    file: str
+
+    def main(
+            self,
+            clinical_data_df: pd.DataFrame,
+            file: str) -> pd.DataFrame:
+
+        self.clinical_data_df = clinical_data_df.copy()
+        self.file = file
+
+        df = ReadTable(self.schema).main(
+            file=file,
+            columns=self.schema.DISPLAY_COLUMNS)
+
+        for i, row in df.iterrows():
+
+            already_exists = row[SAMPLE_ID] in self.clinical_data_df[SAMPLE_ID].values
+            if already_exists:
+                continue
+
+            self.clinical_data_df = append(self.clinical_data_df, row)
+
+        return self.clinical_data_df
+
+
+class ImportSequencingTable(AbstractModel):
+
+    clinical_data_df: pd.DataFrame
+    file: str
+
+    seq_df: pd.DataFrame
+
+    def main(
+            self,
+            clinical_data_df: pd.DataFrame,
+            file: str) -> pd.DataFrame:
+
+        self.clinical_data_df = clinical_data_df.copy()
+        self.file = file
+
+        self.set_seq_df()
+        self.append_new_rows()
+
+        return self.clinical_data_df
+
+    def set_seq_df(self):
+        self.seq_df = ReadTable(self.schema).main(
+            file=self.file,
+            columns=['ID', 'Lab', 'Lab Sample ID']
+        )
+
+    def append_new_rows(self):
+        for i, row in self.seq_df.iterrows():
+
+            sequencing_id = row['ID']
+            already_exists = sequencing_id in self.clinical_data_df[SAMPLE_ID].values
+            if already_exists:
+                continue
+
+            new_row = {
+                SAMPLE_ID: sequencing_id,
+                LAB_ID: row['Lab'],
+                LAB_SAMPLE_ID: row['Lab Sample ID'],
+            }
+
+            self.clinical_data_df = append(self.clinical_data_df, new_row)
+
+
 class ReadTable(AbstractModel):
 
     file: str
@@ -145,37 +211,6 @@ class ReadTable(AbstractModel):
             type_ = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', None)
             if type_ == 'datetime':
                 self.df[c] = pd.to_datetime(self.df[c])
-
-
-class MergeSeqDfIntoClinicalDataDf(AbstractModel):
-
-    clinical_data_df: pd.DataFrame
-    seq_df: pd.DataFrame
-
-    def main(
-            self,
-            clinical_data_df: pd.DataFrame,
-            seq_df: pd.DataFrame) -> pd.DataFrame:
-
-        self.clinical_data_df = clinical_data_df.copy()
-        self.seq_df = seq_df
-
-        for i, row in self.seq_df.iterrows():
-
-            sequencing_id = row['ID']
-            already_exists = sequencing_id in self.clinical_data_df[SAMPLE_ID].values
-            if already_exists:
-                continue
-
-            new_row = {
-                SAMPLE_ID: sequencing_id,
-                LAB_ID: row['Lab'],
-                LAB_SAMPLE_ID: row['Lab Sample ID'],
-            }
-
-            self.clinical_data_df = append(self.clinical_data_df, new_row)
-
-        return self.clinical_data_df
 
 
 class ExportCbioportalStudy:

@@ -113,7 +113,7 @@ class View(QWidget):
     ICON_PNG = f'{os.getcwd()}/icon/logo.ico'
     WIDTH, HEIGHT = 1280, 768
     BUTTON_NAME_TO_LABEL = {
-        'read_clinical_data_table': 'Read Clinical Data Table',
+        'import_clinical_data_table': 'Import Clinical Data Table',
         'import_sequencing_table': 'Import Sequencing Table',
         'save_clinical_data_table': 'Save Clinical Data Table',
 
@@ -128,7 +128,7 @@ class View(QWidget):
         'export_cbioportal_study': 'Export cBioPortal Study',
     }
     BUTTON_NAME_TO_POSITION = {
-        'read_clinical_data_table': (0, 0),
+        'import_clinical_data_table': (0, 0),
         'import_sequencing_table': (1, 0),
         'save_clinical_data_table': (2, 0),
 

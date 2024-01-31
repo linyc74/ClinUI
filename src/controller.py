@@ -17,7 +17,7 @@ class Controller:
         self.__connect_button_actions()
 
     def __init_actions(self):
-        self.action_read_clinical_data_table = ActionReadClinicalDataTable(self)
+        self.action_import_clinical_data_table = ActionImportClinicalDataTable(self)
         self.action_import_sequencing_table = ActionImportSequencingTable(self)
         self.action_save_clinical_data_table = ActionSaveClinicalDataTable(self)
         self.action_sort_ascending = ActionSortAscending(self)
@@ -49,7 +49,7 @@ class Action:
         self.view = controller.view
 
 
-class ActionReadClinicalDataTable(Action):
+class ActionImportClinicalDataTable(Action):
 
     def __call__(self):
         file = self.view.file_dialog_open_table()
@@ -57,7 +57,7 @@ class ActionReadClinicalDataTable(Action):
             return
 
         try:
-            self.model.read_clinical_data_table(file=file)
+            self.model.import_clinical_data_table(file=file)
         except Exception as e:
             self.view.message_box_error(msg=str(e))
             return
