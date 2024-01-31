@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Type
 from .columns import *
 
 
@@ -753,7 +753,7 @@ class TpvghHnsccSchema(Schema):
     }
 
 
-DATA_SCHEMA_DICT: Dict[str, Schema] = {
+DATA_SCHEMA_DICT: Dict[str, Type[Schema]] = {
     'NYCU OSCC': NycuOsccSchema,
     'TPVGH HNSCC': TpvghHnsccSchema,
 }

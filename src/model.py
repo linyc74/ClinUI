@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from os.path import basename
-from typing import List, Optional, Dict, Any, Union, Tuple
+from typing import List, Optional, Dict, Any, Union, Tuple, Type
 from .columns import *
 from .schema import Schema
 from .cbio_base import Settings
@@ -14,7 +14,7 @@ class Model(AbstractModel):
 
     dataframe: pd.DataFrame  # this is the main clinical data table
 
-    def __init__(self, schema: Schema):
+    def __init__(self, schema: Type[Schema]):
         super().__init__(schema=schema)
         self.reset_dataframe()
 

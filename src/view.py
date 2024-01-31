@@ -2,9 +2,8 @@ import os
 import pandas as pd
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, \
-    QFileDialog, QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, \
-    QScrollArea, QLineEdit
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, QFileDialog, \
+    QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, QScrollArea, QLineEdit
 from typing import List, Optional, Any, Dict, Union, Tuple
 from .model import Model
 from .schema import DATA_SCHEMA_DICT
