@@ -405,9 +405,9 @@ class CalculateStage(Calculate):
             self.stage = 'Stage IVC'
         elif t == '4b' and m == '0':
             self.stage = 'Stage IVB'
-        elif n == '3' and m == '0':
+        elif n in ['3', '3a', '3b'] and m == '0':
             self.stage = 'Stage IVB'
-        elif t in ['1', '2', '3', '4a'] and n == '2' and m == '0':
+        elif t in ['1', '2', '3', '4a'] and n in ['2', '2a', '2b', '2c'] and m == '0':
             self.stage = 'Stage IVA'
         elif t == '4a' and n in ['0', '1'] and m == '0':
             self.stage = 'Stage IVA'
@@ -422,7 +422,8 @@ class CalculateStage(Calculate):
         elif t == 'is' and n == '0' and m == '0':
             self.stage = 'Stage 0'
         else:
-            raise ValueError(f'Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
+            print(f'WARNING! Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
+            self.stage = ''
 
 
 class CalculateTotalLymphNodes(Calculate):
