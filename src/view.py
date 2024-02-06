@@ -56,7 +56,16 @@ class Table(QTableWidget):
     def __init__(self, model: Model):
         super().__init__()
         self.model = model
+        self.cellChanged.connect(self.handle_cell_changed)
         self.refresh_table()
+
+    def handle_cell_changed(self, row: int, column: int):
+        item = self.item(row, column)
+        if item:
+            column: str = self.model.dataframe.columns[column]
+            value: str = item.data(Qt.DisplayRole)
+            self.model.set_value(row=row, column=column, value=value)
+            self.refresh_table()  # the model may change the data, so we need to refresh the table
 
     def refresh_table(self):
         df = self.model.get_dataframe()
@@ -65,12 +74,14 @@ class Table(QTableWidget):
         self.setColumnCount(len(df.columns))
 
         self.setHorizontalHeaderLabels(df.columns)
+
+        self.cellChanged.disconnect()  # disconnect the signal to avoid infinite loop
         for i in range(len(df.index)):
             for j in range(len(df.columns)):
                 value = df.iloc[i, j]
                 item = QTableWidgetItem(str_(value))
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # makes the item immutable, i.e. user cannot edit it
                 self.setItem(i, j, item)
+        self.cellChanged.connect(self.handle_cell_changed)
 
         self.resizeColumnsToContents()
 

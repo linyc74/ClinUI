@@ -69,6 +69,9 @@ class Model(AbstractModel):
         attributes = ProcessAttributes(self.schema).main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
+    def set_value(self, row: int, column: str, value: str):
+        self.dataframe.loc[row, column] = value
+
     def find(
             self,
             text: str,
