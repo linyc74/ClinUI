@@ -230,39 +230,45 @@ class FileDialog:
 class FileDialogOpenTable(FileDialog):
 
     def __call__(self) -> str:
-        fpath, ftype = QFileDialog.getOpenFileName(
-            parent=self.view,
-            caption='Open',
-            filter='All Files (*.*);;CSV files (*.csv);;Excel files (*.xlsx)',
-            initialFilter='CSV files (*.csv)',
-            options=QFileDialog.DontUseNativeDialog
-        )
-        return fpath
+        d = QFileDialog(self.view)
+        d.resize(1200, 800)
+        d.setWindowTitle('Open')
+        d.setNameFilter('All Files (*.*);;CSV files (*.csv);;Excel files (*.xlsx)')
+        d.selectNameFilter('CSV files (*.csv)')
+        d.setOptions(QFileDialog.DontUseNativeDialog)
+        d.setFileMode(QFileDialog.ExistingFile)  # only one existing file can be selected
+        d.exec_()
+        selected = d.selectedFiles()
+        return selected[0] if len(selected) > 0 else ''
 
 
 class FileDialogSaveTable(FileDialog):
 
     def __call__(self, filename: str = '') -> str:
-        fpath, ftype = QFileDialog.getSaveFileName(
-            parent=self.view,
-            caption='Save As',
-            directory=filename,
-            filter='All Files (*.*);;CSV files (*.csv);;Excel files (*.xlsx)',
-            initialFilter='CSV files (*.csv)',
-            options=QFileDialog.DontUseNativeDialog
-        )
-        return fpath
+        d = QFileDialog(self.view)
+        d.resize(1200, 800)
+        d.setWindowTitle('Save As')
+        d.selectFile(filename)
+        d.setNameFilter('All Files (*.*);;CSV files (*.csv);;Excel files (*.xlsx)')
+        d.selectNameFilter('CSV files (*.csv)')
+        d.setOptions(QFileDialog.DontUseNativeDialog)
+        d.setAcceptMode(QFileDialog.AcceptSave)
+        d.exec_()
+        selected = d.selectedFiles()
+        return selected[0] if len(selected) > 0 else ''
 
 
 class FileDialogOpenDirectory(FileDialog):
 
     def __call__(self, caption: str) -> str:
-        fpath = QFileDialog.getExistingDirectory(
-            parent=self.view,
-            caption=caption,
-            options=QFileDialog.DontUseNativeDialog
-        )
-        return fpath
+        d = QFileDialog(self.view)
+        d.resize(1200, 800)
+        d.setWindowTitle(caption)
+        d.setOptions(QFileDialog.DontUseNativeDialog)
+        d.setFileMode(QFileDialog.DirectoryOnly)  # only one directory can be selected
+        d.exec_()
+        selected = d.selectedFiles()
+        return selected[0] if len(selected) > 0 else ''
 
 
 class MessageBox:
