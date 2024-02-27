@@ -139,6 +139,9 @@ class CalculateSurvival(Calculate):
         if pd.notna(duration):
             self.attributes[DISEASE_FREE_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
             self.attributes[DISEASE_FREE_SURVIVAL_STATUS] = status
+        else:
+            self.attributes[DISEASE_FREE_SURVIVAL_MONTHS] = ''
+            self.attributes[DISEASE_FREE_SURVIVAL_STATUS] = ''
 
     def disease_specific_survival(self):
         attr = self.attributes
@@ -159,6 +162,9 @@ class CalculateSurvival(Calculate):
         if pd.notna(duration):
             self.attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
             self.attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = status
+        else:
+            self.attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = ''
+            self.attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = ''
 
     def overall_survival(self):
         attr = self.attributes
@@ -176,6 +182,9 @@ class CalculateSurvival(Calculate):
         if pd.notna(duration):
             self.attributes[OVERALL_SURVIVAL_MONTHS] = duration / pd.Timedelta(days=30)
             self.attributes[OVERALL_SURVIVAL_STATUS] = status
+        else:
+            self.attributes[OVERALL_SURVIVAL_MONTHS] = ''
+            self.attributes[OVERALL_SURVIVAL_STATUS] = ''
 
 
 class CalculateICD(Calculate):

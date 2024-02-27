@@ -175,6 +175,14 @@ class TestCalculateSurvival(TestCase):
         }
         actual = CalculateSurvival(self.schema).main(attributes=attributes)
         expected = attributes.copy()
+        expected.update({
+            'Disease Free (Months)': '',
+            'Disease Free Status': '',
+            'Disease-specific Survival (Months)': '',
+            'Disease-specific Survival Status': '',
+            'Overall Survival (Months)': '',
+            'Overall Survival Status': '',
+        })
         self.assertDictEqual(expected, actual)
 
 
