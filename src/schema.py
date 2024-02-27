@@ -482,7 +482,7 @@ class NycuOsccSchema(Schema):
         },
         TUMOR_MARGIN: {
             'type': 'string',
-            'options': ['Positive (> 4mm)', 'Close (≤ 4mm)', 'Negative'],
+            'options': ['Negative (> 4mm)', 'Negative (> 4mm) with dysplasia', 'Close (≤ 4mm)', 'Close (≤ 4mm)  with dysplasia', 'Positive'],
         },
         CLINICAL_TNM: {
             'type': 'string',
