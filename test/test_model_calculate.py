@@ -165,6 +165,18 @@ class TestCalculateSurvival(TestCase):
 
         self.assertDictEqual(expected, actual)
 
+    def test_empty(self):
+        attributes = {
+            'Initial Treatment Completion Date': '',
+            'Last Follow-up Date': '',
+            'Recur Date after Initial Treatment': '',
+            'Expire Date': '',
+            'Cause of Death': ''
+        }
+        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        expected = attributes.copy()
+        self.assertDictEqual(expected, actual)
+
 
 class TestCalculateICD(TestCase):
 
