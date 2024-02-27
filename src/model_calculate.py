@@ -386,46 +386,49 @@ class CalculateStage(Calculate):
     t: str
     n: str
     m: str
-    stage: str
 
     def calculate(self):
-        if self.attributes[CLINICAL_TNM] == '':
-            return
         self.set_tnm()
         self.set_stage()
-        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = self.stage
 
     def set_tnm(self):
-        tnm = self.attributes[CLINICAL_TNM]
-        self.t = tnm.split('T')[1].split('N')[0]
-        self.n = tnm.split('N')[1].split('M')[0]
-        self.m = tnm.split('M')[1]
+        try:
+            tnm = self.attributes[CLINICAL_TNM]
+            self.t = tnm.split('T')[1].split('N')[0]
+            self.n = tnm.split('N')[1].split('M')[0]
+            self.m = tnm.split('M')[1]
+        except Exception as e:
+            print(e)
+            self.t, self.n, self.m = '', '', ''
 
     def set_stage(self):
         t, n, m = self.t, self.n, self.m
         if m == '1':
-            self.stage = 'Stage IVC'
+            stage = 'Stage IVC'
         elif t == '4b' and m == '0':
-            self.stage = 'Stage IVB'
+            stage = 'Stage IVB'
         elif n in ['3', '3a', '3b'] and m == '0':
-            self.stage = 'Stage IVB'
+            stage = 'Stage IVB'
         elif t in ['1', '2', '3', '4a'] and n in ['2', '2a', '2b', '2c'] and m == '0':
-            self.stage = 'Stage IVA'
+            stage = 'Stage IVA'
         elif t == '4a' and n in ['0', '1'] and m == '0':
-            self.stage = 'Stage IVA'
+            stage = 'Stage IVA'
         elif t in ['1', '2', '3'] and n == '1' and m == '0':
-            self.stage = 'Stage III'
+            stage = 'Stage III'
         elif t == '3' and n == '0' and m == '0':
-            self.stage = 'Stage III'
+            stage = 'Stage III'
         elif t == '2' and n == '0' and m == '0':
-            self.stage = 'Stage II'
+            stage = 'Stage II'
         elif t == '1' and n == '0' and m == '0':
-            self.stage = 'Stage I'
+            stage = 'Stage I'
         elif t == 'is' and n == '0' and m == '0':
-            self.stage = 'Stage 0'
+            stage = 'Stage 0'
         else:
             print(f'WARNING! Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
-            self.stage = ''
+            stage = ''
+
+        if stage != '':
+            self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
 
 
 class CalculateLymphNodes(Calculate):

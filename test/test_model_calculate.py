@@ -279,18 +279,15 @@ class TestCalculateStage(TestCase):
         }
         self.assertDictEqual(expected, actual)
 
-    def test_invalid_tnm(self):
+    def test_wrong_format(self):
         attributes = {
-            'Clinical TNM (cTNM)': 'TXN0M0',
+            'Clinical TNM (cTNM)': 'XXX',
         }
-        with self.assertRaises(ValueError):
-            CalculateStage(self.schema).main(attributes=attributes)
-
-    def test_accept_empty_tnm(self):
-        attributes = {
-            'Clinical TNM (cTNM)': '',
+        actual = CalculateStage(self.schema).main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'XXX',
         }
-        CalculateStage(self.schema).main(attributes=attributes)
+        self.assertDictEqual(expected, actual)
 
 
 class TestCalculateLymphNodes(TestCase):
