@@ -80,6 +80,7 @@ class Table(QTableWidget):
             for j in range(len(df.columns)):
                 value = df.iloc[i, j]
                 item = QTableWidgetItem(str_(value))
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # makes the item immutable, i.e. user cannot edit it
                 self.setItem(i, j, item)
         self.cellChanged.connect(self.handle_cell_changed)
 
