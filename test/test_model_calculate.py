@@ -286,6 +286,12 @@ class TestCalculateStage(TestCase):
         with self.assertRaises(ValueError):
             CalculateStage(self.schema).main(attributes=attributes)
 
+    def test_accept_empty_tnm(self):
+        attributes = {
+            'Clinical TNM (cTNM)': '',
+        }
+        CalculateStage(self.schema).main(attributes=attributes)
+
 
 class TestCalculateLymphNodes(TestCase):
 

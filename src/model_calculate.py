@@ -389,6 +389,8 @@ class CalculateStage(Calculate):
     stage: str
 
     def calculate(self):
+        if self.attributes[CLINICAL_TNM] == '':
+            return
         self.set_tnm()
         self.set_stage()
         self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = self.stage
