@@ -211,7 +211,12 @@ class TestCalculateICD(TestCase):
             'Tumor Disease Anatomic Site': 'Cat tongue',
         }
         actual = CalculateICD(self.schema).main(attributes=attributes)
-        self.assertDictEqual(attributes, actual)
+        expected = {
+            'Tumor Disease Anatomic Site': 'Cat tongue',
+            'ICD-O-3 Site Code': '',
+            'ICD-10 Classification': '',
+        }
+        self.assertDictEqual(expected, actual)
 
 
 class TestCalculateStage(TestCase):
@@ -306,6 +311,7 @@ class TestCalculateStage(TestCase):
         actual = CalculateStage(self.schema).main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'XXX',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': '',
         }
         self.assertDictEqual(expected, actual)
 

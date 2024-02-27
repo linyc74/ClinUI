@@ -109,7 +109,6 @@ class CalculateSurvival(Calculate):
 
     def check_cause_of_death(self):
         has_expire_date = self.attributes[EXPIRE_DATE] != ''
-
         if has_expire_date:
             cause = self.attributes[CAUSE_OF_DEATH]
             assert cause in self.schema.COLUMN_ATTRIBUTES[CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
@@ -362,15 +361,13 @@ class CalculateICD(Calculate):
 
     def add_icd_o_3(self):
         site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
-        icd_o_3 = self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE.get(site, None)
-        if icd_o_3 is not None:
-            self.attributes[ICD_O_3_SITE_CODE] = icd_o_3
+        icd_o_3 = self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE.get(site, '')
+        self.attributes[ICD_O_3_SITE_CODE] = icd_o_3
 
     def add_icd_10(self):
         site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
-        icd_10 = self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION.get(site, None)
-        if icd_10 is not None:
-            self.attributes[ICD_10_CLASSIFICATION] = icd_10
+        icd_10 = self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION.get(site, '')
+        self.attributes[ICD_10_CLASSIFICATION] = icd_10
 
 
 class CalculateStage(Calculate):
@@ -389,7 +386,7 @@ class CalculateStage(Calculate):
 
     def calculate(self):
         self.set_tnm()
-        self.set_stage()
+        self.calculate_stage()
 
     def set_tnm(self):
         try:
@@ -401,7 +398,7 @@ class CalculateStage(Calculate):
             print(e)
             self.t, self.n, self.m = '', '', ''
 
-    def set_stage(self):
+    def calculate_stage(self):
         t, n, m = self.t, self.n, self.m
         if m == '1':
             stage = 'Stage IVC'
@@ -427,8 +424,7 @@ class CalculateStage(Calculate):
             print(f'WARNING! Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
             stage = ''
 
-        if stage != '':
-            self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
+        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
 
 
 class CalculateLymphNodes(Calculate):
