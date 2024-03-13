@@ -561,26 +561,25 @@ class CastDatatypes(AbstractModel):
                 attributes[key] = int(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'float':
                 attributes[key] = float(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
-                attributes[key] = pd.to_datetime(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'datetime_list':
-                attributes[key] = self.as_datetime_list(val)
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date':
+                attributes[key] = pd.to_datetime(val).strftime('%Y-%m-%d')  # format it as str
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date_list':
+                attributes[key] = self.format_date_list(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'bool':
                 attributes[key] = True if val.upper() == 'TRUE' else False
             # assume other types are all str
 
         return attributes
 
-    def as_datetime_list(self, val: str) -> List[pd.Timestamp]:
-        if val == '':
-            return []
-
-        ret = []
+    def format_date_list(self, val: str) -> str:
+        dates = []
         for x in val.split(';'):
             if x.strip() == '':
                 continue
-            ret.append(pd.to_datetime(x.strip()))
-        return ret
+            dates.append(
+                pd.to_datetime(x.strip()).strftime('%Y-%m-%d')
+            )
+        return ' ; '.join(dates)
 
 
 def delta_t(

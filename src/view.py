@@ -500,14 +500,7 @@ def str_(value: Any) -> str:
     """
     Converts to str for GUI display
     """
-    if isinstance(value, list):
-        return ' ; '.join([str_(v) for v in value])  # recursively convert each element to str
-    elif isinstance(value, pd.Timestamp):
-        return value.strftime('%Y-%m-%d')
-    elif pd.isna(value):
-        return ''
-    else:
-        return str(value)
+    return '' if pd.isna(value) else str(value)
 
 
 def to_title(s: str) -> str:

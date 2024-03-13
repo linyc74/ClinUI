@@ -197,7 +197,6 @@ class ReadTable(AbstractModel):
         self.read_file()
         self.assert_columns()
         self.df = self.df[self.columns]
-        self.convert_datetime_columns()
 
         return self.df
 
@@ -218,12 +217,6 @@ class ReadTable(AbstractModel):
     def assert_columns(self):
         for c in self.columns:
             assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
-
-    def convert_datetime_columns(self):
-        for c in self.df.columns:
-            type_ = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', None)
-            if type_ == 'datetime':
-                self.df[c] = pd.to_datetime(self.df[c])
 
 
 class ExportCbioportalStudy:

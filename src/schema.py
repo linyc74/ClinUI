@@ -163,7 +163,7 @@ class NycuOsccSchema(Schema):
             'options': ['000-00000'],
         },
         SAMPLE_COLLECTION_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         SEX: {
@@ -183,15 +183,15 @@ class NycuOsccSchema(Schema):
             'options': ['Han', 'Aboriginal'],
         },
         BIRTH_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['1900-01-01'],
         },
         CLINICAL_DIAGNOSIS_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         PATHOLOGICAL_DIAGNOSIS_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         CLINICAL_DIAGNOSIS_AGE: {
@@ -610,19 +610,19 @@ class NycuOsccSchema(Schema):
             'options': ['HNSC HPV-', 'HNSC HPV+', ''],
         },
         INITIAL_TREATMENT_COMPLETION_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         LAST_FOLLOW_UP_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         RECUR_DATE_AFTER_INITIAL_TREATMENT: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['', '2020-01-01'],
         },
         EXPIRE_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['', '2020-01-01'],
         },
         CAUSE_OF_DEATH: {
@@ -701,7 +701,7 @@ class TpvghLuadSchema(Schema):
             'options': ['F', 'M'],
         },
         BIRTHDATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['1900-01-01'],
         },
         AGE: {
@@ -732,11 +732,11 @@ class TpvghLuadSchema(Schema):
             ],
         },
         NEOADJUVANT_THERAPY_START_DATE: {
-            'type': 'datetime_list',
+            'type': 'date_list',
             'options': ['', '2020-01-01'],
         },
         NEOADJUVANT_THERAPY_END_DATE: {
-            'type': 'datetime_list',
+            'type': 'date_list',
             'options': ['', '2020-01-01'],
         },
         ADJUVANT_THERAPY: {
@@ -751,11 +751,11 @@ class TpvghLuadSchema(Schema):
             ],
         },
         ADJUVANT_THERAPY_START_DATE: {
-            'type': 'datetime_list',
+            'type': 'date_list',
             'options': ['', '2020-01-01'],
         },
         ADJUVANT_THERAPY_END_DATE: {
-            'type': 'datetime_list',
+            'type': 'date_list',
             'options': ['', '2020-01-01'],
         },
         LAST_F_U_DATE: {
@@ -770,7 +770,7 @@ class TpvghLuadSchema(Schema):
             'options': [False, True],
         },
         DEATH_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['', '2020-01-01'],
         },
         OS: {
@@ -881,30 +881,30 @@ class TpvghHnsccSchema(Schema):
             'options': ['VGH_001_T', 'NYCUH_001_T'],
         },
         BIRTH_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['1900-01-01'],
         },
         CLINICAL_DIAGNOSIS_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         CLINICAL_DIAGNOSIS_AGE: {
             'type': 'float',
         },
         INITIAL_TREATMENT_COMPLETION_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         LAST_FOLLOW_UP_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['2020-01-01'],
         },
         RECUR_DATE_AFTER_INITIAL_TREATMENT: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['', '2020-01-01'],
         },
         EXPIRE_DATE: {
-            'type': 'datetime',
+            'type': 'date',
             'options': ['', '2020-01-01'],
         },
         CAUSE_OF_DEATH: {
