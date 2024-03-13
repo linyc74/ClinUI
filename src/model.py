@@ -69,9 +69,6 @@ class Model(AbstractModel):
         attributes = ProcessAttributes(self.schema).main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
-    def set_value(self, row: int, column: str, value: str):
-        self.dataframe.at[row, column] = value  # use .at to accept a list (iterable) as a single value
-
     def find(
             self,
             text: str,
