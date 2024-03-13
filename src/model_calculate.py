@@ -564,22 +564,25 @@ class CastDatatypes(AbstractModel):
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date':
                 attributes[key] = pd.to_datetime(val).strftime('%Y-%m-%d')  # format it as str
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date_list':
-                attributes[key] = self.format_date_list(val)
+                attributes[key] = format_date_list(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'bool':
                 attributes[key] = True if val.upper() == 'TRUE' else False
             # assume other types are all str
 
         return attributes
 
-    def format_date_list(self, val: str) -> str:
-        dates = []
-        for x in val.split(';'):
-            if x.strip() == '':
-                continue
-            dates.append(
-                pd.to_datetime(x.strip()).strftime('%Y-%m-%d')
-            )
-        return ' ; '.join(dates)
+
+def format_date_list(val: str) -> str:
+    """
+    '2020;2020-02;2020-03-01' --> '2020-01-01 ; 2020-02-01 ; 2020-03-01'
+    """
+    sep = ';'
+    dates = []
+    for x in val.split(sep):
+        xx = x.strip()
+        if not xx == '':
+            dates.append(pd.to_datetime(xx).strftime('%Y-%m-%d'))
+    return f' {sep} '.join(dates)
 
 
 def delta_t(
