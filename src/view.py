@@ -23,6 +23,7 @@ class SelectDataSchemaDialog:
         self.__init__dialog()
         self.__init__layout()
         self.schema = None
+        self.result = None
 
     def __init__dialog(self):
         self.dialog = QDialog()

@@ -1,6 +1,7 @@
 STUDY_IDENTIFIER_KEY = 'cancer_study_identifier'
 
 
+# NYCU OSCC
 STUDY_ID = 'Study ID'
 PATIENT_ID = 'Patient ID'
 SAMPLE_ID = 'Sample ID'
@@ -70,7 +71,7 @@ LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
 LYMPH_NODE_RIGHT = 'Lymph Node (Right)'
 LYMPH_NODE_LEFT = 'Lymph Node (Left)'
 TOTAL_LYMPH_NODE = 'Total Lymph Node'
-LYMPHOVASCULAR_INVASION = 'Lymphovascular Invasion (LVI)'
+LYMPHOVASCULAR_INVASION_LVI = 'Lymphovascular Invasion (LVI)'
 PERINEURAL_INVASION = 'Perineural Invasion (PNI)'
 CLINICAL_OVERT_EXTRANODAL_EXTENSION = 'Clinical Overt Extranodal Extension'
 PATHOLOGICAL_EXTRANODAL_EXTENSION = 'Pathological Extranodal Extension (ENE)'
@@ -96,7 +97,7 @@ OVERALL_SURVIVAL_MONTHS = 'Overall Survival (Months)'
 OVERALL_SURVIVAL_STATUS = 'Overall Survival Status'
 
 
-# TPVGH LUAD columns
+# TPVGH LUAD
 SERIAL_NO = 'Serial No'
 GENDER = 'Gender'
 BIRTHDATE = 'Birthdate'

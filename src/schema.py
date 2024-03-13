@@ -94,7 +94,7 @@ class NycuOsccSchema(Schema):
         LYMPH_NODE_RIGHT,
         LYMPH_NODE_LEFT,
         TOTAL_LYMPH_NODE,
-        LYMPHOVASCULAR_INVASION,
+        LYMPHOVASCULAR_INVASION_LVI,
         PERINEURAL_INVASION,
         CLINICAL_OVERT_EXTRANODAL_EXTENSION,
         PATHOLOGICAL_EXTRANODAL_EXTENSION,
@@ -464,7 +464,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': ['0/0', ''],
         },
-        LYMPHOVASCULAR_INVASION: {
+        LYMPHOVASCULAR_INVASION_LVI: {
             'type': 'bool',
             'options': [False, True],
         },
