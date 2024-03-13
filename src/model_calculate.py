@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict, Any, Union
 from .columns import *
 from .model_base import AbstractModel
-from .schema import NYCU_OSCC, TPVGH_HNSCC
+from .schema import NYCU_OSCC, TPVGH_HNSCC, TPVGH_LUAD
 
 
 class ProcessAttributes(AbstractModel):
@@ -15,6 +15,9 @@ class ProcessAttributes(AbstractModel):
 
         elif self.schema.NAME == TPVGH_HNSCC:
             return ProcessAttributesTpvghHnscc(self.schema).main(attributes)
+
+        elif self.schema.NAME == TPVGH_LUAD:
+            return ProcessAttributesTpvghLuad(self.schema).main(attributes)
 
         else:
             raise ValueError(f'Invalid schema name: "{self.schema.NAME}"')
@@ -40,6 +43,16 @@ class ProcessAttributesTpvghHnscc(AbstractModel):
 
         attributes = CalculateDiagnosisAge(self.schema).main(attributes)
         attributes = CalculateSurvival(self.schema).main(attributes)
+        attributes = CastDatatypes(self.schema).main(attributes)
+
+        return attributes
+
+
+class ProcessAttributesTpvghLuad(AbstractModel):
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        attributes = CastDatatypes(self.schema).main(attributes)
 
         return attributes
 
@@ -550,10 +563,24 @@ class CastDatatypes(AbstractModel):
                 attributes[key] = float(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'datetime':
                 attributes[key] = pd.to_datetime(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'boolean':
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'datetime_list':
+                attributes[key] = self.as_datetime_list(val)
+            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'bool':
                 attributes[key] = True if val.upper() == 'TRUE' else False
+            # assume other types are all str
 
         return attributes
+
+    def as_datetime_list(self, val: str) -> List[pd.Timestamp]:
+        if val == '':
+            return []
+
+        ret = []
+        for x in val.split(';'):
+            if x.strip() == '':
+                continue
+            ret.append(pd.to_datetime(x.strip()))
+        return ret
 
 
 def delta_t(

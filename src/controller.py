@@ -59,7 +59,7 @@ class ActionImportClinicalDataTable(Action):
         try:
             self.model.import_clinical_data_table(file=file)
         except Exception as e:
-            self.view.message_box_error(msg=str(e))
+            self.view.message_box_error(msg=repr(e))
             return
 
         self.view.refresh_table()
@@ -75,7 +75,7 @@ class ActionImportSequencingTable(Action):
         try:
             self.model.import_sequencing_table(file=file)
         except Exception as e:
-            self.view.message_box_error(msg=str(e))
+            self.view.message_box_error(msg=repr(e))
             return
 
         self.view.refresh_table()
@@ -168,7 +168,7 @@ class ActionAddNewSample(Action):
         try:
             self.model.append_row(attributes=attributes)
         except Exception as e:
-            self.view.message_box_error(msg=str(e))
+            self.view.message_box_error(msg=repr(e))
             return
 
         self.view.refresh_table()
@@ -189,7 +189,7 @@ class ActionEditSample(Action):
         row = rows[0]  # only one row is selected
 
         attributes = self.model.get_row(row=row)
-        attributes = self.view.dialog_edit_sample(attributes)
+        attributes = self.view.dialog_edit_sample(attributes=attributes)
 
         if attributes is None:
             return
@@ -197,7 +197,7 @@ class ActionEditSample(Action):
         try:
             self.model.update_row(row=row, attributes=attributes)
         except Exception as e:
-            self.view.message_box_error(msg=str(e))
+            self.view.message_box_error(msg=repr(e))
             return
 
         self.view.refresh_table()
@@ -267,4 +267,4 @@ class ActionExportCbioportalStudy(Action):
             self.view.message_box_info(msg='Export cBioPortal study complete')
         except Exception as e:
             shutil.rmtree(self.dstdir)
-            self.view.message_box_error(msg=str(e))
+            self.view.message_box_error(msg=repr(e))

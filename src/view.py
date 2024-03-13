@@ -400,7 +400,7 @@ class DialogComboBoxes:
 
 class DialogEditSample(DialogComboBoxes):
 
-    WIDTH, HEIGHT = 1024, 768
+    WIDTH, HEIGHT = 600, 800
 
     def init_field_to_options(self):
         self.field_to_options = {}
@@ -511,10 +511,12 @@ def str_(value: Any) -> str:
     """
     Converts to str for GUI display
     """
-    if pd.isna(value):
-        return ''
-    elif type(value) == pd.Timestamp:
+    if isinstance(value, list):
+        return ' ; '.join([str_(v) for v in value])  # recursively convert each element to str
+    elif isinstance(value, pd.Timestamp):
         return value.strftime('%Y-%m-%d')
+    elif pd.isna(value):
+        return ''
     else:
         return str(value)
 

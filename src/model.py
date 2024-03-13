@@ -63,14 +63,14 @@ class Model(AbstractModel):
     def update_row(self, row: int, attributes: Dict[str, str]):
         attributes = ProcessAttributes(self.schema).main(attributes)
         for key, val in attributes.items():
-            self.dataframe.loc[row, key] = val
+            self.dataframe.at[row, key] = val  # use .at to accept a list (iterable) as a single value
 
     def append_row(self, attributes: Dict[str, str]):
         attributes = ProcessAttributes(self.schema).main(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
     def set_value(self, row: int, column: str, value: str):
-        self.dataframe.loc[row, column] = value
+        self.dataframe.at[row, column] = value  # use .at to accept a list (iterable) as a single value
 
     def find(
             self,
@@ -126,9 +126,11 @@ class ImportClinicalDataTable(AbstractModel):
             file=file,
             columns=self.schema.DISPLAY_COLUMNS)
 
+        id_column = self.clinical_data_df.columns[0]
+
         for i, row in df.iterrows():
 
-            already_exists = row[SAMPLE_ID] in self.clinical_data_df[SAMPLE_ID].values
+            already_exists = row[id_column] in self.clinical_data_df[id_column].values
             if already_exists:
                 continue
 
@@ -203,7 +205,18 @@ class ReadTable(AbstractModel):
         return self.df
 
     def read_file(self):
-        self.df = pd.read_excel(self.file) if self.file.endswith('.xlsx') else pd.read_csv(self.file)
+        if self.file.endswith('.xlsx'):
+            self.df = pd.read_excel(
+                self.file,
+                na_values=['', 'NA', 'NaN'],  # these values are considered as NaN
+                keep_default_na=False  # don't convert 'None' or other default NA values to NaN
+            )
+        else:  # assume csv
+            self.df = pd.read_csv(
+                self.file,
+                na_values=['', 'NA', 'NaN'],
+                keep_default_na=False
+            )
 
     def assert_columns(self):
         for c in self.columns:

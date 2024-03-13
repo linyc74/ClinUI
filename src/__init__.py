@@ -6,17 +6,23 @@ from .controller import Controller
 from .schema import DATA_SCHEMA_DICT
 
 
-__VERSION__ = 'v1.2.0-alpha.3'
+VERSION = 'v1.2.0-alpha.4'
+STARTING_MESSAGE = f'''\
+ClinUI {VERSION}
+College of Dentistry, National Yang Ming Chiao Tung University (NYCU), Taiwan
+Yu-Cheng Lin, DDS, MS, PhD (ylin@nycu.edu.tw)
+'''
 
 
 class Main:
 
-    APP_ID = f'NYCU.Dentistry.ClinUI.{__VERSION__}'
+    APP_ID = f'NYCU.Dentistry.ClinUI.{VERSION}'
 
     schema_name: str
 
     def main(self):
         app = QApplication(sys.argv)
+        print(STARTING_MESSAGE, flush=True)
         self.select_data_schema()
         self.run_app()
         sys.exit(app.exec_())

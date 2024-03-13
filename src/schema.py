@@ -3,6 +3,7 @@ from .columns import *
 
 
 NYCU_OSCC = 'NYCU OSCC'
+TPVGH_LUAD = 'TPVGH LUAD'
 TPVGH_HNSCC = 'TPVGH HNSCC'
 
 
@@ -137,28 +138,28 @@ class NycuOsccSchema(Schema):
 
     COLUMN_ATTRIBUTES = {
         SAMPLE_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['000-00000-0000-E-X00-00'],
         },
         MEDICAL_RECORD_ID: {
-            'type': 'string',
+            'type': 'str',
         },
         PATHOLOGICAL_RECORD_ID: {
-            'type': 'string',
+            'type': 'str',
         },
         PATIENT_NAME: {
-            'type': 'string',
+            'type': 'str',
         },
         LAB_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['XXX_LAB'],
         },
         LAB_SAMPLE_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['VGH_001_T', 'NYCUH_001_T'],
         },
         PATIENT_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['000-00000'],
         },
         SAMPLE_COLLECTION_DATE: {
@@ -166,7 +167,7 @@ class NycuOsccSchema(Schema):
             'options': ['2020-01-01'],
         },
         SEX: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Male', 'Female'],
         },
         PATIENT_WEIGHT: {
@@ -178,7 +179,7 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         ETHNICITY_CATEGORY: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Han', 'Aboriginal'],
         },
         BIRTH_DATE: {
@@ -197,31 +198,31 @@ class NycuOsccSchema(Schema):
             'type': 'float',
         },
         CANCER_TYPE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Head and Neck Cancer'],
         },
         CANCER_TYPE_DETAILED: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Oral Cavity Squamous Cell Carcinoma', 'Head and Neck Squamous Cell Carcinoma'],
         },
         SAMPLE_TYPE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Primary', 'Precancer', 'Recurrent'],
         },
         ONCOTREE_CODE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['OCSC', 'OPHSC'],
         },
         SOMATIC_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Matched Adjacent Normal', 'Matched Blood Normal', 'Tumor Only'],
         },
         CENTER: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Taipei Veterans General Hospital', 'National Yang Ming Chiao Tung University Hospital'],
         },
         TUMOR_DISEASE_ANATOMIC_SITE: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 'Retromolar Triangle',
                 'Right Tongue',
@@ -249,14 +250,14 @@ class NycuOsccSchema(Schema):
             ],
         },
         ICD_O_3_SITE_CODE: {
-            'type': 'string',
+            'type': 'str',
         },
         ALCOHOL_CONSUMPTION: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Current', 'Ex', 'Never'],
         },
         ALCOHOL_CONSUMPTION_FREQUENCY: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0.0', 'Occasional', 'Social'],
         },
         ALCOHOL_CONSUMPTION_DURATION: {
@@ -268,11 +269,11 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         BETEL_NUT_CHEWING: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Current', 'Ex', 'Never'],
         },
         BETEL_NUT_CHEWING_FREQUENCY: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0.0', 'Occasional', 'Social'],
         },
         BETEL_NUT_CHEWING_DURATION: {
@@ -284,7 +285,7 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         CIGARETTE_SMOKING: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Current', 'Ex', 'Never']
         },
         CIGARETTE_SMOKING_FREQUENCY: {
@@ -300,20 +301,20 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         HISTOLOGIC_GRADE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Well Differentiated', 'Moderately Differentiated', 'Poorly Differentiated',
                         'Undifferentated Anaplastic'],
         },
         SURGERY: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Wide Excision', 'Neck Dissection', 'Wide Excision and Neck Dissection'],
         },
         NEOADJUVANT_INDUCTION_CHEMOTHERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'Cisplatin',
@@ -326,11 +327,11 @@ class NycuOsccSchema(Schema):
             ],
         },
         ADJUVANT_CHEMOTHERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         ADJUVANT_CHEMOTHERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'Cisplatin',
@@ -343,11 +344,11 @@ class NycuOsccSchema(Schema):
             ],
         },
         PALLIATIVE_CHEMOTHERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         PALLIATIVE_CHEMOTHERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'Cisplatin',
@@ -360,11 +361,11 @@ class NycuOsccSchema(Schema):
             ],
         },
         ADJUVANT_TARGETED_THERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         ADJUVANT_TARGETED_THERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'Cetuximab',
@@ -372,11 +373,11 @@ class NycuOsccSchema(Schema):
             ],
         },
         PALLIATIVE_TARGETED_THERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         PALLIATIVE_TARGETED_THERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'Cetuximab',
@@ -384,15 +385,15 @@ class NycuOsccSchema(Schema):
             ],
         },
         IMMUNOTHERAPY: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         IMMUNOTHERAPY_DRUG: {
-            'type': 'string',
+            'type': 'str',
             'options': ['', 'Pembrolizumab', 'Nivolumab'],
         },
         RADIATION_THERAPY: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Definitive', 'Adjuvant', 'Palliative'],
         },
         RADIATION_THERAPY_DOSE: {
@@ -400,83 +401,83 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['> 50%', '< 50%'],
         },
         IHC_ANTI_PDL1_MAB_22C3_CPS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['> 50%', '< 50%'],
         },
         IHC_ANTI_PDL1_MAB_28_8_TPS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['> 50%', '< 50%'],
         },
         IHC_ANTI_PDL1_MAB_28_8_CPS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['> 50%', '< 50%'],
         },
         LYMPH_NODE_LEVEL_I: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_IA: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_IB: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_II: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_IIA: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_IIB: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_III: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_IV: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEVEL_V: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_RIGHT: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPH_NODE_LEFT: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         TOTAL_LYMPH_NODE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0/0', ''],
         },
         LYMPHOVASCULAR_INVASION: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         PERINEURAL_INVASION: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Negative', 'Positive', 'Extensive'],
         },
         CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
-            'type': 'boolean',
+            'type': 'bool',
             'options': [False, True],
         },
         PATHOLOGICAL_EXTRANODAL_EXTENSION: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Negative', 'Micro', 'Macro'],
         },
         DEPTH_OF_INVASION: {
@@ -484,11 +485,11 @@ class NycuOsccSchema(Schema):
             'options': [0.0],
         },
         TUMOR_MARGIN: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Negative (> 4mm)', 'Negative (> 4mm) with dysplasia', 'Close (≤ 4mm)', 'Close (≤ 4mm)  with dysplasia', 'Positive'],
         },
         CLINICAL_TNM: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 'T1N0M0',
                 'TisN0M0',
@@ -515,7 +516,7 @@ class NycuOsccSchema(Schema):
             ],
         },
         PATHOLOGICAL_TNM: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 'T1N0M0',
                 'TisN0M0',
@@ -542,7 +543,7 @@ class NycuOsccSchema(Schema):
             ],
         },
         POSTNEOADJUVANT_CLINICAL_TNM: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'T1N0M0',
@@ -570,7 +571,7 @@ class NycuOsccSchema(Schema):
             ],
         },
         POSTNEOADJUVANT_PATHOLOGICAL_TNM: {
-            'type': 'string',
+            'type': 'str',
             'options': [
                 '',
                 'T1N0M0',
@@ -598,14 +599,14 @@ class NycuOsccSchema(Schema):
             ],
         },
         NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Stage I', 'Stage II', 'Stage III', 'Stage IVA', 'Stage IVB', 'Stage IVC'],
         },
         ICD_10_CLASSIFICATION: {
-            'type': 'string',
+            'type': 'str',
         },
         SUBTYPE: {
-            'type': 'string',
+            'type': 'str',
             'options': ['HNSC HPV-', 'HNSC HPV+', ''],
         },
         INITIAL_TREATMENT_COMPLETION_DATE: {
@@ -625,29 +626,197 @@ class NycuOsccSchema(Schema):
             'options': ['', '2020-01-01'],
         },
         CAUSE_OF_DEATH: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Cancer', 'Other Disease', 'Other Cancer'],
         },
         DISEASE_FREE_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         DISEASE_FREE_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:DiseaseFree', '1:Recurred/Progressed'],
         },
         DISEASE_SPECIFIC_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         DISEASE_SPECIFIC_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:ALIVE OR DEAD TUMOR FREE', '1:DEAD WITH TUMOR'],
         },
         OVERALL_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         OVERALL_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:LIVING', '1:DECEASED'],
+        },
+    }
+
+
+class TpvghLuadSchema(Schema):
+
+    NAME = TPVGH_LUAD
+
+    DISPLAY_COLUMNS = [
+        SERIAL_NO,
+        GENDER,
+        BIRTHDATE,
+        AGE,
+        SMOKING,
+        SMOKING_AMOUNT_PPD,
+        SMOKING_YEARS,
+        QUIT_SMOKING_YEARS,
+        LUNG_CANCER_FAMILY_HISTORY,
+        NEOADJUVANT_THERAPY,
+        NEOADJUVANT_THERAPY_START_DATE,
+        NEOADJUVANT_THERAPY_END_DATE,
+        ADJUVANT_THERAPY,
+        ADJUVANT_THERAPY_START_DATE,
+        ADJUVANT_THERAPY_END_DATE,
+        LAST_F_U_DATE,
+        DFS,
+        DEATH,
+        DEATH_DATE,
+        OS,
+        HISTOLOGIC_TYPE,
+        SUBTYPE_FOR_INVASIVE_NONMUCINOUS_ADENOCARCINOMA,
+        HISTOLOGIC_GRADE,
+        SPREAD_THROUGH_AIR_SPACES,
+        VISCERAL_PLEURA_INVASION,
+        LYMPHOVASCULAR_INVASION,
+        PRIMARY_TUMOR,
+        REGIONAL_LYMPH_NODES,
+        DISTANT_METASTASIS,
+    ]
+
+    AUTOGENERATED_COLUMNS = []
+
+    COLUMN_ATTRIBUTES = {
+        SERIAL_NO: {
+            'type': 'str',
+            'options': ['C0000'],
+        },
+        GENDER: {
+            'type': 'str',
+            'options': ['F', 'M'],
+        },
+        BIRTHDATE: {
+            'type': 'datetime',
+            'options': ['1900-01-01'],
+        },
+        AGE: {
+            'type': 'int',
+        },
+        SMOKING: {
+            'type': 'int',
+            'options': [0, 1],
+        },
+        SMOKING_AMOUNT_PPD: {
+            'type': 'float',
+        },
+        SMOKING_YEARS: {
+            'type': 'float',
+        },
+        QUIT_SMOKING_YEARS: {
+            'type': 'float',
+        },
+        LUNG_CANCER_FAMILY_HISTORY: {
+            'type': 'str',
+            'options': ['None', 'Mother', 'Father'],
+        },
+        NEOADJUVANT_THERAPY: {
+            'type': 'str',
+            'options': [
+                '-',
+                'Tegafur',
+            ],
+        },
+        NEOADJUVANT_THERAPY_START_DATE: {
+            'type': 'datetime_list',
+            'options': ['', '2020-01-01'],
+        },
+        NEOADJUVANT_THERAPY_END_DATE: {
+            'type': 'datetime_list',
+            'options': ['', '2020-01-01'],
+        },
+        ADJUVANT_THERAPY: {
+            'type': 'str',
+            'options': [
+                '-',
+                'Tegafur',
+                'Tegafur, Erlotinib',
+                'Vinorelbine, Cisplatin'
+                'Vinorelbine, Cisplatin, Afatinib',
+                'Vinorelbine, Carboplatin',
+            ],
+        },
+        ADJUVANT_THERAPY_START_DATE: {
+            'type': 'datetime_list',
+            'options': ['', '2020-01-01'],
+        },
+        ADJUVANT_THERAPY_END_DATE: {
+            'type': 'datetime_list',
+            'options': ['', '2020-01-01'],
+        },
+        LAST_F_U_DATE: {
+            'type': 'str',
+            'options': ['2020-01-01'],
+        },
+        DFS: {
+            'type': 'float',
+        },
+        DEATH: {
+            'type': 'bool',
+            'options': [False, True],
+        },
+        DEATH_DATE: {
+            'type': 'datetime',
+            'options': ['', '2020-01-01'],
+        },
+        OS: {
+            'type': 'float',
+        },
+        HISTOLOGIC_TYPE: {
+            'type': 'str',
+            'options': [
+                'Invasive adenocarcinoma, nonmucinous',
+                'Invasive squamous cell carcinoma, non-keratinizing',
+                'Invasive squamous cell carcinoma, keratinizing',
+                'Minimally invasive adenocarcinoma, nonmucinous',
+                'Adenosquamous carcinoma',
+            ],
+        },
+        SUBTYPE_FOR_INVASIVE_NONMUCINOUS_ADENOCARCINOMA: {
+            'type': 'str',
+            'options': ['Acinar', 'Micropapillary', 'Lepidic', 'Solid', 'Papillary'],
+        },
+        HISTOLOGIC_GRADE: {
+            'type': 'str',
+            'options': ['G1: Well differentiated', 'G2: Moderately differentiated', 'G3: Poorly differentiated', 'Not applicable'],
+        },
+        SPREAD_THROUGH_AIR_SPACES: {
+            'type': 'str',
+            'options': ['Not identified', 'Present'],
+        },
+        VISCERAL_PLEURA_INVASION: {
+            'type': 'str',
+            'options': ['Not identified', 'Present (PL1)', 'Present (PL2)'],
+        },
+        LYMPHOVASCULAR_INVASION: {
+            'type': 'str',
+            'options': ['Not identified', 'Present'],
+        },
+        PRIMARY_TUMOR: {
+            'type': 'str',
+            'options': ['pT1mi', 'pT1a', 'pT1b', 'pT2a', 'pT2b', 'pT3'],
+        },
+        REGIONAL_LYMPH_NODES: {
+            'type': 'str',
+            'options': ['pN0', 'pN1', 'pN2', 'pNX'],
+        },
+        DISTANT_METASTASIS: {
+            'type': 'str',
+            'options': ['No distant metastasis in specimen examined'],
         },
     }
 
@@ -691,24 +860,24 @@ class TpvghHnsccSchema(Schema):
 
     COLUMN_ATTRIBUTES = {
         SAMPLE_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['000-00000-0000-E-X00-00'],
         },
         MEDICAL_RECORD_ID: {
-            'type': 'string',
+            'type': 'str',
         },
         PATHOLOGICAL_RECORD_ID: {
-            'type': 'string',
+            'type': 'str',
         },
         PATIENT_NAME: {
-            'type': 'string',
+            'type': 'str',
         },
         LAB_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['XXX_LAB'],
         },
         LAB_SAMPLE_ID: {
-            'type': 'string',
+            'type': 'str',
             'options': ['VGH_001_T', 'NYCUH_001_T'],
         },
         BIRTH_DATE: {
@@ -739,28 +908,28 @@ class TpvghHnsccSchema(Schema):
             'options': ['', '2020-01-01'],
         },
         CAUSE_OF_DEATH: {
-            'type': 'string',
+            'type': 'str',
             'options': ['Cancer', 'Other Disease', 'Other Cancer'],
         },
         DISEASE_FREE_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         DISEASE_FREE_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:DiseaseFree', '1:Recurred/Progressed'],
         },
         DISEASE_SPECIFIC_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         DISEASE_SPECIFIC_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:ALIVE OR DEAD TUMOR FREE', '1:DEAD WITH TUMOR'],
         },
         OVERALL_SURVIVAL_MONTHS: {
             'type': 'float',
         },
         OVERALL_SURVIVAL_STATUS: {
-            'type': 'string',
+            'type': 'str',
             'options': ['0:LIVING', '1:DECEASED'],
         },
     }
@@ -768,5 +937,6 @@ class TpvghHnsccSchema(Schema):
 
 DATA_SCHEMA_DICT: Dict[str, Type[Schema]] = {
     NYCU_OSCC: NycuOsccSchema,
+    TPVGH_LUAD: TpvghLuadSchema,
     TPVGH_HNSCC: TpvghHnsccSchema,
 }
