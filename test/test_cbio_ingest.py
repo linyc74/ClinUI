@@ -41,6 +41,35 @@ class TestcBioIngest(TestCase):
             with self.subTest(file=file):
                 self.assertTrue(exists(f'{self.outdir}/{file}'))
 
+    def test_luad(self):
+        cBioIngest(self.settings).main(
+            study_info_dict={
+                'type_of_cancer': 'luad',
+                'cancer_study_identifier': 'tpvgh_luad_2024',
+                'name': 'Lung Adenocarcinoma (TPVGH, 2024)',
+                'description': 'Whole exome sequencing of LUAD tumor/normal pairs',
+                'groups': 'PUBLIC',
+                'reference_genome': 'hg38',
+            },
+            clinical_data_df=pd.read_csv(f'{self.indir}/luad_clinical_data.csv'),
+            maf_dir=f'{self.indir}/maf_dir',
+            tags_dict={'key': 'val'},
+        )
+        # for file in [
+        #     'case_lists/cases_all.txt',
+        #     'case_lists/cases_sequenced.txt',
+        #     'data_clinical_patient.txt',
+        #     'data_clinical_sample.txt',
+        #     'data_mutations_extended.txt',
+        #     'meta_clinical_patient.txt',
+        #     'meta_clinical_sample.txt',
+        #     'meta_mutations_extended.txt',
+        #     'meta_study.txt',
+        #     'tags.json',
+        # ]:
+        #     with self.subTest(file=file):
+        #         self.assertTrue(exists(f'{self.outdir}/{file}'))
+
     def test_empty_clinical_data(self):
         cBioIngest(self.settings).main(
             study_info_dict={

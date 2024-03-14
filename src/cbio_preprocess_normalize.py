@@ -66,7 +66,8 @@ class DropIdentifiableInformation(Processor):
     ]
 
     def main(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df.drop(columns=self.DROP_COLUMNS)
+        columns = [c for c in self.DROP_COLUMNS if c in df.columns]
+        return df.drop(columns=columns)
 
 
 class NormalizePatientSampleData(Processor):

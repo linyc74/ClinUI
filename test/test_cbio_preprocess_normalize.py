@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from src.columns import *
 from src.cbio_preprocess_normalize import PreprocessNormalize, delta_t
 from test.setup import TestCase
 
@@ -15,7 +16,8 @@ class TestPreprocessNormalize(TestCase):
     def test_main(self):
         patient_df, sample_df = PreprocessNormalize(self.settings).main(
             clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv'),
-            study_id='hnsc_nycu_2022'
+            study_id='hnsc_nycu_2022',
+
         )
         self.assertDataFrameEqual(
             pd.read_csv(f'{self.indir}/patient_df.csv'),
