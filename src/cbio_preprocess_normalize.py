@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from typing import Tuple, Union
-from .schema import *
 from .model_base import AbstractModel
 
 
@@ -24,7 +23,7 @@ class PreprocessNormalize(AbstractModel):
         return self.patient_df, self.sample_df
 
     def drop_identifiable_information(self):
-        self.df = DropIdentifiableInformation(self.schema).main(self.df)
+        self.df = self.df.drop(columns=self.schema.CBIO_DROP_COLUMNS)
 
     def normalize_patient_sample_data(self):
         self.patient_df, self.sample_df = NormalizePatientSampleData(self.schema).main(
@@ -49,58 +48,12 @@ def delta_t(
     return end - start
 
 
-class DropIdentifiableInformation(AbstractModel):
-
-    DROP_COLUMNS = [
-        MEDICAL_RECORD_ID,
-        PATHOLOGICAL_RECORD_ID,
-        PATIENT_NAME,
-        LAB_SAMPLE_ID,
-        BIRTH_DATE,
-        CLINICAL_DIAGNOSIS_DATE,
-        PATHOLOGICAL_DIAGNOSIS_DATE,
-        INITIAL_TREATMENT_COMPLETION_DATE,
-        LAST_FOLLOW_UP_DATE,
-        EXPIRE_DATE,
-        RECUR_DATE_AFTER_INITIAL_TREATMENT,
-    ]
-
-    def main(self, df: pd.DataFrame) -> pd.DataFrame:
-        columns = [c for c in self.DROP_COLUMNS if c in df.columns]
-        return df.drop(columns=columns)
-
-
 class NormalizePatientSampleData(AbstractModel):
-
-    PATIENT_LEVEL_COLUMNS = [
-        SEX,
-        PATIENT_WEIGHT,
-        PATIENT_HEIGHT,
-        ETHNICITY_CATEGORY,
-        ALCOHOL_CONSUMPTION,
-        ALCOHOL_CONSUMPTION_FREQUENCY,
-        ALCOHOL_CONSUMPTION_DURATION,
-        ALCOHOL_CONSUMPTION_QUIT,
-        BETEL_NUT_CHEWING,
-        BETEL_NUT_CHEWING_FREQUENCY,
-        BETEL_NUT_CHEWING_DURATION,
-        BETEL_NUT_CHEWING_QUIT,
-        CIGARETTE_SMOKING,
-        CIGARETTE_SMOKING_FREQUENCY,
-        CIGARETTE_SMOKING_DURATION,
-        CIGARETTE_SMOKING_QUIT,
-        CAUSE_OF_DEATH,
-        DISEASE_FREE_SURVIVAL_MONTHS,
-        DISEASE_FREE_SURVIVAL_STATUS,
-        DISEASE_SPECIFIC_SURVIVAL_MONTHS,
-        DISEASE_SPECIFIC_SURVIVAL_STATUS,
-        OVERALL_SURVIVAL_MONTHS,
-        OVERALL_SURVIVAL_STATUS,
-    ]
 
     df: pd.DataFrame
     study_id: str
 
+    index_column: str
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
 
@@ -108,28 +61,29 @@ class NormalizePatientSampleData(AbstractModel):
         self.df = df
         self.study_id = study_id
 
+        self.index_column = self.df.columns[0]
         self.extract_patient_data()
         self.extract_sample_data()
 
         return self.patient_df, self.sample_df
 
     def extract_patient_data(self):
-        columns = [SAMPLE_ID] + self.PATIENT_LEVEL_COLUMNS
+        columns = [self.index_column] + self.schema.CBIO_PATIENT_LEVEL_COLUMNS
         df = self.df[columns].copy()
         df = df.rename(
-            columns={SAMPLE_ID: PATIENT_ID}
+            columns={self.index_column: 'Patient ID'}
         )
         self.patient_df = df
 
     def extract_sample_data(self):
         columns = [
-            c for c in self.df.columns if c not in self.PATIENT_LEVEL_COLUMNS
+            c for c in self.df.columns if c not in self.schema.CBIO_PATIENT_LEVEL_COLUMNS
         ]
 
         df = self.df[columns].copy()
 
-        df[STUDY_ID] = self.study_id  # add Study ID column
-        df[PATIENT_ID] = df[SAMPLE_ID]  # add Patient ID column, Patient ID = Sample ID
+        df['Study ID'] = self.study_id
+        df['Patient ID'] = df[self.index_column]  # add Patient ID column, Patient ID is the sample index column
 
         # re-order columns
         columns = df.columns.to_list()
