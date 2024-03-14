@@ -53,7 +53,6 @@ class NormalizePatientSampleData(AbstractModel):
     df: pd.DataFrame
     study_id: str
 
-    index_column: str
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
 
@@ -61,33 +60,29 @@ class NormalizePatientSampleData(AbstractModel):
         self.df = df
         self.study_id = study_id
 
-        self.index_column = self.df.columns[0]
+        self.rename_and_add_columns()
         self.extract_patient_data()
         self.extract_sample_data()
 
         return self.patient_df, self.sample_df
 
+    def rename_and_add_columns(self):
+        self.df = self.df.rename(columns={self.df.columns[0]: 'Sample ID'})  # cBioPortal requires it to be 'Sample ID'
+
+        self.df['Study ID'] = self.study_id
+        self.df['Patient ID'] = self.df['Sample ID']
+
+        columns = self.df.columns.to_list()
+        reordered = columns[-2:] + columns[:-2]  # move the last two columns 'Study ID' and 'Patient ID' to the front
+        self.df = self.df[reordered]
+
     def extract_patient_data(self):
-        columns = [self.index_column] + self.schema.CBIO_PATIENT_LEVEL_COLUMNS
+        columns = ['Patient ID'] + self.schema.CBIO_PATIENT_LEVEL_COLUMNS
         df = self.df[columns].copy()
-        df = df.rename(
-            columns={self.index_column: 'Patient ID'}
-        )
         self.patient_df = df
 
     def extract_sample_data(self):
         columns = [
             c for c in self.df.columns if c not in self.schema.CBIO_PATIENT_LEVEL_COLUMNS
         ]
-
-        df = self.df[columns].copy()
-
-        df['Study ID'] = self.study_id
-        df['Patient ID'] = df[self.index_column]  # add Patient ID column, Patient ID is the sample index column
-
-        # re-order columns
-        columns = df.columns.to_list()
-        reordered = columns[-2:] + columns[:-2]
-        df = df[reordered]
-
-        self.sample_df = df
+        self.sample_df = self.df[columns].copy()

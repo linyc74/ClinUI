@@ -73,7 +73,7 @@ class BaseWriter(AbstractModel):
 
     def write_data_file_1st_2nd_lines(self):
         line = '#' + '\t'.join(self.df.columns) + '\n'
-        with open(f'{self.outdir}/{self.DATA_FNAME}', 'w') as fh:
+        with open(f'{self.outdir}/{self.DATA_FNAME}', 'w', encoding='UTF-8') as fh:
             for _ in range(2):
                 fh.write(line)
 

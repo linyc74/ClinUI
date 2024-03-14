@@ -2,7 +2,7 @@ import os.path
 import pandas as pd
 from typing import Dict, List
 from .model_base import AbstractModel
-from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
+from .schema import STUDY_IDENTIFIER_KEY
 
 
 class WriteMutationData(AbstractModel):
@@ -51,7 +51,8 @@ data_filename: {self.DATA_FNAME}'''
             fh.write(text)
 
     def set_mafs(self):
-        self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_df[SAMPLE_ID]]
+        sample_id_column = self.sample_df.columns[2]  # First 3 columns: 'Study ID', 'Patient ID', 'Sample ID'
+        self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_df[sample_id_column]]
 
     def read_first_maf(self):
         self.df = ReadAndProcessMaf(self.schema).main(maf=self.mafs[0])
