@@ -4,7 +4,6 @@ import unittest
 import pandas as pd
 from typing import Tuple
 from src.schema import NycuOsccSchema
-from src.cbio_base import Settings
 
 
 def get_dirs(py_path: str) -> Tuple[str, str]:
@@ -19,7 +18,6 @@ class TestCase(unittest.TestCase):
     def set_up(self, py_path: str):
         self.indir, self.outdir = get_dirs(py_path=py_path)
         os.makedirs(self.outdir, exist_ok=True)
-        self.settings = Settings(outdir=self.outdir, debug=True)
         self.schema = NycuOsccSchema
 
     def tear_down(self):

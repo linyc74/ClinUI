@@ -1,11 +1,11 @@
 import os.path
 import pandas as pd
 from typing import Dict, List
-from .cbio_base import Processor
+from .model_base import AbstractModel
 from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 
 
-class WriteMutationData(Processor):
+class WriteMutationData(AbstractModel):
 
     META_FNAME = 'meta_mutations_extended.txt'
     DATA_FNAME = 'data_mutations_extended.txt'
@@ -13,6 +13,7 @@ class WriteMutationData(Processor):
     maf_dir: str
     study_info_dict: Dict[str, str]
     sample_df: pd.DataFrame
+    outdir: str
 
     mafs: List[str]
     df: pd.DataFrame
@@ -21,11 +22,13 @@ class WriteMutationData(Processor):
             self,
             maf_dir: str,
             study_info_dict: Dict[str, str],
-            sample_df: pd.DataFrame):
+            sample_df: pd.DataFrame,
+            outdir: str):
 
         self.maf_dir = maf_dir
         self.study_info_dict = study_info_dict
         self.sample_df = sample_df
+        self.outdir = outdir
 
         self.write_meta_file()
         self.set_mafs()
@@ -51,18 +54,18 @@ data_filename: {self.DATA_FNAME}'''
         self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_df[SAMPLE_ID]]
 
     def read_first_maf(self):
-        self.df = ReadAndProcessMaf(self.settings).main(maf=self.mafs[0])
+        self.df = ReadAndProcessMaf(self.schema).main(maf=self.mafs[0])
 
     def read_the_rest_mafs(self):
         for maf in self.mafs[1:]:
-            df = ReadAndProcessMaf(self.settings).main(maf=maf)
+            df = ReadAndProcessMaf(self.schema).main(maf=maf)
             self.df = pd.concat([self.df, df], ignore_index=True)
 
     def write_data_file(self):
         self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', sep='\t', index=False)
 
 
-class ReadAndProcessMaf(Processor):
+class ReadAndProcessMaf(AbstractModel):
     """
     https://docs.cbioportal.org/file-formats/#mutation-data
     """
@@ -123,7 +126,7 @@ class ReadAndProcessMaf(Processor):
 
     def main(self, maf: str) -> pd.DataFrame:
         self.maf = maf
-        self.logger.info(f'Processing {self.maf}')
+        print(f'Processing {self.maf}', flush=True)
         self.read_maf()
         self.set_tumor_sample_id()
         return self.df

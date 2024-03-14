@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Union
 from .schema import *
-from .cbio_base import Processor
+from .model_base import AbstractModel
 
 
-class PreprocessNormalize(Processor):
+class PreprocessNormalize(AbstractModel):
 
     df: pd.DataFrame
     study_id: str
@@ -24,10 +24,10 @@ class PreprocessNormalize(Processor):
         return self.patient_df, self.sample_df
 
     def drop_identifiable_information(self):
-        self.df = DropIdentifiableInformation(self.settings).main(self.df)
+        self.df = DropIdentifiableInformation(self.schema).main(self.df)
 
     def normalize_patient_sample_data(self):
-        self.patient_df, self.sample_df = NormalizePatientSampleData(self.settings).main(
+        self.patient_df, self.sample_df = NormalizePatientSampleData(self.schema).main(
             df=self.df,
             study_id=self.study_id)
 
@@ -49,7 +49,7 @@ def delta_t(
     return end - start
 
 
-class DropIdentifiableInformation(Processor):
+class DropIdentifiableInformation(AbstractModel):
 
     DROP_COLUMNS = [
         MEDICAL_RECORD_ID,
@@ -70,7 +70,7 @@ class DropIdentifiableInformation(Processor):
         return df.drop(columns=columns)
 
 
-class NormalizePatientSampleData(Processor):
+class NormalizePatientSampleData(AbstractModel):
 
     PATIENT_LEVEL_COLUMNS = [
         SEX,

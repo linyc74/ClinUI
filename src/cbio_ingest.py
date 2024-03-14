@@ -2,19 +2,20 @@ import json
 import os.path
 import pandas as pd
 from typing import Dict, List, Optional
-from .cbio_base import Processor
+from .model_base import AbstractModel
+from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 from .cbio_write_clinical_data import WriteClinicalData
 from .cbio_write_mutation_data import WriteMutationData
-from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 from .cbio_preprocess_normalize import PreprocessNormalize
 
 
-class cBioIngest(Processor):
+class cBioIngest(AbstractModel):
 
     clinical_data_df: pd.DataFrame
     maf_dir: str
     study_info_dict: Dict[str, str]
     tags_dict: Optional[Dict[str, str]]
+    outdir: str
 
     patient_df: pd.DataFrame
     sample_df: pd.DataFrame
@@ -24,12 +25,14 @@ class cBioIngest(Processor):
             clinical_data_df: pd.DataFrame,
             maf_dir: str,
             study_info_dict: Dict[str, str],
-            tags_dict: Optional[Dict[str, str]]):
+            tags_dict: Optional[Dict[str, str]],
+            outdir: str):
 
         self.clinical_data_df = clinical_data_df
         self.maf_dir = maf_dir
         self.study_info_dict = study_info_dict
         self.tags_dict = tags_dict
+        self.outdir = outdir
 
         self.write_study_info()
         self.preprocess_normalize()
@@ -38,49 +41,56 @@ class cBioIngest(Processor):
         self.create_case_lists()
 
     def write_study_info(self):
-        WriteStudyInfo(self.settings).main(
+        WriteStudyInfo(self.schema).main(
             study_info_dict=self.study_info_dict,
-            tags_dict=self.tags_dict)
+            tags_dict=self.tags_dict,
+            outdir=self.outdir)
 
     def preprocess_normalize(self):
-        self.patient_df, self.sample_df = PreprocessNormalize(self.settings).main(
+        self.patient_df, self.sample_df = PreprocessNormalize(self.schema).main(
             clinical_data_df=self.clinical_data_df,
             study_id=self.study_info_dict[STUDY_IDENTIFIER_KEY]
         )
 
     def write_clinical_data(self):
-        WriteClinicalData(self.settings).main(
+        WriteClinicalData(self.schema).main(
             study_info_dict=self.study_info_dict,
             patient_df=self.patient_df,
-            sample_df=self.sample_df)
+            sample_df=self.sample_df,
+            outdir=self.outdir)
 
     def write_mutation_data(self):
-        WriteMutationData(self.settings).main(
+        WriteMutationData(self.schema).main(
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
-            sample_df=self.sample_df)
+            sample_df=self.sample_df,
+            outdir=self.outdir)
 
     def create_case_lists(self):
-        CreateCaseLists(self.settings).main(
+        CreateCaseLists(self.schema).main(
             study_info_dict=self.study_info_dict,
-            sample_df=self.sample_df)
+            sample_df=self.sample_df,
+            outdir=self.outdir)
 
 
-class WriteStudyInfo(Processor):
+class WriteStudyInfo(AbstractModel):
 
     META_STUDY_TXT_FILENAME = 'meta_study.txt'
     TAGS_JSON_FILENAME = 'tags.json'
 
     study_info_dict: Dict[str, str]
     tags_dict: Optional[Dict[str, str]]
+    outdir: str
 
     def main(
             self,
             study_info_dict: Dict[str, str],
-            tags_dict: Optional[Dict[str, str]]):
+            tags_dict: Optional[Dict[str, str]],
+            outdir: str):
 
         self.study_info_dict = study_info_dict
         self.tags_dict = tags_dict
+        self.outdir = outdir
 
         self.write_meta_study_txt()
         self.write_tags_json()
@@ -99,7 +109,7 @@ class WriteStudyInfo(Processor):
             json.dump(self.tags_dict, fh, indent=4)
 
 
-class CreateCaseLists(Processor):
+class CreateCaseLists(AbstractModel):
 
     CASE_DIRNAME = 'case_lists'
     ALL_TXT = 'cases_all.txt'
@@ -107,6 +117,7 @@ class CreateCaseLists(Processor):
 
     study_info_dict: Dict[str, str]
     sample_df: pd.DataFrame
+    outdir: str
 
     case_dir: str
     sample_ids: List[str]
@@ -114,10 +125,12 @@ class CreateCaseLists(Processor):
     def main(
             self,
             study_info_dict: Dict[str, str],
-            sample_df: pd.DataFrame):
+            sample_df: pd.DataFrame,
+            outdir: str):
 
         self.study_info_dict = study_info_dict
         self.sample_df = sample_df
+        self.outdir = outdir
 
         self.make_case_dir()
         self.set_sample_ids()

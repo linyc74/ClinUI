@@ -19,12 +19,13 @@ class TestWriteClinicalData(TestCase):
             'description': 'Whole exome sequencing of 11 precancer and OSCC tumor/normal pairs',
             'groups': 'PUBLIC',
             'reference_genome': 'hg38',
-            'tags_file': 'tags.json'
+            'tags_file': 'tags.json',
         }
-        WriteClinicalData(self.settings).main(
+        WriteClinicalData(self.schema).main(
             study_info_dict=study_info_dict,
             patient_df=pd.read_csv(f'{self.indir}/patient_df.csv'),
             sample_df=pd.read_csv(f'{self.indir}/sample_df.csv'),
+            outdir=self.outdir
         )
 
     def test_empty_patient_data(self):
@@ -37,8 +38,9 @@ class TestWriteClinicalData(TestCase):
             'reference_genome': 'hg38',
             'tags_file': 'tags.json'
         }
-        WriteClinicalData(self.settings).main(
+        WriteClinicalData(self.schema).main(
             study_info_dict=study_info_dict,
             patient_df=pd.read_csv(f'{self.indir}/empty_patient_df.csv'),
             sample_df=pd.read_csv(f'{self.indir}/sample_df.csv'),
+            outdir=self.outdir
         )

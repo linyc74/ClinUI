@@ -4,7 +4,6 @@ from os.path import basename
 from typing import List, Optional, Dict, Any, Union, Tuple, Type
 from .columns import *
 from .schema import Schema
-from .cbio_base import Settings
 from .cbio_ingest import cBioIngest
 from .model_base import AbstractModel
 from .model_calculate import ProcessAttributes
@@ -98,12 +97,12 @@ class Model(AbstractModel):
             tags_dict: Dict[str, str],
             dstdir: str):
 
-        ExportCbioportalStudy().main(
+        ExportCbioportalStudy(self.schema).main(
             clinical_data_df=self.dataframe,
             maf_dir=maf_dir,
             study_info_dict=study_info_dict,
             tags_dict=tags_dict,
-            dstdir=dstdir)
+            outdir=dstdir)
 
 
 class ImportClinicalDataTable(AbstractModel):
@@ -219,15 +218,13 @@ class ReadTable(AbstractModel):
             assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
 
 
-class ExportCbioportalStudy:
+class ExportCbioportalStudy(AbstractModel):
 
     clinical_data_df: pd.DataFrame
     maf_dir: str
     study_info_dict: Dict[str, str]
     tags_dict: Dict[str, str]
-    dstdir: str
-
-    settings: Settings
+    outdir: str
 
     def main(
             self,
@@ -235,27 +232,27 @@ class ExportCbioportalStudy:
             maf_dir: str,
             study_info_dict: Dict[str, str],
             tags_dict: Dict[str, str],
-            dstdir: str):
+            outdir: str):
 
         self.clinical_data_df = clinical_data_df
         self.maf_dir = maf_dir
         self.study_info_dict = study_info_dict
         self.tags_dict = tags_dict
-        self.dstdir = dstdir
+        self.outdir = outdir
 
-        self.set_settings()
+        self.make_outdir()
         self.run_cbio_ingest()
 
-    def set_settings(self):
-        os.makedirs(self.dstdir, exist_ok=True)
-        self.settings = Settings(outdir=self.dstdir, debug=False)
+    def make_outdir(self):
+        os.makedirs(self.outdir, exist_ok=True)
 
     def run_cbio_ingest(self):
-        cBioIngest(self.settings).main(
+        cBioIngest(self.schema).main(
             clinical_data_df=self.clinical_data_df,
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
-            tags_dict=self.tags_dict)
+            tags_dict=self.tags_dict,
+            outdir=self.dstdir)
 
 
 def append(

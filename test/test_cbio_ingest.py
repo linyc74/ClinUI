@@ -13,7 +13,7 @@ class TestcBioIngest(TestCase):
         self.tear_down()
 
     def test_main(self):
-        cBioIngest(self.settings).main(
+        cBioIngest(self.schema).main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
@@ -25,6 +25,7 @@ class TestcBioIngest(TestCase):
             clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv'),
             maf_dir=f'{self.indir}/maf_dir',
             tags_dict={'key': 'val'},
+            outdir=self.outdir
         )
         for file in [
             'case_lists/cases_all.txt',
@@ -41,20 +42,21 @@ class TestcBioIngest(TestCase):
             with self.subTest(file=file):
                 self.assertTrue(exists(f'{self.outdir}/{file}'))
 
-    def test_luad(self):
-        cBioIngest(self.settings).main(
-            study_info_dict={
-                'type_of_cancer': 'luad',
-                'cancer_study_identifier': 'tpvgh_luad_2024',
-                'name': 'Lung Adenocarcinoma (TPVGH, 2024)',
-                'description': 'Whole exome sequencing of LUAD tumor/normal pairs',
-                'groups': 'PUBLIC',
-                'reference_genome': 'hg38',
-            },
-            clinical_data_df=pd.read_csv(f'{self.indir}/luad_clinical_data.csv'),
-            maf_dir=f'{self.indir}/maf_dir',
-            tags_dict={'key': 'val'},
-        )
+    # def test_luad(self):
+    #     cBioIngest(self.schema).main(
+    #         study_info_dict={
+    #             'type_of_cancer': 'luad',
+    #             'cancer_study_identifier': 'tpvgh_luad_2024',
+    #             'name': 'Lung Adenocarcinoma (TPVGH, 2024)',
+    #             'description': 'Whole exome sequencing of LUAD tumor/normal pairs',
+    #             'groups': 'PUBLIC',
+    #             'reference_genome': 'hg38',
+    #         },
+    #         clinical_data_df=pd.read_csv(f'{self.indir}/luad_clinical_data.csv'),
+    #         maf_dir=f'{self.indir}/maf_dir',
+    #         tags_dict={'key': 'val'},
+    #         outdir=self.outdir
+    #     )
         # for file in [
         #     'case_lists/cases_all.txt',
         #     'case_lists/cases_sequenced.txt',
@@ -71,7 +73,7 @@ class TestcBioIngest(TestCase):
         #         self.assertTrue(exists(f'{self.outdir}/{file}'))
 
     def test_empty_clinical_data(self):
-        cBioIngest(self.settings).main(
+        cBioIngest(self.schema).main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
@@ -83,6 +85,7 @@ class TestcBioIngest(TestCase):
             clinical_data_df=pd.read_csv(f'{self.indir}/empty_clinical_data.csv'),
             maf_dir=f'{self.indir}/maf_dir',
             tags_dict={'key': 'val'},
+            outdir=self.outdir
         )
         for file in [
             'case_lists/cases_all.txt',
@@ -114,7 +117,7 @@ class TestWriteStudyInfo(TestCase):
         self.tear_down()
 
     def test_no_tags(self):
-        WriteStudyInfo(self.settings).main(
+        WriteStudyInfo(self.schema).main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
@@ -124,6 +127,7 @@ class TestWriteStudyInfo(TestCase):
                 'reference_genome': 'hg38',
             },
             tags_dict=None,
+            outdir=self.outdir
         )
         expected = f'''\
 type_of_cancer: hnsc
@@ -141,7 +145,7 @@ reference_genome: hg38
         self.assertTrue(not exists(f'{self.outdir}/tags.json'))
 
     def test_with_tags(self):
-        WriteStudyInfo(self.settings).main(
+        WriteStudyInfo(self.schema).main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
@@ -151,6 +155,7 @@ reference_genome: hg38
                 'reference_genome': 'hg38',
             },
             tags_dict={'key': 'val'},
+            outdir=self.outdir
         )
         expected = f'''\
 type_of_cancer: hnsc

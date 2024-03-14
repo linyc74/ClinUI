@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from src.columns import *
 from src.cbio_preprocess_normalize import PreprocessNormalize, delta_t
 from test.setup import TestCase
 
@@ -14,7 +13,7 @@ class TestPreprocessNormalize(TestCase):
         self.tear_down()
 
     def test_main(self):
-        patient_df, sample_df = PreprocessNormalize(self.settings).main(
+        patient_df, sample_df = PreprocessNormalize(self.schema).main(
             clinical_data_df=pd.read_csv(f'{self.indir}/clinical_data.csv'),
             study_id='hnsc_nycu_2022',
 

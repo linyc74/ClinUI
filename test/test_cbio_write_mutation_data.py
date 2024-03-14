@@ -12,7 +12,7 @@ class TestWriteClinicalData(TestCase):
         self.tear_down()
 
     def test_main(self):
-        WriteMutationData(self.settings).main(
+        WriteMutationData(self.schema).main(
             maf_dir=f'{self.indir}/maf_dir',
             study_info_dict={
                 'type_of_cancer': 'hnsc',
@@ -23,5 +23,6 @@ class TestWriteClinicalData(TestCase):
                 'reference_genome': 'hg38',
                 'tags_file': 'tags.json'
             },
-            sample_df=pd.read_csv(f'{self.indir}/sample_df.csv')
+            sample_df=pd.read_csv(f'{self.indir}/sample_df.csv'),
+            outdir=self.outdir
         )
