@@ -95,14 +95,14 @@ class Model(AbstractModel):
             maf_dir: str,
             study_info_dict: Dict[str, str],
             tags_dict: Dict[str, str],
-            dstdir: str):
+            outdir: str):
 
         ExportCbioportalStudy(self.schema).main(
             clinical_data_df=self.dataframe,
             maf_dir=maf_dir,
             study_info_dict=study_info_dict,
             tags_dict=tags_dict,
-            outdir=dstdir)
+            outdir=outdir)
 
 
 class ImportClinicalDataTable(AbstractModel):
@@ -252,7 +252,7 @@ class ExportCbioportalStudy(AbstractModel):
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
             tags_dict=self.tags_dict,
-            outdir=self.dstdir)
+            outdir=self.outdir)
 
 
 def append(

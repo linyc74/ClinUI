@@ -206,7 +206,7 @@ class ActionEditSample(Action):
 class ActionExportCbioportalStudy(Action):
 
     maf_dir: Optional[str]
-    dstdir: Optional[str]
+    outdir: Optional[str]
     project_info_dict: Optional[Dict[str, str]]
     study_info_dict: Dict[str, str]
     tags_dict: Optional[Dict[str, str]]
@@ -220,8 +220,8 @@ class ActionExportCbioportalStudy(Action):
         if self.project_info_dict is None:
             return
 
-        self.set_dstdir()
-        if self.dstdir is None:
+        self.set_outdir()
+        if self.outdir is None:
             return
 
         self.set_study_info_dict()
@@ -238,13 +238,13 @@ class ActionExportCbioportalStudy(Action):
     def set_project_info_dict(self):
         self.project_info_dict = self.view.dialog_project_info()
 
-    def set_dstdir(self):
+    def set_outdir(self):
         d = self.view.file_dialog_open_directory(caption='Select Destination Directory')
         study_id = self.project_info_dict[STUDY_IDENTIFIER_KEY]
         if d == '':
-            self.dstdir = None
+            self.outdir = None
         else:
-            self.dstdir = f'{d}/{study_id}'
+            self.outdir = f'{d}/{study_id}'
 
     def set_study_info_dict(self):
         self.study_info_dict = self.project_info_dict.copy()
@@ -263,8 +263,8 @@ class ActionExportCbioportalStudy(Action):
                 maf_dir=self.maf_dir,
                 study_info_dict=self.study_info_dict,
                 tags_dict=self.tags_dict,
-                dstdir=self.dstdir)
+                outdir=self.outdir)
             self.view.message_box_info(msg='Export cBioPortal study complete')
         except Exception as e:
-            shutil.rmtree(self.dstdir)
+            shutil.rmtree(self.outdir)
             self.view.message_box_error(msg=repr(e))
