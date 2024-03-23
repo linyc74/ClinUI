@@ -94,8 +94,6 @@ class ReadAndProcessMaf(AbstractModel):
         'Tumor_Validation_Allele2',
         'Match_Norm_Validation_Allele1',
         'Match_Norm_Validation_Allele2',
-        'Match_Norm_Validation_Allele1',
-        'Match_Norm_Validation_Allele2',
         'Verification_Status',
         'Validation_Status',
         'Mutation_Status',
@@ -111,7 +109,7 @@ class ReadAndProcessMaf(AbstractModel):
         'n_alt_count',
         'n_ref_count',
     ]
-    REQUIRED_COLUMNs = [
+    REQUIRED_COLUMN = [
         'Hugo_Symbol',
         'NCBI_Build',
         'Chromosome',
