@@ -419,20 +419,10 @@ class DialogEditSample(DialogComboBoxes):
 
 class DialogStudyInfo(DialogComboBoxes):
 
-    FIELD_TO_OPTIONS = {
-        'type_of_cancer': ['hnsc'],
-        'cancer_study_identifier': ['hnsc_nycu_2023'],
-        'name': ['Head and Neck Squamous Cell Carcinomas (NYCU, 2023)'],
-        'description': ['Whole exome sequencing of OSCC tumor/normal pairs'],
-        'groups': ['PUBLIC'],
-        'reference_genome': ['hg38', 'hg19'],
-        'source_data': ['yy_mmdd_dataset'],
-    }
-
     WIDTH, HEIGHT = 600, 300
 
     def init_field_to_options(self):
-        self.field_to_options = self.FIELD_TO_OPTIONS
+        self.field_to_options = self.view.model.schema.CBIO_STUDY_INFO_FIELD_TO_OPTIONS
 
     def __call__(self) -> Optional[Dict[str, str]]:
         self.set_combo_box_default_text()
