@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict, Any, Union
 from .columns import *
 from .model_base import AbstractModel
-from .schema import NYCU_OSCC, TPVGH_HNSCC, TPVGH_LUAD
+from .schema import NYCU_OSCC, VGHTPE_HNSCC, VGHTPE_LUAD
 
 
 class ProcessAttributes(AbstractModel):
@@ -13,10 +13,10 @@ class ProcessAttributes(AbstractModel):
         if self.schema.NAME == NYCU_OSCC:
             return ProcessAttributesNycuOscc(self.schema).main(attributes)
 
-        elif self.schema.NAME == TPVGH_HNSCC:
+        elif self.schema.NAME == VGHTPE_HNSCC:
             return ProcessAttributesTpvghHnscc(self.schema).main(attributes)
 
-        elif self.schema.NAME == TPVGH_LUAD:
+        elif self.schema.NAME == VGHTPE_LUAD:
             return ProcessAttributesTpvghLuad(self.schema).main(attributes)
 
         else:

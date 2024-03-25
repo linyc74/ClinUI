@@ -3,8 +3,8 @@ from .columns import *
 
 
 NYCU_OSCC = 'NYCU OSCC'
-TPVGH_LUAD = 'TPVGH LUAD'
-TPVGH_HNSCC = 'TPVGH HNSCC'
+VGHTPE_LUAD = 'VGHTPE LUAD'
+VGHTPE_HNSCC = 'VGHTPE HNSCC'
 
 
 class Schema:
@@ -709,9 +709,9 @@ class NycuOsccSchema(Schema):
     }
 
 
-class TpvghLuadSchema(Schema):
+class VghtpeLuadSchema(Schema):
 
-    NAME = TPVGH_LUAD
+    NAME = VGHTPE_LUAD
 
     DISPLAY_COLUMNS = [
         SERIAL_NO,
@@ -903,7 +903,7 @@ class TpvghLuadSchema(Schema):
 
     CBIO_STUDY_INFO_FIELD_TO_OPTIONS = {
         'type_of_cancer': ['luad'],
-        'cancer_study_identifier': ['luad_tpvgh_2024'],
+        'cancer_study_identifier': ['luad_vghtpe_2024'],
         'name': ['Lung Adenocarcinoma (TPVGH, 2024)'],
         'description': ['Whole exome sequencing of LUAD tumor/normal pairs'],
         'groups': ['PUBLIC'],
@@ -912,9 +912,9 @@ class TpvghLuadSchema(Schema):
     }
 
 
-class TpvghHnsccSchema(Schema):
+class VghtpeHnsccSchema(Schema):
 
-    NAME = TPVGH_HNSCC
+    NAME = VGHTPE_HNSCC
 
     DISPLAY_COLUMNS = [
         SAMPLE_ID,
@@ -1057,7 +1057,7 @@ class TpvghHnsccSchema(Schema):
 
     CBIO_STUDY_INFO_FIELD_TO_OPTIONS = {
         'type_of_cancer': ['hnsc'],
-        'cancer_study_identifier': ['hnsc_tpvgh_2024'],
+        'cancer_study_identifier': ['hnsc_vghtpe_2024'],
         'name': ['Head and Neck Squamous Cell Carcinomas (TPVGH, 2024)'],
         'description': ['Whole exome sequencing of HNSC tumor/normal pairs'],
         'groups': ['PUBLIC'],
@@ -1068,6 +1068,6 @@ class TpvghHnsccSchema(Schema):
 
 DATA_SCHEMA_DICT: Dict[str, Type[Schema]] = {
     NYCU_OSCC: NycuOsccSchema,
-    TPVGH_LUAD: TpvghLuadSchema,
-    TPVGH_HNSCC: TpvghHnsccSchema,
+    VGHTPE_LUAD: VghtpeLuadSchema,
+    VGHTPE_HNSCC: VghtpeHnsccSchema,
 }

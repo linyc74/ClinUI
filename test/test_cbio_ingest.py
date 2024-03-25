@@ -1,6 +1,6 @@
 import pandas as pd
 from os.path import exists
-from src.schema import TpvghLuadSchema
+from src.schema import VghtpeLuadSchema
 from src.cbio_ingest import cBioIngest, WriteStudyInfo
 from .setup import TestCase
 
@@ -44,10 +44,10 @@ class TestcBioIngest(TestCase):
                 self.assertTrue(exists(f'{self.outdir}/{file}'))
 
     def test_luad(self):
-        cBioIngest(TpvghLuadSchema).main(
+        cBioIngest(VghtpeLuadSchema).main(
             study_info_dict={
                 'type_of_cancer': 'luad',
-                'cancer_study_identifier': 'tpvgh_luad_2024',
+                'cancer_study_identifier': 'vghtpe_luad_2024',
                 'name': 'Lung Adenocarcinoma (TPVGH, 2024)',
                 'description': 'Whole exome sequencing of LUAD tumor/normal pairs',
                 'groups': 'PUBLIC',
