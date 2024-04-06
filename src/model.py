@@ -203,13 +203,13 @@ class ReadTable(AbstractModel):
         if self.file.endswith('.xlsx'):
             self.df = pd.read_excel(
                 self.file,
-                na_values=['', 'NA', 'NaN'],  # these values are considered as NaN
+                na_values=['', 'NaN'],  # these values are considered as NaN
                 keep_default_na=False  # don't convert 'None' or other default NA values to NaN
             )
         else:  # assume csv
             self.df = pd.read_csv(
                 self.file,
-                na_values=['', 'NA', 'NaN'],
+                na_values=['', 'NaN'],
                 keep_default_na=False
             )
 

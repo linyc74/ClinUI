@@ -215,13 +215,15 @@ class GetDataTypes(AbstractModel):
 
         self.datatypes = []
         for c in self.columns:
-            dtype = 'STRING'
-            if c in self.BOOLEAN_COLUMNS:
+            ty = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', 'str')  # default is 'str'
+
+            if ty == 'bool':
                 dtype = 'BOOLEAN'
-            for k in self.KEYWORDS_FOR_NUMBER_DATATYPE:
-                if k in c:
-                    dtype = 'NUMBER'
-                    break
+            elif ty == 'int' or ty == 'float':
+                dtype = 'NUMBER'
+            else:
+                dtype = 'STRING'  # default
+
             self.datatypes.append(dtype)
 
         return self.datatypes

@@ -14,6 +14,8 @@ class TestModel(TestCase):
     def test_read_clinical_data_table(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
+        # Do not auto-detect 'NA' as NaN, 'NA' should remain as string
+        self.assertEqual('NA', model.dataframe.loc[0, 'Medical Record ID'])
 
     def test_wrong_clinical_data_table(self):
         model = Model(NycuOsccSchema)
