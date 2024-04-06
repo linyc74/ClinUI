@@ -192,20 +192,6 @@ class FillInMissingBooleanValues(AbstractModel):
 
 class GetDataTypes(AbstractModel):
 
-    BOOLEAN_COLUMNS = [
-        'Neoadjuvant/Induction Chemotherapy',
-        'Adjuvant Chemotherapy',
-        'Palliative Chemotherapy',
-        'Adjuvant Targeted Therapy',
-        'Palliative Targeted Therapy',
-        'Immunotherapy',
-        'Lymphovascular Invasion (LVI)',
-        'Clinical Overt Extranodal Extension',
-    ]
-    KEYWORDS_FOR_NUMBER_DATATYPE = [
-        '(Kg)', '(mm)', '(Years)', '(Months)', 'Frequency',
-    ]
-
     columns: List[str]
 
     datatypes: List[str]
@@ -232,8 +218,8 @@ class GetDataTypes(AbstractModel):
 class FormatClinicalData(AbstractModel):
 
     RENAME_COLUMN_DICT = {
-        'DISEASE_FREE_SURVIVAL_MONTHS': 'DFS_MONTHS',
-        'DISEASE_FREE_SURVIVAL_STATUS': 'DFS_STATUS',
+        'DISEASE_FREE_MONTHS': 'DF_MONTHS',
+        'DISEASE_FREE_STATUS': 'DF_STATUS',
         'DISEASE_SPECIFIC_SURVIVAL_MONTHS': 'DSS_MONTHS',
         'DISEASE_SPECIFIC_SURVIVAL_STATUS': 'DSS_STATUS',
         'OVERALL_SURVIVAL_MONTHS': 'OS_MONTHS',
