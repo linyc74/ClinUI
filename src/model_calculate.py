@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict, Any, Union
 from .columns import *
 from .model_base import AbstractModel
-from .schema import NYCU_OSCC, VGHTPE_LUAD
+from .schema import NYCU_OSCC, VGHTPE_LUAD, VGHTPE_HNSCC
 
 
 class ProcessAttributes(AbstractModel):
@@ -15,6 +15,9 @@ class ProcessAttributes(AbstractModel):
 
         elif self.schema.NAME == VGHTPE_LUAD:
             return ProcessAttributesVghtpeLuad(self.schema).main(attributes)
+
+        elif self.schema.NAME == VGHTPE_HNSCC:
+            return ProcessAttributesVghtpeHnscc(self.schema).main(attributes)
 
         else:
             raise ValueError(f'Invalid schema name: "{self.schema.NAME}"')
@@ -35,6 +38,15 @@ class ProcessAttributesNycuOscc(AbstractModel):
 
 
 class ProcessAttributesVghtpeLuad(AbstractModel):
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        attributes = CastDatatypes(self.schema).main(attributes)
+
+        return attributes
+
+
+class ProcessAttributesVghtpeHnscc(AbstractModel):
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
 

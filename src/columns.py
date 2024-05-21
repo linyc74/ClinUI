@@ -118,3 +118,18 @@ LYMPHOVASCULAR_INVASION = 'Lymphovascular Invasion'
 PRIMARY_TUMOR_PT = 'Primary Tumor (pT)'
 REGIONAL_LYMPH_NODES_PN = 'Regional Lymph Nodes (pN)'
 DISTANT_METASTASIS_PM = 'Distant Metastasis (pM)'
+
+
+# VGHTPE HNSCC
+STUDY_NUM = 'Study_num'
+T = 'T'
+N = 'N'
+M = 'M'
+STAGE = 'stage'
+RECURRENCE = 'recurrence'
+PATHOLOGICAL_DIAGNOSIS_DATE_VGHTPE_HNSCC = 'pathological_diagnosis_date'
+ENE = 'ENE'
+PNI = 'PNI'
+LVI = 'LVI'
+T_EMBOLI = 'T Emboli'
+WPOI = 'WPOI'

@@ -204,13 +204,15 @@ class ReadTable(AbstractModel):
             self.df = pd.read_excel(
                 self.file,
                 na_values=['', 'NaN'],  # these values are considered as NaN
-                keep_default_na=False  # don't convert 'None' or other default NA values to NaN
+                keep_default_na=False,  # don't convert 'None' or other default NA values to NaN
+                dtype=str  # read everything as string, let other functions handle the conversion
             )
         else:  # assume csv
             self.df = pd.read_csv(
                 self.file,
                 na_values=['', 'NaN'],
-                keep_default_na=False
+                keep_default_na=False,
+                dtype=str
             )
 
     def assert_columns(self):
