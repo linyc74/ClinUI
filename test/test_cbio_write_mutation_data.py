@@ -12,7 +12,7 @@ class TestWriteClinicalData(TestCase):
         self.tear_down()
 
     def test_main(self):
-        WriteMutationData(self.schema).main(
+        WriteMutationData().main(
             maf_dir=f'{self.indir}/maf_dir',
             study_info_dict={
                 'type_of_cancer': 'hnsc',

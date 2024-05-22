@@ -41,7 +41,7 @@ class cBioIngest(BaseModel):
         self.create_case_lists()
 
     def write_study_info(self):
-        WriteStudyInfo(self.schema).main(
+        WriteStudyInfo().main(
             study_info_dict=self.study_info_dict,
             tags_dict=self.tags_dict,
             outdir=self.outdir)
@@ -60,20 +60,20 @@ class cBioIngest(BaseModel):
             outdir=self.outdir)
 
     def write_mutation_data(self):
-        WriteMutationData(self.schema).main(
+        WriteMutationData().main(
             maf_dir=self.maf_dir,
             study_info_dict=self.study_info_dict,
             sample_df=self.sample_df,
             outdir=self.outdir)
 
     def create_case_lists(self):
-        CreateCaseLists(self.schema).main(
+        CreateCaseLists().main(
             study_info_dict=self.study_info_dict,
             sample_df=self.sample_df,
             outdir=self.outdir)
 
 
-class WriteStudyInfo(BaseModel):
+class WriteStudyInfo:
 
     META_STUDY_TXT_FILENAME = 'meta_study.txt'
     TAGS_JSON_FILENAME = 'tags.json'
@@ -109,7 +109,7 @@ class WriteStudyInfo(BaseModel):
             json.dump(self.tags_dict, fh, indent=4)
 
 
-class CreateCaseLists(BaseModel):
+class CreateCaseLists:
 
     CASE_DIRNAME = 'case_lists'
     ALL_TXT = 'cases_all.txt'

@@ -1,11 +1,10 @@
 import os.path
 import pandas as pd
 from typing import Dict, List
-from .schema import BaseModel
 from .cbio_constant import STUDY_IDENTIFIER_KEY
 
 
-class WriteMutationData(BaseModel):
+class WriteMutationData:
 
     META_FNAME = 'meta_mutations_extended.txt'
     DATA_FNAME = 'data_mutations_extended.txt'
@@ -55,18 +54,18 @@ data_filename: {self.DATA_FNAME}'''
         self.mafs = [f'{self.maf_dir}/{id_}.maf' for id_ in self.sample_df[sample_id_column]]
 
     def read_first_maf(self):
-        self.df = ReadAndProcessMaf(self.schema).main(maf=self.mafs[0])
+        self.df = ReadAndProcessMaf().main(maf=self.mafs[0])
 
     def read_the_rest_mafs(self):
         for maf in self.mafs[1:]:
-            df = ReadAndProcessMaf(self.schema).main(maf=maf)
+            df = ReadAndProcessMaf().main(maf=maf)
             self.df = pd.concat([self.df, df], ignore_index=True)
 
     def write_data_file(self):
         self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', sep='\t', index=False)
 
 
-class ReadAndProcessMaf(BaseModel):
+class ReadAndProcessMaf:
     """
     https://docs.cbioportal.org/file-formats/#mutation-data
     """

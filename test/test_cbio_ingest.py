@@ -87,7 +87,7 @@ class TestWriteStudyInfo(TestCase):
         self.tear_down()
 
     def test_no_tags(self):
-        WriteStudyInfo(self.schema).main(
+        WriteStudyInfo().main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
@@ -115,7 +115,7 @@ reference_genome: hg38
         self.assertTrue(not exists(f'{self.outdir}/tags.json'))
 
     def test_with_tags(self):
-        WriteStudyInfo(self.schema).main(
+        WriteStudyInfo().main(
             study_info_dict={
                 'type_of_cancer': 'hnsc',
                 'cancer_study_identifier': 'hnsc_nycu_2022',
