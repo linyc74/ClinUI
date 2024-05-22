@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Any, Union
+from typing import Dict, Any, Union
 from .model_utils import CastDatatypes
 from .schema import BaseModel, NycuOsccSchema
 
@@ -23,34 +23,7 @@ class ProcessAttributesNycuOscc(BaseModel):
         return attributes
 
 
-class Calculate:
-
-    REQUIRED_KEYS: List[str]
-
-    attributes: Dict[str, Any]
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-
-        self.attributes = attributes.copy()
-
-        if self.has_required_keys():
-            self.calculate()
-
-        self.calculate()
-
-        return self.attributes
-
-    def has_required_keys(self) -> bool:
-        for key in self.REQUIRED_KEYS:
-            if key not in S.DISPLAY_COLUMNS:
-                return False
-        return True
-
-    def calculate(self):
-        raise NotImplementedError
-
-
-class CalculateDiagnosisAge(Calculate):
+class CalculateDiagnosisAge:
 
     REQUIRED_KEYS = [
         S.BIRTH_DATE,
@@ -58,13 +31,19 @@ class CalculateDiagnosisAge(Calculate):
         S.CLINICAL_DIAGNOSIS_AGE,
     ]
 
-    def calculate(self):
+    attributes: Dict[str, Any]
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
         self.attributes[S.CLINICAL_DIAGNOSIS_AGE] = delta_t(
             start=self.attributes[S.BIRTH_DATE],
             end=self.attributes[S.CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
 
+        return self.attributes
 
-class CalculateSurvival(Calculate):
+
+class CalculateSurvival:
 
     REQUIRED_KEYS = [
         S.INITIAL_TREATMENT_COMPLETION_DATE,
@@ -80,11 +59,17 @@ class CalculateSurvival(Calculate):
         S.OVERALL_SURVIVAL_STATUS,
     ]
 
-    def calculate(self):
+    attributes: Dict[str, Any]
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
         self.check_cause_of_death()
         self.disease_free_survival()
         self.disease_specific_survival()
         self.overall_survival()
+
+        return self.attributes
 
     def check_cause_of_death(self):
         has_expire_date = self.attributes[S.EXPIRE_DATE] != ''
@@ -153,7 +138,24 @@ class CalculateSurvival(Calculate):
         self.attributes[S.OVERALL_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
 
 
-class CalculateICD(Calculate):
+def delta_t(
+        start: Union[pd.Timestamp, str, type(np.NAN)],
+        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
+
+    if type(start) is str:
+        start = pd.to_datetime(start)
+    elif pd.isna(start):
+        start = pd.NaT
+
+    if type(end) is str:
+        end = pd.to_datetime(end)
+    elif pd.isna(end):
+        end = pd.NaT
+
+    return end - start
+
+
+class CalculateICD:
 
     # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
     ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {
@@ -241,8 +243,7 @@ class CalculateICD(Calculate):
     }
 
     # https://www.icd10data.com/ICD10CM/Codes (2023 edition)
-    # I manually checked ICD-10 and found it to be identical to ICD-O-3,
-    #   although the wordings of ICD-10 and ICD-O-3 are slightly different
+    # I manually checked ICD-10 and found it to be identical to ICD-O-3, although the wordings of ICD-10 and ICD-O-3 are slightly different
     # Here I use the description from ICD-O-3
     # Note that "C08.8" is not present in ICD-10 (maybe they just forgot to add it?)
     ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION = {
@@ -334,9 +335,15 @@ class CalculateICD(Calculate):
         S.ICD_10_CLASSIFICATION
     ]
 
-    def calculate(self):
+    attributes: Dict[str, Any]
+
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
         self.add_icd_o_3()
         self.add_icd_10()
+
+        return self.attributes
 
     def add_icd_o_3(self):
         site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
@@ -349,7 +356,7 @@ class CalculateICD(Calculate):
         self.attributes[S.ICD_10_CLASSIFICATION] = icd_10
 
 
-class CalculateStage(Calculate):
+class CalculateStage:
     """
     https://www.cancer.org/cancer/types/oral-cavity-and-oropharyngeal-cancer/detection-diagnosis-staging/staging.html
     """
@@ -359,13 +366,19 @@ class CalculateStage(Calculate):
         S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
     ]
 
+    attributes: Dict[str, Any]
+
     t: str
     n: str
     m: str
 
-    def calculate(self):
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
         self.set_tnm()
         self.calculate_stage()
+
+        return self.attributes
 
     def set_tnm(self):
         try:
@@ -406,7 +419,7 @@ class CalculateStage(Calculate):
         self.attributes[S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
 
 
-class CalculateLymphNodes(Calculate):
+class CalculateLymphNodes:
 
     REQUIRED_KEYS = [
         S.LYMPH_NODE_LEVEL_IA,
@@ -421,6 +434,8 @@ class CalculateLymphNodes(Calculate):
         S.TOTAL_LYMPH_NODE,
     ]
 
+    attributes: Dict[str, Any]
+
     level_1_m: int
     level_1_n: int
     level_2_m: int
@@ -428,7 +443,9 @@ class CalculateLymphNodes(Calculate):
     total_m: int
     total_n: int
 
-    def calculate(self):
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        self.attributes = attributes.copy()
+
         self.total_m, self.total_n = 0, 0
         self.add_level_1()
         self.add_level_2()
@@ -439,6 +456,8 @@ class CalculateLymphNodes(Calculate):
         self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{self.level_1_m}/{self.level_1_n}'
         self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{self.level_2_m}/{self.level_2_n}'
         self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
+
+        return self.attributes
 
     def add_level_1(self):
         level_1a = self.attributes.get(S.LYMPH_NODE_LEVEL_IA, '')
@@ -513,20 +532,3 @@ class CalculateLymphNodes(Calculate):
             a, b = left.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
-
-
-def delta_t(
-        start: Union[pd.Timestamp, str, type(np.NAN)],
-        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
-
-    if type(start) is str:
-        start = pd.to_datetime(start)
-    elif pd.isna(start):
-        start = pd.NaT
-
-    if type(end) is str:
-        end = pd.to_datetime(end)
-    elif pd.isna(end):
-        end = pd.NaT
-
-    return end - start
