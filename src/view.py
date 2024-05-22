@@ -118,6 +118,7 @@ class View(QWidget):
         'import_clinical_data_table': 'Import Clinical Data Table',
         'import_sequencing_table': 'Import Sequencing Table',
         'save_clinical_data_table': 'Save Clinical Data Table',
+        'reprocess_table': 'Reprocess Table',
 
         'find': 'Find',
         'sort_ascending': 'Sort (A to Z)',
@@ -133,6 +134,7 @@ class View(QWidget):
         'import_clinical_data_table': (0, 0),
         'import_sequencing_table': (1, 0),
         'save_clinical_data_table': (2, 0),
+        'reprocess_table': (4, 0),
 
         'find': (0, 1),
         'sort_ascending': (1, 1),
@@ -143,7 +145,7 @@ class View(QWidget):
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
 
-        'export_cbioportal_study': (3, 2),
+        'export_cbioportal_study': (4, 2),
     }
 
     model: Model

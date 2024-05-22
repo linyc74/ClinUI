@@ -28,6 +28,7 @@ class Controller:
         self.action_edit_sample = ActionEditSample(self)
         self.action_export_cbioportal_study = ActionExportCbioportalStudy(self)
         self.action_find = ActionFind(self)
+        self.action_reprocess_table = ActionReprocessTable(self)
 
     def __connect_button_actions(self):
         for name in self.view.BUTTON_NAME_TO_LABEL.keys():
@@ -58,11 +59,9 @@ class ActionImportClinicalDataTable(Action):
 
         try:
             self.model.import_clinical_data_table(file=file)
+            self.view.refresh_table()
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
-            return
-
-        self.view.refresh_table()
 
 
 class ActionImportSequencingTable(Action):
@@ -74,11 +73,9 @@ class ActionImportSequencingTable(Action):
 
         try:
             self.model.import_sequencing_table(file=file)
+            self.view.refresh_table()
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
-            return
-
-        self.view.refresh_table()
 
 
 class ActionSaveClinicalDataTable(Action):
@@ -167,11 +164,9 @@ class ActionAddNewSample(Action):
 
         try:
             self.model.append_row(attributes=attributes)
+            self.view.refresh_table()
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
-            return
-
-        self.view.refresh_table()
 
 
 class ActionEditSample(Action):
@@ -188,19 +183,17 @@ class ActionEditSample(Action):
 
         row = rows[0]  # only one row is selected
 
-        attributes = self.model.get_row(row=row)
-        attributes = self.view.dialog_edit_sample(attributes=attributes)
+        attributes: Dict[str, str] = self.model.get_row(row=row)
+        attributes: Optional[Dict[str, str]] = self.view.dialog_edit_sample(attributes=attributes)
 
         if attributes is None:
             return
 
         try:
             self.model.update_row(row=row, attributes=attributes)
+            self.view.refresh_table()
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
-            return
-
-        self.view.refresh_table()
 
 
 class ActionExportCbioportalStudy(Action):
@@ -268,3 +261,16 @@ class ActionExportCbioportalStudy(Action):
         except Exception as e:
             shutil.rmtree(self.outdir)
             self.view.message_box_error(msg=repr(e))
+
+
+class ActionReprocessTable(Action):
+
+    def __call__(self):
+        for row in range(len(self.model.dataframe)):  # reprocess row by row for better granularity and error handling
+            try:
+                attributes: Dict[str, str] = self.model.get_row(row=row)
+                self.model.update_row(row=row, attributes=attributes)
+                self.view.refresh_table()
+            except Exception as e:
+                msg = f'Row: {row + 1}\n\nError:\n{repr(e)}'
+                self.view.message_box_error(msg=msg)

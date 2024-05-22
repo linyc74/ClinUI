@@ -57,10 +57,12 @@ class CalculateSurvival:
     ]
 
     attributes: Dict[str, Any]
+    alive: bool
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
 
+        self.set_alive()
         self.check_cause_of_death()
         self.disease_free_survival()
         self.disease_specific_survival()
@@ -68,9 +70,12 @@ class CalculateSurvival:
 
         return self.attributes
 
+    def set_alive(self):
+        expire_date = self.attributes[S.EXPIRE_DATE]
+        self.alive = pd.isna(expire_date) or expire_date == ''
+
     def check_cause_of_death(self):
-        has_expire_date = self.attributes[S.EXPIRE_DATE] != ''
-        if has_expire_date:
+        if not self.alive:
             cause = self.attributes[S.CAUSE_OF_DEATH]
             assert cause in S.COLUMN_ATTRIBUTES[S.CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
 
@@ -78,7 +83,6 @@ class CalculateSurvival:
         attr = self.attributes
 
         recurred = attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT] != ''
-        alive = attr[S.EXPIRE_DATE] == ''
 
         t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
@@ -86,7 +90,7 @@ class CalculateSurvival:
             duration = delta_t(start=t0, end=attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT])
             status = '1:Recurred/Progressed'
         else:
-            if alive:
+            if self.alive:
                 duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
                 status = '0:DiseaseFree'
             else:  # died
@@ -102,10 +106,9 @@ class CalculateSurvival:
     def disease_specific_survival(self):
         attr = self.attributes
 
-        alive = attr[S.EXPIRE_DATE] == ''
         t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
-        if alive:
+        if self.alive:
             duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:ALIVE OR DEAD TUMOR FREE'
         else:
@@ -121,10 +124,9 @@ class CalculateSurvival:
     def overall_survival(self):
         attr = self.attributes
 
-        alive = attr[S.EXPIRE_DATE] == ''
         t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
-        if alive:
+        if self.alive:
             duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:LIVING'
         else:

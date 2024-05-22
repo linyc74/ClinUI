@@ -23,6 +23,9 @@ class Model(BaseModel):
             clinical_data_df=self.dataframe,
             file=file)
 
+        # When the whole column is NaN, it becomes float64, convert it back to object
+        self.dataframe = self.dataframe.astype(object)
+
     def import_sequencing_table(self, file: str):
         self.dataframe = ImportSequencingTable(self.schema).main(
             clinical_data_df=self.dataframe,
@@ -54,8 +57,16 @@ class Model(BaseModel):
             drop=True
         )
 
-    def get_row(self, row: int) -> Dict[str, Any]:
-        return self.dataframe.loc[row, ].to_dict()
+    def get_row(self, row: int) -> Dict[str, str]:
+        ret = self.dataframe.loc[row, ].to_dict()
+
+        for key, val in ret.items():
+            if pd.isna(val):
+                ret[key] = ''  # NaN to ''
+
+        ret = {k: str(v) for k, v in ret.items()}
+
+        return ret
 
     def update_row(self, row: int, attributes: Dict[str, str]):
         attributes = self.__process(attributes)
@@ -66,12 +77,11 @@ class Model(BaseModel):
         attributes = self.__process(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
-    def __process(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-
+    def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
             attributes = ProcessAttributesNycuOscc().main(attributes)
-
-        return CastDatatypes(self.schema).main(attributes)
+        attributes = CastDatatypes(self.schema).main(attributes)
+        return attributes
 
     def find(
             self,
@@ -281,25 +291,27 @@ def append(
 
 class CastDatatypes(BaseModel):
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+    def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
 
-        for key, val in attributes.items():
+        ret: Dict[str, Any] = attributes.copy()
+
+        for key, val in ret.items():
 
             if val == '':
-                attributes[key] = pd.NA
+                ret[key] = pd.NA
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'int':
-                attributes[key] = int(val)
+                ret[key] = int(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'float':
-                attributes[key] = float(val)
+                ret[key] = float(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date':
-                attributes[key] = pd.to_datetime(val).strftime('%Y-%m-%d')  # format it as str
+                ret[key] = pd.to_datetime(val).strftime('%Y-%m-%d')  # format it as str
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date_list':
-                attributes[key] = format_date_list(val)
+                ret[key] = format_date_list(val)
             elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'bool':
-                attributes[key] = True if val.upper() == 'TRUE' else False
+                ret[key] = True if val.upper() == 'TRUE' else False
             # assume other types are all str
 
-        return attributes
+        return ret
 
 
 def format_date_list(val: str) -> str:
