@@ -143,7 +143,7 @@ class View(QWidget):
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
 
-        'export_cbioportal_study': (2, 2),
+        'export_cbioportal_study': (3, 2),
     }
 
     model: Model
