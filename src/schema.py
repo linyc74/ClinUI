@@ -862,20 +862,20 @@ class VghtpeLuadSchema(Schema):
             'type': 'int',
         },
         SMOKING_YN: {
-            'type': 'int',
-            'options': [0, 1],
+            'type': 'str',
+            'options': ['0', '1', 'NA'],
         },
         FAMILY_HISTORY_YN: {
-            'type': 'int',
-            'options': [0, 1],
+            'type': 'str',
+            'options': ['0', '1', 'NA'],
         },
         NEODJUVANT_THERAPY_YN: {
             'type': 'str',
-            'options': [0, 1],
+            'options': ['0', '1', 'NA'],
         },
         ADJUVANT_THERAPY_YN: {
             'type': 'str',
-            'options': [0, 1],
+            'options': ['0', '1', 'NA'],
         },
         LAST_F_U_DATE: {
             'type': 'date',
@@ -885,8 +885,8 @@ class VghtpeLuadSchema(Schema):
             'type': 'float',
         },
         DEATH_Y1N0: {
-            'type': 'int',
-            'options': [0, 1],
+            'type': 'str',
+            'options': ['0', '1', 'NA'],
         },
         DEATH_DATE: {
             'type': 'date',
