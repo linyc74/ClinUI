@@ -1,14 +1,13 @@
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Union
-from .model_utils import CastDatatypes
-from .schema import BaseModel, NycuOsccSchema
+from .schema import NycuOsccSchema
 
 
 S = NycuOsccSchema
 
 
-class ProcessAttributesNycuOscc(BaseModel):
+class ProcessAttributesNycuOscc:
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
 
@@ -17,8 +16,6 @@ class ProcessAttributesNycuOscc(BaseModel):
         attributes = CalculateICD().main(attributes)
         attributes = CalculateLymphNodes().main(attributes)
         attributes = CalculateStage().main(attributes)
-
-        attributes = CastDatatypes(self.schema).main(attributes)
 
         return attributes
 
