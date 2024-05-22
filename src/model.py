@@ -1,9 +1,8 @@
 import os
 import pandas as pd
-from os.path import basename
 from typing import List, Optional, Dict, Any, Union, Tuple, Type
 from .cbio_ingest import cBioIngest
-from .model_nycu import ProcessAttributesNycuOscc
+from .model_nycu import ProcessNycuOscc
 from .schema import BaseModel, Schema, NycuOsccSchema
 
 
@@ -60,7 +59,7 @@ class Model(BaseModel):
             drop=True
         )
 
-    def get_row(self, row: int) -> Dict[str, str]:
+    def get_sample(self, row: int) -> Dict[str, str]:
         """
         Everything going out of model should be string to avoid complex type issues
         """
@@ -74,7 +73,7 @@ class Model(BaseModel):
 
         return ret
 
-    def update_row(self, row: int, attributes: Dict[str, str]):
+    def update_sample(self, row: int, attributes: Dict[str, str]):
         """
         Everyting comes in model should be string
         Data type conversion is done in the model
@@ -83,7 +82,7 @@ class Model(BaseModel):
         for key, val in attributes.items():
             self.dataframe.at[row, key] = val  # use .at to accept a list (iterable) as a single value
 
-    def append_row(self, attributes: Dict[str, str]):
+    def append_sample(self, attributes: Dict[str, str]):
         """
         Everyting comes in model should be string
         Data type conversion is done in the model
@@ -93,7 +92,7 @@ class Model(BaseModel):
 
     def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
-            attributes = ProcessAttributesNycuOscc().main(attributes=attributes)
+            attributes = ProcessNycuOscc().main(attributes=attributes)
         attributes = CastDatatypes(self.schema).main(attributes=attributes)
         return attributes
 
@@ -250,7 +249,7 @@ class ReadTable(BaseModel):
 
     def assert_columns(self):
         for c in self.columns:
-            assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
+            assert c in self.df.columns, f'Column "{c}" not found in "{os.path.basename(self.file)}"'
 
 
 class ExportCbioportalStudy(BaseModel):
@@ -305,7 +304,7 @@ def append(
 
 class CastDatatypes(BaseModel):
 
-    def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
+    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
 
         ret: Dict[str, Any] = attributes.copy()
 

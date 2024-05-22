@@ -7,9 +7,9 @@ from .schema import NycuOsccSchema
 S = NycuOsccSchema
 
 
-class ProcessAttributesNycuOscc:
+class ProcessNycuOscc:
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+    def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
 
         attributes = CalculateDiagnosisAge().main(attributes)
         attributes = CalculateSurvival().main(attributes)

@@ -11,12 +11,12 @@ class TestModel(TestCase):
     def tearDown(self):
         self.tear_down()
 
-    def test_get_row(self):
+    def test_get_sample(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
 
         for row in range(len(model.dataframe)):
-            attributes = model.get_row(row=row)
+            attributes = model.get_sample(row=row)
             for val in attributes.values():
                 with self.subTest(row=row, val=val):
                     self.assertTrue(type(val) is str)  # everything out of the model should be string
