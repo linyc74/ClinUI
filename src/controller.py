@@ -2,7 +2,7 @@ import shutil
 from typing import Dict, Optional
 from .view import View
 from .model import Model
-from .schema import STUDY_IDENTIFIER_KEY
+from .cbio_constant import STUDY_IDENTIFIER_KEY
 
 
 class Controller:

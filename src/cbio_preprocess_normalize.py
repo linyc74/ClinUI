@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 from typing import Tuple, Union
-from .model_base import AbstractModel
+from .schema import BaseModel
+from .cbio_constant import SAMPLE_ID, STUDY_ID, PATIENT_ID
 
 
-class PreprocessNormalize(AbstractModel):
+class PreprocessNormalize(BaseModel):
 
     df: pd.DataFrame
     study_id: str
@@ -48,7 +49,7 @@ def delta_t(
     return end - start
 
 
-class NormalizePatientSampleData(AbstractModel):
+class NormalizePatientSampleData(BaseModel):
 
     df: pd.DataFrame
     study_id: str
@@ -67,17 +68,17 @@ class NormalizePatientSampleData(AbstractModel):
         return self.patient_df, self.sample_df
 
     def rename_and_add_columns(self):
-        self.df = self.df.rename(columns={self.df.columns[0]: 'Sample ID'})  # cBioPortal requires it to be 'Sample ID'
+        self.df = self.df.rename(columns={self.df.columns[0]: SAMPLE_ID})  # cBioPortal requires it to be 'Sample ID'
 
-        self.df['Study ID'] = self.study_id
-        self.df['Patient ID'] = self.df['Sample ID']
+        self.df[STUDY_ID] = self.study_id
+        self.df[PATIENT_ID] = self.df[SAMPLE_ID]
 
         columns = self.df.columns.to_list()
         reordered = columns[-2:] + columns[:-2]  # move the last two columns 'Study ID' and 'Patient ID' to the front
         self.df = self.df[reordered]
 
     def extract_patient_data(self):
-        columns = ['Patient ID'] + self.schema.CBIO_PATIENT_LEVEL_COLUMNS
+        columns = [PATIENT_ID] + self.schema.CBIO_PATIENT_LEVEL_COLUMNS
         df = self.df[columns].copy()
         self.patient_df = df
 

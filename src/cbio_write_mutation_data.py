@@ -1,11 +1,11 @@
 import os.path
 import pandas as pd
 from typing import Dict, List
-from .model_base import AbstractModel
-from .schema import STUDY_IDENTIFIER_KEY
+from .schema import BaseModel
+from .cbio_constant import STUDY_IDENTIFIER_KEY
 
 
-class WriteMutationData(AbstractModel):
+class WriteMutationData(BaseModel):
 
     META_FNAME = 'meta_mutations_extended.txt'
     DATA_FNAME = 'data_mutations_extended.txt'
@@ -66,7 +66,7 @@ data_filename: {self.DATA_FNAME}'''
         self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', sep='\t', index=False)
 
 
-class ReadAndProcessMaf(AbstractModel):
+class ReadAndProcessMaf(BaseModel):
     """
     https://docs.cbioportal.org/file-formats/#mutation-data
     """

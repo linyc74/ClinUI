@@ -2,14 +2,14 @@ import json
 import os.path
 import pandas as pd
 from typing import Dict, List, Optional
-from .model_base import AbstractModel
-from .schema import STUDY_IDENTIFIER_KEY, SAMPLE_ID
+from .schema import BaseModel
+from .cbio_constant import STUDY_IDENTIFIER_KEY, SAMPLE_ID
 from .cbio_write_clinical_data import WriteClinicalData
 from .cbio_write_mutation_data import WriteMutationData
 from .cbio_preprocess_normalize import PreprocessNormalize
 
 
-class cBioIngest(AbstractModel):
+class cBioIngest(BaseModel):
 
     clinical_data_df: pd.DataFrame
     maf_dir: str
@@ -73,7 +73,7 @@ class cBioIngest(AbstractModel):
             outdir=self.outdir)
 
 
-class WriteStudyInfo(AbstractModel):
+class WriteStudyInfo(BaseModel):
 
     META_STUDY_TXT_FILENAME = 'meta_study.txt'
     TAGS_JSON_FILENAME = 'tags.json'
@@ -109,7 +109,7 @@ class WriteStudyInfo(AbstractModel):
             json.dump(self.tags_dict, fh, indent=4)
 
 
-class CreateCaseLists(AbstractModel):
+class CreateCaseLists(BaseModel):
 
     CASE_DIRNAME = 'case_lists'
     ALL_TXT = 'cases_all.txt'

@@ -1,4 +1,4 @@
-from src.model_calculate import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, CalculateStage, CalculateLymphNodes
+from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, CalculateStage, CalculateLymphNodes
 from .setup import TestCase
 
 
@@ -15,7 +15,7 @@ class TestCalculateDiagnosisAge(TestCase):
             'Birth Date': '2001-01-01',
             'Clinical Diagnosis Date': '2002-01-01',
         }
-        actual = CalculateDiagnosisAge(self.schema).main(attributes=attributes)
+        actual = CalculateDiagnosisAge().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -41,7 +41,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '',
             'Cause of Death': ''
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -63,7 +63,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '',
             'Cause of Death': ''
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -85,7 +85,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '2003-12-27',
             'Cause of Death': 'Cancer'
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -107,7 +107,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '2003-12-27',
             'Cause of Death': 'Cancer'
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -129,7 +129,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '2003-12-27',
             'Cause of Death': 'Other Disease'
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -151,7 +151,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '2003-12-27',
             'Cause of Death': 'Other Disease'
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
 
         expected = attributes.copy()
         expected.update({
@@ -173,7 +173,7 @@ class TestCalculateSurvival(TestCase):
             'Expire Date': '',
             'Cause of Death': ''
         }
-        actual = CalculateSurvival(self.schema).main(attributes=attributes)
+        actual = CalculateSurvival().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Disease Free (Months)': '',
@@ -198,7 +198,7 @@ class TestCalculateICD(TestCase):
         attributes = {
             'Tumor Disease Anatomic Site': 'External upper lip',
         }
-        actual = CalculateICD(self.schema).main(attributes=attributes)
+        actual = CalculateICD().main(attributes=attributes)
         expected = {
             'Tumor Disease Anatomic Site': 'External upper lip',
             'ICD-O-3 Site Code': 'C00.0',
@@ -210,7 +210,7 @@ class TestCalculateICD(TestCase):
         attributes = {
             'Tumor Disease Anatomic Site': 'Cat tongue',
         }
-        actual = CalculateICD(self.schema).main(attributes=attributes)
+        actual = CalculateICD().main(attributes=attributes)
         expected = {
             'Tumor Disease Anatomic Site': 'Cat tongue',
             'ICD-O-3 Site Code': '',
@@ -231,7 +231,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T4bN3M1',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T4bN3M1',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVC',
@@ -242,7 +242,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T4bN3M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T4bN3M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVB',
@@ -253,7 +253,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T4aN2M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T4aN2M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage IVA',
@@ -264,7 +264,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T2N1M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T2N1M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage III',
@@ -275,7 +275,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T2N0M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T2N0M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage II',
@@ -286,7 +286,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'T1N0M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'T1N0M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage I',
@@ -297,7 +297,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'TisN0M0',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'TisN0M0',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage 0',
@@ -308,7 +308,7 @@ class TestCalculateStage(TestCase):
         attributes = {
             'Clinical TNM (cTNM)': 'XXX',
         }
-        actual = CalculateStage(self.schema).main(attributes=attributes)
+        actual = CalculateStage().main(attributes=attributes)
         expected = {
             'Clinical TNM (cTNM)': 'XXX',
             'Neoplasm Disease Stage American Joint Committee on Cancer Code': '',
@@ -329,7 +329,7 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level Ia': '1/1',
             'Lymph Node Level Ib': '0/1',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '1/2',
@@ -343,7 +343,7 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level IIa': '1/1',
             'Lymph Node Level IIb': '0/1',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '0/0',
@@ -356,7 +356,7 @@ class TestCalculateLymphNodes(TestCase):
         attributes = {
             'Lymph Node Level III': '1/2',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '0/0',
@@ -369,7 +369,7 @@ class TestCalculateLymphNodes(TestCase):
         attributes = {
             'Lymph Node Level IV': '1/2',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '0/0',
@@ -382,7 +382,7 @@ class TestCalculateLymphNodes(TestCase):
         attributes = {
             'Lymph Node Level V': '1/2',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '0/0',
@@ -396,7 +396,7 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node (Right)': '0/1',
             'Lymph Node (Left)': '1/1',
         }
-        actual = CalculateLymphNodes(self.schema).main(attributes=attributes)
+        actual = CalculateLymphNodes().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Lymph Node Level I': '0/0',

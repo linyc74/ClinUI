@@ -2,14 +2,13 @@ import os
 import pandas as pd
 from os.path import basename
 from typing import List, Optional, Dict, Any, Union, Tuple, Type
-from .columns import *
-from .schema import Schema
 from .cbio_ingest import cBioIngest
-from .model_base import AbstractModel
-from .model_calculate import ProcessAttributes
+from .model_nycu import ProcessAttributesNycuOscc
+from .model_vghtpe import ProcessAttributesVghtpeLuad, ProcessAttributesVghtpeHnscc
+from .schema import Schema, BaseModel, NycuOsccSchema, VghtpeLuadSchema, VghtpeHnsccSchema
 
 
-class Model(AbstractModel):
+class Model(BaseModel):
 
     dataframe: pd.DataFrame  # this is the main clinical data table
 
@@ -60,13 +59,27 @@ class Model(AbstractModel):
         return self.dataframe.loc[row, ].to_dict()
 
     def update_row(self, row: int, attributes: Dict[str, str]):
-        attributes = ProcessAttributes(self.schema).main(attributes)
+        attributes = self.__process(attributes)
         for key, val in attributes.items():
             self.dataframe.at[row, key] = val  # use .at to accept a list (iterable) as a single value
 
     def append_row(self, attributes: Dict[str, str]):
-        attributes = ProcessAttributes(self.schema).main(attributes)
+        attributes = self.__process(attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
+
+    def __process(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+
+        if self.schema is NycuOsccSchema:
+            return ProcessAttributesNycuOscc(self.schema).main(attributes)
+
+        elif self.schema is VghtpeLuadSchema:
+            return ProcessAttributesVghtpeLuad(self.schema).main(attributes)
+
+        elif self.schema is VghtpeHnsccSchema:
+            return ProcessAttributesVghtpeHnscc(self.schema).main(attributes)
+
+        else:
+            raise TypeError(f'Invalid schema type: "{type(self.schema)}"')
 
     def find(
             self,
@@ -105,7 +118,7 @@ class Model(AbstractModel):
             outdir=outdir)
 
 
-class ImportClinicalDataTable(AbstractModel):
+class ImportClinicalDataTable(BaseModel):
 
     clinical_data_df: pd.DataFrame
     file: str
@@ -135,7 +148,11 @@ class ImportClinicalDataTable(AbstractModel):
         return self.clinical_data_df
 
 
-class ImportSequencingTable(AbstractModel):
+class ImportSequencingTable(BaseModel):
+
+    SAMPLE_ID = NycuOsccSchema.SAMPLE_ID
+    LAB_ID = NycuOsccSchema.LAB_ID
+    LAB_SAMPLE_ID = NycuOsccSchema.LAB_SAMPLE_ID
 
     clinical_data_df: pd.DataFrame
     file: str
@@ -165,20 +182,20 @@ class ImportSequencingTable(AbstractModel):
         for i, row in self.seq_df.iterrows():
 
             sequencing_id = row['ID']
-            already_exists = sequencing_id in self.clinical_data_df[SAMPLE_ID].values
+            already_exists = sequencing_id in self.clinical_data_df[self.SAMPLE_ID].values
             if already_exists:
                 continue
 
             new_row = {
-                SAMPLE_ID: sequencing_id,
-                LAB_ID: row['Lab'],
-                LAB_SAMPLE_ID: row['Lab Sample ID'],
+                self.SAMPLE_ID: sequencing_id,
+                self.LAB_ID: row['Lab'],
+                self.LAB_SAMPLE_ID: row['Lab Sample ID'],
             }
 
             self.clinical_data_df = append(self.clinical_data_df, new_row)
 
 
-class ReadTable(AbstractModel):
+class ReadTable(BaseModel):
 
     file: str
     columns: List[str]
@@ -220,7 +237,7 @@ class ReadTable(AbstractModel):
             assert c in self.df.columns, f'Column "{c}" not found in "{basename(self.file)}"'
 
 
-class ExportCbioportalStudy(AbstractModel):
+class ExportCbioportalStudy(BaseModel):
 
     clinical_data_df: pd.DataFrame
     maf_dir: str

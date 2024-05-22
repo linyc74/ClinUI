@@ -1,10 +1,10 @@
 import pandas as pd
 from typing import Dict, List
-from .model_base import AbstractModel
-from .schema import STUDY_IDENTIFIER_KEY, PATIENT_ID
+from .schema import BaseModel
+from .cbio_constant import STUDY_IDENTIFIER_KEY, PATIENT_ID
 
 
-class WriteClinicalData(AbstractModel):
+class WriteClinicalData(BaseModel):
 
     study_info_dict: Dict[str, str]
     patient_df: pd.DataFrame
@@ -50,7 +50,7 @@ class WriteClinicalData(AbstractModel):
             outdir=self.outdir)
 
 
-class RemoveEmptyColumns(AbstractModel):
+class RemoveEmptyColumns(BaseModel):
 
     df: pd.DataFrame
 
@@ -63,7 +63,7 @@ class RemoveEmptyColumns(AbstractModel):
         return self.df
 
 
-class BaseWriter(AbstractModel):
+class BaseWriter(BaseModel):
 
     DATA_FNAME: str
 
@@ -167,7 +167,7 @@ data_filename: {self.DATA_FNAME}'''
         self.df.to_csv(f'{self.outdir}/{self.DATA_FNAME}', mode='a', sep='\t', index=False)
 
 
-class FillInMissingBooleanValues(AbstractModel):
+class FillInMissingBooleanValues(BaseModel):
 
     df: pd.DataFrame
 
@@ -190,7 +190,7 @@ class FillInMissingBooleanValues(AbstractModel):
                 self.df[column] = self.df[column].fillna(value=False)
 
 
-class GetDataTypes(AbstractModel):
+class GetDataTypes(BaseModel):
 
     columns: List[str]
 
@@ -215,7 +215,7 @@ class GetDataTypes(AbstractModel):
         return self.datatypes
 
 
-class FormatClinicalData(AbstractModel):
+class FormatClinicalData(BaseModel):
 
     RENAME_COLUMN_DICT = {
         'DISEASE_FREE_MONTHS': 'DF_MONTHS',

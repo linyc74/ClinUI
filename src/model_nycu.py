@@ -1,61 +1,29 @@
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Union
-from .columns import *
-from .model_base import AbstractModel
-from .schema import NYCU_OSCC, VGHTPE_LUAD, VGHTPE_HNSCC
+from .model_utils import CastDatatypes
+from .schema import BaseModel, NycuOsccSchema
 
 
-class ProcessAttributes(AbstractModel):
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-
-        if self.schema.NAME == NYCU_OSCC:
-            return ProcessAttributesNycuOscc(self.schema).main(attributes)
-
-        elif self.schema.NAME == VGHTPE_LUAD:
-            return ProcessAttributesVghtpeLuad(self.schema).main(attributes)
-
-        elif self.schema.NAME == VGHTPE_HNSCC:
-            return ProcessAttributesVghtpeHnscc(self.schema).main(attributes)
-
-        else:
-            raise ValueError(f'Invalid schema name: "{self.schema.NAME}"')
+S = NycuOsccSchema
 
 
-class ProcessAttributesNycuOscc(AbstractModel):
+class ProcessAttributesNycuOscc(BaseModel):
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
 
-        attributes = CalculateDiagnosisAge(self.schema).main(attributes)
-        attributes = CalculateSurvival(self.schema).main(attributes)
-        attributes = CalculateICD(self.schema).main(attributes)
-        attributes = CalculateLymphNodes(self.schema).main(attributes)
-        attributes = CalculateStage(self.schema).main(attributes)
-        attributes = CastDatatypes(self.schema).main(attributes)
-
-        return attributes
-
-
-class ProcessAttributesVghtpeLuad(AbstractModel):
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
+        attributes = CalculateDiagnosisAge().main(attributes)
+        attributes = CalculateSurvival().main(attributes)
+        attributes = CalculateICD().main(attributes)
+        attributes = CalculateLymphNodes().main(attributes)
+        attributes = CalculateStage().main(attributes)
 
         attributes = CastDatatypes(self.schema).main(attributes)
 
         return attributes
 
 
-class ProcessAttributesVghtpeHnscc(AbstractModel):
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-
-        attributes = CastDatatypes(self.schema).main(attributes)
-
-        return attributes
-
-
-class Calculate(AbstractModel):
+class Calculate:
 
     REQUIRED_KEYS: List[str]
 
@@ -65,8 +33,8 @@ class Calculate(AbstractModel):
 
         self.attributes = attributes.copy()
 
-        if not self.has_required_keys():
-            return self.attributes
+        if self.has_required_keys():
+            self.calculate()
 
         self.calculate()
 
@@ -74,7 +42,7 @@ class Calculate(AbstractModel):
 
     def has_required_keys(self) -> bool:
         for key in self.REQUIRED_KEYS:
-            if key not in self.schema.DISPLAY_COLUMNS:
+            if key not in S.DISPLAY_COLUMNS:
                 return False
         return True
 
@@ -85,31 +53,31 @@ class Calculate(AbstractModel):
 class CalculateDiagnosisAge(Calculate):
 
     REQUIRED_KEYS = [
-        BIRTH_DATE,
-        CLINICAL_DIAGNOSIS_DATE,
-        CLINICAL_DIAGNOSIS_AGE,
+        S.BIRTH_DATE,
+        S.CLINICAL_DIAGNOSIS_DATE,
+        S.CLINICAL_DIAGNOSIS_AGE,
     ]
 
     def calculate(self):
-        self.attributes[CLINICAL_DIAGNOSIS_AGE] = delta_t(
-            start=self.attributes[BIRTH_DATE],
-            end=self.attributes[CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
+        self.attributes[S.CLINICAL_DIAGNOSIS_AGE] = delta_t(
+            start=self.attributes[S.BIRTH_DATE],
+            end=self.attributes[S.CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
 
 
 class CalculateSurvival(Calculate):
 
     REQUIRED_KEYS = [
-        INITIAL_TREATMENT_COMPLETION_DATE,
-        LAST_FOLLOW_UP_DATE,
-        RECUR_DATE_AFTER_INITIAL_TREATMENT,
-        EXPIRE_DATE,
-        CAUSE_OF_DEATH,
-        DISEASE_FREE_SURVIVAL_MONTHS,
-        DISEASE_FREE_SURVIVAL_STATUS,
-        DISEASE_SPECIFIC_SURVIVAL_MONTHS,
-        DISEASE_SPECIFIC_SURVIVAL_STATUS,
-        OVERALL_SURVIVAL_MONTHS,
-        OVERALL_SURVIVAL_STATUS,
+        S.INITIAL_TREATMENT_COMPLETION_DATE,
+        S.LAST_FOLLOW_UP_DATE,
+        S.RECUR_DATE_AFTER_INITIAL_TREATMENT,
+        S.EXPIRE_DATE,
+        S.CAUSE_OF_DEATH,
+        S.DISEASE_FREE_SURVIVAL_MONTHS,
+        S.DISEASE_FREE_SURVIVAL_STATUS,
+        S.DISEASE_SPECIFIC_SURVIVAL_MONTHS,
+        S.DISEASE_SPECIFIC_SURVIVAL_STATUS,
+        S.OVERALL_SURVIVAL_MONTHS,
+        S.OVERALL_SURVIVAL_STATUS,
     ]
 
     def calculate(self):
@@ -119,70 +87,70 @@ class CalculateSurvival(Calculate):
         self.overall_survival()
 
     def check_cause_of_death(self):
-        has_expire_date = self.attributes[EXPIRE_DATE] != ''
+        has_expire_date = self.attributes[S.EXPIRE_DATE] != ''
         if has_expire_date:
-            cause = self.attributes[CAUSE_OF_DEATH]
-            assert cause in self.schema.COLUMN_ATTRIBUTES[CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
+            cause = self.attributes[S.CAUSE_OF_DEATH]
+            assert cause in S.COLUMN_ATTRIBUTES[S.CAUSE_OF_DEATH]['options'], f'"{cause}" is not a valid cause of death'
 
     def disease_free_survival(self):
         attr = self.attributes
 
-        recurred = attr[RECUR_DATE_AFTER_INITIAL_TREATMENT] != ''
-        alive = attr[EXPIRE_DATE] == ''
+        recurred = attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT] != ''
+        alive = attr[S.EXPIRE_DATE] == ''
 
-        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
         if recurred:
-            duration = delta_t(start=t0, end=attr[RECUR_DATE_AFTER_INITIAL_TREATMENT])
+            duration = delta_t(start=t0, end=attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT])
             status = '1:Recurred/Progressed'
         else:
             if alive:
-                duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+                duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
                 status = '0:DiseaseFree'
             else:  # died
-                duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
-                if attr[CAUSE_OF_DEATH].upper() == 'CANCER':
+                duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
+                if attr[S.CAUSE_OF_DEATH].upper() == 'CANCER':
                     status = '1:Recurred/Progressed'
                 else:
                     status = '0:DiseaseFree'
 
-        self.attributes[DISEASE_FREE_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[DISEASE_FREE_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        self.attributes[S.DISEASE_FREE_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
+        self.attributes[S.DISEASE_FREE_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
 
     def disease_specific_survival(self):
         attr = self.attributes
 
-        alive = attr[EXPIRE_DATE] == ''
-        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+        alive = attr[S.EXPIRE_DATE] == ''
+        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
         if alive:
-            duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+            duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:ALIVE OR DEAD TUMOR FREE'
         else:
-            duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
-            if attr[CAUSE_OF_DEATH].upper() == 'CANCER':
+            duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
+            if attr[S.CAUSE_OF_DEATH].upper() == 'CANCER':
                 status = '1:DEAD WITH TUMOR'
             else:
                 status = '0:ALIVE OR DEAD TUMOR FREE'
 
-        self.attributes[DISEASE_SPECIFIC_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[DISEASE_SPECIFIC_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
+        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
 
     def overall_survival(self):
         attr = self.attributes
 
-        alive = attr[EXPIRE_DATE] == ''
-        t0 = attr[INITIAL_TREATMENT_COMPLETION_DATE]
+        alive = attr[S.EXPIRE_DATE] == ''
+        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
 
         if alive:
-            duration = delta_t(start=t0, end=attr[LAST_FOLLOW_UP_DATE])
+            duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:LIVING'
         else:
-            duration = delta_t(start=t0, end=attr[EXPIRE_DATE])
+            duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
             status = '1:DECEASED'
 
-        self.attributes[OVERALL_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[OVERALL_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        self.attributes[S.OVERALL_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
+        self.attributes[S.OVERALL_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
 
 
 class CalculateICD(Calculate):
@@ -361,9 +329,9 @@ class CalculateICD(Calculate):
     }
 
     REQUIRED_KEYS = [
-        TUMOR_DISEASE_ANATOMIC_SITE,
-        ICD_O_3_SITE_CODE,
-        ICD_10_CLASSIFICATION
+        S.TUMOR_DISEASE_ANATOMIC_SITE,
+        S.ICD_O_3_SITE_CODE,
+        S.ICD_10_CLASSIFICATION
     ]
 
     def calculate(self):
@@ -371,14 +339,14 @@ class CalculateICD(Calculate):
         self.add_icd_10()
 
     def add_icd_o_3(self):
-        site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
+        site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
         icd_o_3 = self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE.get(site, '')
-        self.attributes[ICD_O_3_SITE_CODE] = icd_o_3
+        self.attributes[S.ICD_O_3_SITE_CODE] = icd_o_3
 
     def add_icd_10(self):
-        site = self.attributes[TUMOR_DISEASE_ANATOMIC_SITE]
+        site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
         icd_10 = self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION.get(site, '')
-        self.attributes[ICD_10_CLASSIFICATION] = icd_10
+        self.attributes[S.ICD_10_CLASSIFICATION] = icd_10
 
 
 class CalculateStage(Calculate):
@@ -387,8 +355,8 @@ class CalculateStage(Calculate):
     """
 
     REQUIRED_KEYS = [
-        CLINICAL_TNM,
-        NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
+        S.CLINICAL_TNM,
+        S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
     ]
 
     t: str
@@ -401,7 +369,7 @@ class CalculateStage(Calculate):
 
     def set_tnm(self):
         try:
-            tnm = self.attributes[CLINICAL_TNM]
+            tnm = self.attributes[S.CLINICAL_TNM]
             self.t = tnm.split('T')[1].split('N')[0]
             self.n = tnm.split('N')[1].split('M')[0]
             self.m = tnm.split('M')[1]
@@ -432,25 +400,25 @@ class CalculateStage(Calculate):
         elif t == 'is' and n == '0' and m == '0':
             stage = 'Stage 0'
         else:
-            print(f'WARNING! Invalid "{CLINICAL_TNM}": "{self.attributes[CLINICAL_TNM]}" for finding AJCC stage')
+            print(f'WARNING! Invalid "{S.CLINICAL_TNM}": "{self.attributes[S.CLINICAL_TNM]}" for finding AJCC stage')
             stage = ''
 
-        self.attributes[NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
+        self.attributes[S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
 
 
 class CalculateLymphNodes(Calculate):
 
     REQUIRED_KEYS = [
-        LYMPH_NODE_LEVEL_IA,
-        LYMPH_NODE_LEVEL_IB,
-        LYMPH_NODE_LEVEL_IIA,
-        LYMPH_NODE_LEVEL_IIB,
-        LYMPH_NODE_LEVEL_III,
-        LYMPH_NODE_LEVEL_IV,
-        LYMPH_NODE_LEVEL_V,
-        LYMPH_NODE_RIGHT,
-        LYMPH_NODE_LEFT,
-        TOTAL_LYMPH_NODE,
+        S.LYMPH_NODE_LEVEL_IA,
+        S.LYMPH_NODE_LEVEL_IB,
+        S.LYMPH_NODE_LEVEL_IIA,
+        S.LYMPH_NODE_LEVEL_IIB,
+        S.LYMPH_NODE_LEVEL_III,
+        S.LYMPH_NODE_LEVEL_IV,
+        S.LYMPH_NODE_LEVEL_V,
+        S.LYMPH_NODE_RIGHT,
+        S.LYMPH_NODE_LEFT,
+        S.TOTAL_LYMPH_NODE,
     ]
 
     level_1_m: int
@@ -468,13 +436,13 @@ class CalculateLymphNodes(Calculate):
         self.add_level_4()
         self.add_level_5()
         self.add_right_left()
-        self.attributes[LYMPH_NODE_LEVEL_I] = f'{self.level_1_m}/{self.level_1_n}'
-        self.attributes[LYMPH_NODE_LEVEL_II] = f'{self.level_2_m}/{self.level_2_n}'
-        self.attributes[TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
+        self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{self.level_1_m}/{self.level_1_n}'
+        self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{self.level_2_m}/{self.level_2_n}'
+        self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
 
     def add_level_1(self):
-        level_1a = self.attributes.get(LYMPH_NODE_LEVEL_IA, '')
-        level_1b = self.attributes.get(LYMPH_NODE_LEVEL_IB, '')
+        level_1a = self.attributes.get(S.LYMPH_NODE_LEVEL_IA, '')
+        level_1b = self.attributes.get(S.LYMPH_NODE_LEVEL_IB, '')
 
         self.level_1_m, self.level_1_n = 0, 0
 
@@ -492,8 +460,8 @@ class CalculateLymphNodes(Calculate):
             self.total_n += int(n)
 
     def add_level_2(self):
-        level_2a = self.attributes.get(LYMPH_NODE_LEVEL_IIA, '')
-        level_2b = self.attributes.get(LYMPH_NODE_LEVEL_IIB, '')
+        level_2a = self.attributes.get(S.LYMPH_NODE_LEVEL_IIA, '')
+        level_2b = self.attributes.get(S.LYMPH_NODE_LEVEL_IIB, '')
 
         self.level_2_m, self.level_2_n = 0, 0
 
@@ -511,21 +479,21 @@ class CalculateLymphNodes(Calculate):
             self.total_n += int(n)
 
     def add_level_3(self):
-        level_3 = self.attributes.get(LYMPH_NODE_LEVEL_III, '')
+        level_3 = self.attributes.get(S.LYMPH_NODE_LEVEL_III, '')
         if level_3 != '':
             a, b = level_3.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
 
     def add_level_4(self):
-        level_4 = self.attributes.get(LYMPH_NODE_LEVEL_IV, '')
+        level_4 = self.attributes.get(S.LYMPH_NODE_LEVEL_IV, '')
         if level_4 != '':
             a, b = level_4.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
 
     def add_level_5(self):
-        level_5 = self.attributes.get(LYMPH_NODE_LEVEL_V, '')
+        level_5 = self.attributes.get(S.LYMPH_NODE_LEVEL_V, '')
         if level_5 != '':
             a, b = level_5.split('/')
             self.total_m += int(a)
@@ -535,8 +503,8 @@ class CalculateLymphNodes(Calculate):
         if self.total_m + self.total_n > 0:
             return  # no need to check right and left
 
-        right = self.attributes.get(LYMPH_NODE_RIGHT, '')
-        left = self.attributes.get(LYMPH_NODE_LEFT, '')
+        right = self.attributes.get(S.LYMPH_NODE_RIGHT, '')
+        left = self.attributes.get(S.LYMPH_NODE_LEFT, '')
         if right != '':
             a, b = right.split('/')
             self.total_m += int(a)
@@ -545,42 +513,6 @@ class CalculateLymphNodes(Calculate):
             a, b = left.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
-
-
-class CastDatatypes(AbstractModel):
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-
-        for key, val in attributes.items():
-
-            if val == '':
-                attributes[key] = pd.NA
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'int':
-                attributes[key] = int(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'float':
-                attributes[key] = float(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date':
-                attributes[key] = pd.to_datetime(val).strftime('%Y-%m-%d')  # format it as str
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'date_list':
-                attributes[key] = format_date_list(val)
-            elif self.schema.COLUMN_ATTRIBUTES[key]['type'] == 'bool':
-                attributes[key] = True if val.upper() == 'TRUE' else False
-            # assume other types are all str
-
-        return attributes
-
-
-def format_date_list(val: str) -> str:
-    """
-    '2020;2020-02;2020-03-01' --> '2020-01-01 ; 2020-02-01 ; 2020-03-01'
-    """
-    sep = ';'
-    dates = []
-    for x in val.split(sep):
-        xx = x.strip()
-        if not xx == '':
-            dates.append(pd.to_datetime(xx).strftime('%Y-%m-%d'))
-    return f' {sep} '.join(dates)
 
 
 def delta_t(
