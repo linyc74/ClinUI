@@ -49,7 +49,10 @@ class Model(BaseModel):
             drop=True
         )
 
-    def drop(self, rows: Optional[List[int]] = None, columns: Optional[List[str]] = None):
+    def drop(
+            self,
+            rows: Optional[List[int]] = None,
+            columns: Optional[List[str]] = None):
         self.dataframe = self.dataframe.drop(
             index=rows,
             columns=columns
@@ -58,6 +61,9 @@ class Model(BaseModel):
         )
 
     def get_row(self, row: int) -> Dict[str, str]:
+        """
+        Everything going out of model should be string to avoid complex type issues
+        """
         ret = self.dataframe.loc[row, ].to_dict()
 
         for key, val in ret.items():
@@ -69,18 +75,26 @@ class Model(BaseModel):
         return ret
 
     def update_row(self, row: int, attributes: Dict[str, str]):
-        attributes = self.__process(attributes)
+        """
+        Everyting comes in model should be string
+        Data type conversion is done in the model
+        """
+        attributes = self.__process(attributes=attributes)
         for key, val in attributes.items():
             self.dataframe.at[row, key] = val  # use .at to accept a list (iterable) as a single value
 
     def append_row(self, attributes: Dict[str, str]):
-        attributes = self.__process(attributes)
+        """
+        Everyting comes in model should be string
+        Data type conversion is done in the model
+        """
+        attributes = self.__process(attributes=attributes)
         self.dataframe = append(self.dataframe, pd.Series(attributes))
 
     def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
-            attributes = ProcessAttributesNycuOscc().main(attributes)
-        attributes = CastDatatypes(self.schema).main(attributes)
+            attributes = ProcessAttributesNycuOscc().main(attributes=attributes)
+        attributes = CastDatatypes(self.schema).main(attributes=attributes)
         return attributes
 
     def find(
