@@ -1,3 +1,7 @@
+"""
+This module is the foundation of all data model-related aspects of the application.
+It is the "database" schema on which everything is built.
+"""
 from abc import ABC
 from typing import List, Dict, Any, Type
 

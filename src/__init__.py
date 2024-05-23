@@ -30,15 +30,15 @@ class Main:
     def select_data_schema(self):
         dialog = SelectDataSchemaDialog()
         result = None
-        while result is None:
+        while result is None:  # loop until a schema is selected
             result = dialog.show()
         self.schema_name = result
 
     def run_app(self):
         self.config_taskbar_icon()
-        m = Model(schema=DATA_SCHEMA_DICT[self.schema_name])
-        v = View(model=m)
-        Controller(model=m, view=v)
+        model = Model(schema=DATA_SCHEMA_DICT[self.schema_name])
+        view = View(model=model)
+        Controller(model=model, view=view)
 
     def config_taskbar_icon(self):
         try:

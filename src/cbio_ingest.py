@@ -1,3 +1,8 @@
+"""
+The entrypoint of the cBioPortal module.
+Decoupled from the `model` module, but still depends on the `schema` module.
+Most of the classes dynamically depend on the `self.schema` object, which contains the schema for cBioPortal.
+"""
 import json
 import os.path
 import pandas as pd
