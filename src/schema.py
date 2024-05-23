@@ -23,6 +23,14 @@ class Schema:
     CBIO_STUDY_INFO_FIELD_TO_OPTIONS: Dict[str, List[str]]
 
 
+class BaseModel(ABC):
+
+    schema: Type[Schema]
+
+    def __init__(self, schema: Type[Schema]):
+        self.schema = schema
+
+
 class NycuOsccSchema(Schema):
 
     NAME = 'NYCU OSCC'
@@ -1079,11 +1087,3 @@ DATA_SCHEMA_DICT = {
     VghtpeLuadSchema.NAME: VghtpeLuadSchema,
     VghtpeHnsccSchema.NAME: VghtpeHnsccSchema,
 }
-
-
-class BaseModel(ABC):
-
-    schema: Type[Schema]
-
-    def __init__(self, schema: Type[Schema]):
-        self.schema = schema

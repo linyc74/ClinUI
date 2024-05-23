@@ -20,6 +20,7 @@ class TestModel(TestCase):
             for val in attributes.values():
                 with self.subTest(row=row, val=val):
                     self.assertTrue(type(val) is str)  # everything out of the model should be string
+                    self.assertNotEquals('nan', val)  # 'nan' should be converted to ''
 
     def test_read_clinical_data_table(self):
         model = Model(NycuOsccSchema)
