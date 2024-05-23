@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from typing import List, Optional, Dict, Any, Union, Tuple, Type
 from .cbio_ingest import cBioIngest
-from .model_nycu import ProcessNycuOscc
+from .model_nycu import CalculateNycuOscc
 from .schema import BaseModel, Schema, NycuOsccSchema
 
 
@@ -62,6 +62,7 @@ class Model(BaseModel):
     def get_sample(self, row: int) -> Dict[str, str]:
         """
         Everything going out of model should be string to avoid complex type issues
+        NaN should simply be defined as empty string
         """
         ret = self.dataframe.loc[row, ].to_dict()
 
@@ -79,8 +80,8 @@ class Model(BaseModel):
         Data type conversion is done in the model
         """
         attributes = self.__process(attributes=attributes)
-        for key, val in attributes.items():
-            self.dataframe.at[row, key] = val  # use .at to accept a list (iterable) as a single value
+        for column, val in attributes.items():
+            self.dataframe.at[row, column] = val  # use .at to accept a list as a single value
 
     def append_sample(self, attributes: Dict[str, str]):
         """
@@ -92,7 +93,7 @@ class Model(BaseModel):
 
     def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
-            attributes = ProcessNycuOscc().main(attributes=attributes)
+            attributes = CalculateNycuOscc().main(attributes=attributes)
         attributes = CastDatatypes(self.schema).main(attributes=attributes)
         return attributes
 
@@ -210,6 +211,19 @@ class ImportSequencingTable(BaseModel):
             self.clinical_data_df = append(self.clinical_data_df, new_row)
 
 
+def append(
+        df: pd.DataFrame,
+        s: Union[dict, pd.Series]) -> pd.DataFrame:
+
+    if type(s) is dict:
+        s = pd.Series(s)
+
+    if df.empty:
+        return pd.DataFrame([s])  # no need to concat, just return the Series as a DataFrame
+
+    return pd.concat([df, pd.DataFrame([s])], ignore_index=True)
+
+
 class ReadTable(BaseModel):
 
     file: str
@@ -287,19 +301,6 @@ class ExportCbioportalStudy(BaseModel):
             study_info_dict=self.study_info_dict,
             tags_dict=self.tags_dict,
             outdir=self.outdir)
-
-
-def append(
-        df: pd.DataFrame,
-        s: Union[dict, pd.Series]) -> pd.DataFrame:
-
-    if type(s) is dict:
-        s = pd.Series(s)
-
-    if df.empty:
-        return pd.DataFrame([s])  # no need to concat, just return the Series as a DataFrame
-
-    return pd.concat([df, pd.DataFrame([s])], ignore_index=True)
 
 
 class CastDatatypes(BaseModel):

@@ -1,3 +1,7 @@
+"""
+This module is statically coupled with NycuOsccSchema
+Thus there is no need to dynamically pass in the self.schema object
+"""
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Union
@@ -7,7 +11,7 @@ from .schema import NycuOsccSchema
 S = NycuOsccSchema
 
 
-class ProcessNycuOscc:
+class CalculateNycuOscc:
 
     def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
 
