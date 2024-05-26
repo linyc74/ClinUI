@@ -8,27 +8,60 @@ from .schema import BaseModel, Schema, NycuOsccSchema
 
 class Model(BaseModel):
 
+    MAX_UNDO = 10
+
     dataframe: pd.DataFrame  # this is the main clinical data table
+
+    undo_cache: List[pd.DataFrame]
+    redo_cache: List[pd.DataFrame]
 
     def __init__(self, schema: Type[Schema]):
         super().__init__(schema=schema)
-        self.reset_dataframe()
+        self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
+        self.undo_cache = []
+        self.redo_cache = []
+
+    def undo(self):
+        if len(self.undo_cache) == 0:
+            return
+        self.redo_cache.append(self.dataframe)
+        self.dataframe = self.undo_cache.pop()
+
+    def redo(self):
+        if len(self.redo_cache) == 0:
+            return
+        self.undo_cache.append(self.dataframe)
+        self.dataframe = self.redo_cache.pop()
+
+    def __add_to_undo_cache(self):
+        self.undo_cache.append(self.dataframe.copy())
+        if len(self.undo_cache) > self.MAX_UNDO:
+            self.undo_cache.pop(0)
+        self.redo_cache = []  # clear redo cache
 
     def reset_dataframe(self):
-        self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
+        new = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
+        self.__add_to_undo_cache()  # add to undo cache after successful reset
+        self.dataframe = new
 
     def import_clinical_data_table(self, file: str):
-        self.dataframe = ImportClinicalDataTable(self.schema).main(
+        new = ImportClinicalDataTable(self.schema).main(
             clinical_data_df=self.dataframe,
             file=file)
 
         # When the whole column is NaN, it becomes float64, convert it back to object
-        self.dataframe = self.dataframe.astype(object)
+        new = new.astype(object)
+
+        self.__add_to_undo_cache()  # add to undo cache after successful import
+        self.dataframe = new
 
     def import_sequencing_table(self, file: str):
-        self.dataframe = ImportSequencingTable(self.schema).main(
+        new = ImportSequencingTable(self.schema).main(
             clinical_data_df=self.dataframe,
             file=file)
+
+        self.__add_to_undo_cache()  # add to undo cache after successful import
+        self.dataframe = new
 
     def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):
@@ -39,25 +72,32 @@ class Model(BaseModel):
     def get_dataframe(self) -> pd.DataFrame:
         return self.dataframe.copy()
 
-    def sort_dataframe(self, by: str, ascending: bool):
-        self.dataframe = self.dataframe.sort_values(
+    def sort_dataframe(
+            self,
+            by: str,
+            ascending: bool):
+        new = self.dataframe.sort_values(
             by=by,
             ascending=ascending,
             kind='mergesort'  # deterministic, keep the original order when tied
         ).reset_index(
             drop=True
         )
+        self.__add_to_undo_cache()  # add to undo cache after successful sort
+        self.dataframe = new
 
     def drop(
             self,
             rows: Optional[List[int]] = None,
             columns: Optional[List[str]] = None):
-        self.dataframe = self.dataframe.drop(
+        new = self.dataframe.drop(
             index=rows,
             columns=columns
         ).reset_index(
             drop=True
         )
+        self.__add_to_undo_cache()  # add to undo cache after successful drop
+        self.dataframe = new
 
     def get_sample(self, row: int) -> Dict[str, str]:
         """
@@ -74,14 +114,22 @@ class Model(BaseModel):
 
         return ret
 
-    def update_sample(self, row: int, attributes: Dict[str, str]):
+    def update_sample(
+            self,
+            row: int,
+            attributes: Dict[str, str]):
         """
         Everyting comes in model should be string
         Data type conversion is done in the model
         """
         attributes = self.__process(attributes=attributes)
+
+        new = self.dataframe.copy()
         for column, val in attributes.items():
-            self.dataframe.at[row, column] = val  # use .at to accept a list as a single value
+            new.at[row, column] = val  # use .at to accept a list as a single value
+
+        self.__add_to_undo_cache()  # add to undo cache after successful update
+        self.dataframe = new
 
     def append_sample(self, attributes: Dict[str, str]):
         """
@@ -89,7 +137,11 @@ class Model(BaseModel):
         Data type conversion is done in the model
         """
         attributes = self.__process(attributes=attributes)
-        self.dataframe = append(self.dataframe, pd.Series(attributes))
+
+        new = append(self.dataframe, pd.Series(attributes))
+
+        self.__add_to_undo_cache()  # add to undo cache after successful append
+        self.dataframe = new
 
     def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:

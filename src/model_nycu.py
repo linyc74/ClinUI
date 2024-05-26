@@ -4,7 +4,7 @@ Thus there is no need to dynamically pass in the self.schema object
 """
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 from .schema import NycuOsccSchema
 
 
@@ -24,27 +24,45 @@ class CalculateNycuOscc:
         return attributes
 
 
-class CalculateDiagnosisAge:
+class Calculate:
 
-    REQUIRED_KEYS = [
-        S.BIRTH_DATE,
-        S.CLINICAL_DIAGNOSIS_DATE,
-        S.CLINICAL_DIAGNOSIS_AGE,
-    ]
-
+    REQUIRED_KEYS: List[str]
     attributes: Dict[str, Any]
 
     def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         self.attributes = attributes.copy()
 
+        if not self.has_required_keys():
+            return self.attributes
+
+        self.calculate()
+
+        return self.attributes
+
+    def has_required_keys(self) -> bool:
+        for key in self.REQUIRED_KEYS:
+            if key not in self.attributes:
+                return False
+        return True
+
+    def calculate(self):
+        raise NotImplementedError
+
+
+class CalculateDiagnosisAge(Calculate):
+
+    REQUIRED_KEYS = [
+        S.BIRTH_DATE,
+        S.CLINICAL_DIAGNOSIS_DATE,
+    ]
+
+    def calculate(self):
         self.attributes[S.CLINICAL_DIAGNOSIS_AGE] = delta_t(
             start=self.attributes[S.BIRTH_DATE],
             end=self.attributes[S.CLINICAL_DIAGNOSIS_DATE]) / pd.Timedelta(days=365)
 
-        return self.attributes
 
-
-class CalculateSurvival:
+class CalculateSurvival(Calculate):
 
     REQUIRED_KEYS = [
         S.INITIAL_TREATMENT_COMPLETION_DATE,
@@ -52,27 +70,16 @@ class CalculateSurvival:
         S.RECUR_DATE_AFTER_INITIAL_TREATMENT,
         S.EXPIRE_DATE,
         S.CAUSE_OF_DEATH,
-        S.DISEASE_FREE_SURVIVAL_MONTHS,
-        S.DISEASE_FREE_SURVIVAL_STATUS,
-        S.DISEASE_SPECIFIC_SURVIVAL_MONTHS,
-        S.DISEASE_SPECIFIC_SURVIVAL_STATUS,
-        S.OVERALL_SURVIVAL_MONTHS,
-        S.OVERALL_SURVIVAL_STATUS,
     ]
 
-    attributes: Dict[str, Any]
     alive: bool
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        self.attributes = attributes.copy()
-
+    def calculate(self):
         self.set_alive()
         self.check_cause_of_death()
         self.disease_free_survival()
         self.disease_specific_survival()
         self.overall_survival()
-
-        return self.attributes
 
     def set_alive(self):
         expire_date = self.attributes[S.EXPIRE_DATE]
@@ -158,7 +165,7 @@ def delta_t(
     return end - start
 
 
-class CalculateICD:
+class CalculateICD(Calculate):
 
     # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
     ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {
@@ -334,19 +341,11 @@ class CalculateICD:
 
     REQUIRED_KEYS = [
         S.TUMOR_DISEASE_ANATOMIC_SITE,
-        S.ICD_O_3_SITE_CODE,
-        S.ICD_10_CLASSIFICATION
     ]
 
-    attributes: Dict[str, Any]
-
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        self.attributes = attributes.copy()
-
+    def calculate(self):
         self.add_icd_o_3()
         self.add_icd_10()
-
-        return self.attributes
 
     def add_icd_o_3(self):
         site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
@@ -359,29 +358,22 @@ class CalculateICD:
         self.attributes[S.ICD_10_CLASSIFICATION] = icd_10
 
 
-class CalculateStage:
+class CalculateStage(Calculate):
     """
     https://www.cancer.org/cancer/types/oral-cavity-and-oropharyngeal-cancer/detection-diagnosis-staging/staging.html
     """
 
     REQUIRED_KEYS = [
         S.CLINICAL_TNM,
-        S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
     ]
-
-    attributes: Dict[str, Any]
 
     t: str
     n: str
     m: str
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        self.attributes = attributes.copy()
-
+    def calculate(self):
         self.set_tnm()
         self.calculate_stage()
-
-        return self.attributes
 
     def set_tnm(self):
         try:
@@ -422,22 +414,9 @@ class CalculateStage:
         self.attributes[S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
 
 
-class CalculateLymphNodes:
+class CalculateLymphNodes(Calculate):
 
-    REQUIRED_KEYS = [
-        S.LYMPH_NODE_LEVEL_IA,
-        S.LYMPH_NODE_LEVEL_IB,
-        S.LYMPH_NODE_LEVEL_IIA,
-        S.LYMPH_NODE_LEVEL_IIB,
-        S.LYMPH_NODE_LEVEL_III,
-        S.LYMPH_NODE_LEVEL_IV,
-        S.LYMPH_NODE_LEVEL_V,
-        S.LYMPH_NODE_RIGHT,
-        S.LYMPH_NODE_LEFT,
-        S.TOTAL_LYMPH_NODE,
-    ]
-
-    attributes: Dict[str, Any]
+    REQUIRED_KEYS = []  # all lymph node records are optional
 
     level_1_m: int
     level_1_n: int
@@ -446,9 +425,7 @@ class CalculateLymphNodes:
     total_m: int
     total_n: int
 
-    def main(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
-        self.attributes = attributes.copy()
-
+    def calculate(self):
         self.total_m, self.total_n = 0, 0
         self.add_level_1()
         self.add_level_2()
@@ -459,8 +436,6 @@ class CalculateLymphNodes:
         self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{self.level_1_m}/{self.level_1_n}'
         self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{self.level_2_m}/{self.level_2_n}'
         self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
-
-        return self.attributes
 
     def add_level_1(self):
         level_1a = self.attributes.get(S.LYMPH_NODE_LEVEL_IA, '')
