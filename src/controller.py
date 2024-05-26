@@ -268,25 +268,28 @@ class ActionExportCbioportalStudy(Action):
 class ActionReprocessTable(Action):
 
     def __call__(self):
-        for row in range(len(self.model.dataframe)):  # row by row for better granularity and error handling
-            try:
-                attributes: Dict[str, str] = self.model.get_sample(row=row)
-                self.model.update_sample(row=row, attributes=attributes)
-                self.view.refresh_table()
-            except Exception as e:
-                msg = f'Row: {row + 1}\n\nError:\n{repr(e)}'
-                self.view.message_box_error(msg=msg)
+        try:
+            self.model.reprocess_table()
+            self.view.refresh_table()
+        except Exception as e:
+            self.view.message_box_error(msg=repr(e))
 
 
 class ActionUndo(Action):
 
     def __call__(self):
-        self.model.undo()
-        self.view.refresh_table()
+        try:
+            self.model.undo()
+            self.view.refresh_table()
+        except Exception as e:
+            self.view.message_box_error(msg=repr(e))
 
 
 class ActionRedo(Action):
 
     def __call__(self):
-        self.model.redo()
-        self.view.refresh_table()
+        try:
+            self.model.redo()
+            self.view.refresh_table()
+        except Exception as e:
+            self.view.message_box_error(msg=repr(e))

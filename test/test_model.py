@@ -108,3 +108,10 @@ class TestModel(TestCase):
         model.append_sample(attributes={'Medical Record ID': '12345'})
         self.assertEqual('12345', model.dataframe.loc[11, 'Medical Record ID'])
         self.assertEqual(2, len(model.undo_cache))
+
+    def test_reprocess_table(self):
+        model = Model(NycuOsccSchema)
+        model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
+        model.reprocess_table()
+        self.assertEqual(11, len(model.dataframe))
+        self.assertEqual(2, len(model.undo_cache))

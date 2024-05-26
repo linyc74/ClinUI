@@ -143,6 +143,18 @@ class Model(BaseModel):
         self.__add_to_undo_cache()  # add to undo cache after successful append
         self.dataframe = new
 
+    def reprocess_table(self):
+        new = self.dataframe.copy()
+
+        for row in range(len(self.dataframe)):
+            attributes = self.get_sample(row=row)
+            attributes = self.__process(attributes=attributes)
+            for key, val in attributes.items():
+                new.at[row, key] = val
+
+        self.__add_to_undo_cache()  # add to undo cache after successful reprocess
+        self.dataframe = new
+
     def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
             attributes = CalculateNycuOscc().main(attributes=attributes)
@@ -152,8 +164,7 @@ class Model(BaseModel):
     def find(
             self,
             text: str,
-            start: Optional[Tuple[int, str]]) \
-            -> Optional[Tuple[int, str]]:
+            start: Optional[Tuple[int, str]]) -> Optional[Tuple[int, str]]:
 
         if start is None:
             start_irow = 0
