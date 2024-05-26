@@ -29,6 +29,8 @@ class Controller:
         self.action_export_cbioportal_study = ActionExportCbioportalStudy(self)
         self.action_find = ActionFind(self)
         self.action_reprocess_table = ActionReprocessTable(self)
+        self.action_undo = ActionUndo(self)
+        self.action_redo = ActionRedo(self)
 
     def __connect_button_actions(self):
         for name in self.view.BUTTON_NAME_TO_LABEL.keys():
@@ -274,3 +276,17 @@ class ActionReprocessTable(Action):
             except Exception as e:
                 msg = f'Row: {row + 1}\n\nError:\n{repr(e)}'
                 self.view.message_box_error(msg=msg)
+
+
+class ActionUndo(Action):
+
+    def __call__(self):
+        self.model.undo()
+        self.view.refresh_table()
+
+
+class ActionRedo(Action):
+
+    def __call__(self):
+        self.model.redo()
+        self.view.refresh_table()

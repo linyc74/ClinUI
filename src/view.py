@@ -120,6 +120,8 @@ class View(QWidget):
         'save_clinical_data_table': 'Save Clinical Data Table',
         'reprocess_table': 'Reprocess Table',
 
+        'undo': 'Undo',
+        'redo': 'Redo',
         'find': 'Find',
         'sort_ascending': 'Sort (A to Z)',
         'sort_descending': 'Sort (Z to A)',
@@ -136,16 +138,17 @@ class View(QWidget):
         'save_clinical_data_table': (2, 0),
         'reprocess_table': (4, 0),
 
-        'find': (0, 1),
-        'sort_ascending': (1, 1),
-        'sort_descending': (2, 1),
-        'delete_selected_rows': (3, 1),
-        'reset_table': (4, 1),
+        'undo': (0, 1),
+        'redo': (1, 1),
+        'find': (2, 1),
+        'sort_ascending': (3, 1),
+        'sort_descending': (4, 1),
+        'delete_selected_rows': (5, 1),
+        'reset_table': (6, 1),
 
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
-
-        'export_cbioportal_study': (4, 2),
+        'export_cbioportal_study': (3, 2),
     }
 
     model: Model
