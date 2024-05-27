@@ -185,8 +185,8 @@ class ActionEditSample(Action):
 
         row = rows[0]  # only one row is selected
 
-        attributes: Dict[str, str] = self.model.get_sample(row=row)
-        attributes: Optional[Dict[str, str]] = self.view.dialog_edit_sample(attributes=attributes)
+        attributes = self.model.get_sample(row=row)
+        attributes = self.view.dialog_edit_sample(attributes=attributes)
 
         if attributes is None:
             return

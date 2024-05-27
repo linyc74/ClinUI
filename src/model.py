@@ -125,8 +125,7 @@ class Model(BaseModel):
         attributes = self.__process(attributes=attributes)
 
         new = self.dataframe.copy()
-        for column, val in attributes.items():
-            new.at[row, column] = val  # use .at to accept a list as a single value
+        new.loc[row] = attributes
 
         self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
@@ -147,10 +146,9 @@ class Model(BaseModel):
         new = self.dataframe.copy()
 
         for row in range(len(self.dataframe)):
-            attributes = self.get_sample(row=row)
+            attributes = self.get_sample(row=row)  # get from the current self.dataframe
             attributes = self.__process(attributes=attributes)
-            for key, val in attributes.items():
-                new.at[row, key] = val
+            new.loc[row] = attributes
 
         self.__add_to_undo_cache()  # add to undo cache after successful reprocess
         self.dataframe = new
