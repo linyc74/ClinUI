@@ -8,7 +8,7 @@ from .schema import BaseModel, Schema, NycuOsccSchema
 
 class Model(BaseModel):
 
-    MAX_UNDO = 10
+    MAX_UNDO = 100
 
     dataframe: pd.DataFrame  # this is the main clinical data table
 
