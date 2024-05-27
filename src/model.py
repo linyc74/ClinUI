@@ -122,7 +122,7 @@ class Model(BaseModel):
         Everyting comes in model should be string
         Data type conversion is done in the model
         """
-        attributes = self.__process(attributes=attributes)
+        attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
 
         new = self.dataframe.copy()
         new.loc[row] = attributes
@@ -135,7 +135,7 @@ class Model(BaseModel):
         Everyting comes in model should be string
         Data type conversion is done in the model
         """
-        attributes = self.__process(attributes=attributes)
+        attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
 
         new = append(self.dataframe, pd.Series(attributes))
 
@@ -147,17 +147,11 @@ class Model(BaseModel):
 
         for row in range(len(self.dataframe)):
             attributes = self.get_sample(row=row)  # get from the current self.dataframe
-            attributes = self.__process(attributes=attributes)
+            attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
             new.loc[row] = attributes
 
         self.__add_to_undo_cache()  # add to undo cache after successful reprocess
         self.dataframe = new
-
-    def __process(self, attributes: Dict[str, str]) -> Dict[str, Any]:
-        if self.schema is NycuOsccSchema:
-            attributes = CalculateNycuOscc().main(attributes=attributes)
-        attributes = CastDatatypes(self.schema).main(attributes=attributes)
-        return attributes
 
     def find(
             self,
@@ -362,6 +356,15 @@ class ExportCbioportalStudy(BaseModel):
             study_info_dict=self.study_info_dict,
             tags_dict=self.tags_dict,
             outdir=self.outdir)
+
+
+class ProcessSampleAttributes(BaseModel):
+
+    def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
+        if self.schema is NycuOsccSchema:
+            attributes = CalculateNycuOscc().main(attributes=attributes)
+        attributes = CastDatatypes(self.schema).main(attributes=attributes)
+        return attributes
 
 
 class CastDatatypes(BaseModel):
