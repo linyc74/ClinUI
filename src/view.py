@@ -1,5 +1,5 @@
-import os
 import pandas as pd
+from os.path import dirname
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, QFileDialog, \
@@ -12,7 +12,7 @@ from .schema import DATA_SCHEMA_DICT
 class SelectDataSchemaDialog:
 
     TITLE = 'Select Data Schema'
-    ICON_PNG = f'{os.getcwd()}/icon/logo.ico'
+    ICON_FILE = 'icon/logo.ico'
     WIDTH, HEIGHT = 500, 225
 
     dialog: QDialog
@@ -28,7 +28,7 @@ class SelectDataSchemaDialog:
     def __init__dialog(self):
         self.dialog = QDialog()
         self.dialog.setWindowTitle(self.TITLE)
-        self.dialog.setWindowIcon(QIcon(self.ICON_PNG))
+        self.dialog.setWindowIcon(QIcon(f'{dirname(dirname(__file__))}/{self.ICON_FILE}'))
         self.dialog.resize(self.WIDTH, self.HEIGHT)
 
     def __init__layout(self):
@@ -112,7 +112,7 @@ class Table(QTableWidget):
 class View(QWidget):
 
     TITLE = 'ClinUI'
-    ICON_PNG = f'{os.getcwd()}/icon/logo.ico'
+    ICON_FILE = 'icon/logo.ico'
     WIDTH, HEIGHT = 1280, 768
     BUTTON_NAME_TO_LABEL = {
         'import_clinical_data_table': 'Import Clinical Data Table',
@@ -161,7 +161,8 @@ class View(QWidget):
         self.model = model
 
         self.setWindowTitle(self.TITLE)
-        self.setWindowIcon(QIcon(self.ICON_PNG))
+        self.setWindowIcon(QIcon(self.ICON_FILE))
+        self.setWindowIcon(QIcon(f'{dirname(dirname(__file__))}/{self.ICON_FILE}'))
         self.resize(self.WIDTH, self.HEIGHT)
 
         self.__init__vertical_layout()
