@@ -18,6 +18,5 @@ test/*workdir*/
 build/
 dist/
 ClinUI.spec
-setup.py
 
 todo.md
