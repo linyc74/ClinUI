@@ -240,14 +240,12 @@ class FormatClinicalData(BaseModel):
         return self.df
 
     def replace_boolean_with_str(self):
-        """
-        For cBioPortal boolean values need to be written as 'TRUE' and 'FALSE'
-        """
+        # cBioPortal boolean values need to be written as 'TRUE' and 'FALSE'
         for c in self.df.columns:
             datatype = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', 'str')  # default is 'str'
-
-            # need to check datatype is bool, otherwise what can happen is
-            #   1.0 --> 'TRUE', 0.0 --> 'FALSE'
+            # need to check datatype is bool, otherwise what can happen is:
+            #   1.0 --> 'TRUE'
+            #   0.0 --> 'FALSE'
             if datatype == 'bool':
                 self.df[c] = self.df[c].replace(to_replace={True: 'TRUE', False: 'FALSE'})
 
