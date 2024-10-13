@@ -227,37 +227,41 @@ class FormatClinicalData(BaseModel):
         'PROGRESSION_FREE_SURVIVAL_MONTHS': 'PFS_MONTHS',
         'PROGRESSION_FREE_SURVIVAL_STATUS': 'PFS_STATUS',
     }
-    REPLACE_VALUE_DICT = {
-        True: 'TRUE',
-        False: 'FALSE'
-    }
 
     df: pd.DataFrame
 
     def main(self, df: pd.DataFrame) -> pd.DataFrame:
         self.df = df
 
+        self.replace_boolean_with_str()
         self.format_columns()
         self.rename_columns()
-        self.replace_values()
 
         return self.df
 
+    def replace_boolean_with_str(self):
+        """
+        For cBioPortal boolean values need to be written as 'TRUE' and 'FALSE'
+        """
+        for c in self.df.columns:
+            datatype = self.schema.COLUMN_ATTRIBUTES.get(c, {}).get('type', 'str')  # default is 'str'
+
+            # need to check datatype is bool, otherwise what can happen is
+            #   1.0 --> 'TRUE', 0.0 --> 'FALSE'
+            if datatype == 'bool':
+                self.df[c] = self.df[c].replace(to_replace={True: 'TRUE', False: 'FALSE'})
+
     def format_columns(self):
-        rename_dict = {c: self.__format(c) for c in self.df.columns}
+
+        def formated(c: str) -> str:
+            for x in [' ', '-', ',', '/']:
+                c = c.upper().replace(x, '_')
+            for x in ['(', ')']:
+                c = c.replace(x, '')
+            return c
+
+        rename_dict = {c: formated(c) for c in self.df.columns}
         self.df = self.df.rename(columns=rename_dict)
-
-    def __format(self, c: str) -> str:
-        for x in [' ', '-', ',', '/']:
-            c = c.upper().replace(x, '_')
-
-        for x in ['(', ')']:
-            c = c.replace(x, '')
-
-        return c
 
     def rename_columns(self):
         self.df = self.df.rename(columns=self.RENAME_COLUMN_DICT)
-
-    def replace_values(self):
-        self.df = self.df.replace(to_replace=self.REPLACE_VALUE_DICT)
