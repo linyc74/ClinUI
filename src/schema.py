@@ -170,17 +170,17 @@ class NycuOsccSchema(Schema):
         CIGARETTE_SMOKING_QUIT,
         HISTOLOGIC_GRADE,
         SURGERY,
-        NEOADJUVANT_INDUCTION_CHEMOTHERAPY,
+        # NEOADJUVANT_INDUCTION_CHEMOTHERAPY,
         NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG,
-        ADJUVANT_CHEMOTHERAPY,
+        # ADJUVANT_CHEMOTHERAPY,
         ADJUVANT_CHEMOTHERAPY_DRUG,
-        PALLIATIVE_CHEMOTHERAPY,
+        # PALLIATIVE_CHEMOTHERAPY,
         PALLIATIVE_CHEMOTHERAPY_DRUG,
-        ADJUVANT_TARGETED_THERAPY,
+        # ADJUVANT_TARGETED_THERAPY,
         ADJUVANT_TARGETED_THERAPY_DRUG,
-        PALLIATIVE_TARGETED_THERAPY,
+        # PALLIATIVE_TARGETED_THERAPY,
         PALLIATIVE_TARGETED_THERAPY_DRUG,
-        IMMUNOTHERAPY,
+        # IMMUNOTHERAPY,
         IMMUNOTHERAPY_DRUG,
         RADIATION_THERAPY,
         RADIATION_THERAPY_DOSE,
@@ -230,9 +230,13 @@ class NycuOsccSchema(Schema):
         CLINICAL_DIAGNOSIS_AGE,
         ICD_O_3_SITE_CODE,
         ICD_10_CLASSIFICATION,
-        LYMPH_NODE_LEVEL_I,
-        LYMPH_NODE_LEVEL_II,
         TOTAL_LYMPH_NODE,
+        NEOADJUVANT_INDUCTION_CHEMOTHERAPY,
+        ADJUVANT_CHEMOTHERAPY,
+        PALLIATIVE_CHEMOTHERAPY,
+        ADJUVANT_TARGETED_THERAPY,
+        PALLIATIVE_TARGETED_THERAPY,
+        IMMUNOTHERAPY,
         NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE,
         DISEASE_FREE_SURVIVAL_MONTHS,
         DISEASE_FREE_SURVIVAL_STATUS,
@@ -309,7 +313,12 @@ class NycuOsccSchema(Schema):
         },
         CANCER_TYPE_DETAILED: {
             'type': 'str',
-            'options': ['Oral Cavity Squamous Cell Carcinoma', 'Head and Neck Squamous Cell Carcinoma'],
+            'options': [
+                'Head and Neck Squamous Cell Carcinoma',
+                'Oral Cavity Squamous Cell Carcinoma',
+                'Salivary Carcinoma',
+                'Mucoepideroid Carcinoma',
+            ],
         },
         SAMPLE_TYPE: {
             'type': 'str',
@@ -364,7 +373,7 @@ class NycuOsccSchema(Schema):
         },
         ALCOHOL_CONSUMPTION_FREQUENCY: {
             'type': 'str',
-            'options': ['0.0', 'Occasional', 'Social'],
+            'options': ['0.0', 'Occasional', 'Social', 'Heavy'],
         },
         ALCOHOL_CONSUMPTION_DURATION: {
             'type': 'float',
@@ -380,7 +389,7 @@ class NycuOsccSchema(Schema):
         },
         BETEL_NUT_CHEWING_FREQUENCY: {
             'type': 'str',
-            'options': ['0.0', 'Occasional', 'Social'],
+            'options': ['0.0', 'Occasional', 'Social', 'Heavy'],
         },
         BETEL_NUT_CHEWING_DURATION: {
             'type': 'float',
@@ -396,7 +405,7 @@ class NycuOsccSchema(Schema):
         },
         CIGARETTE_SMOKING_FREQUENCY: {
             'type': 'sting',
-            'options': ['0.0', 'Occasional', 'Social'],
+            'options': ['0.0', 'Occasional', 'Social', 'Heavy'],
         },
         CIGARETTE_SMOKING_DURATION: {
             'type': 'float',
@@ -423,6 +432,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': [
                 '',
+                'None',
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
@@ -440,6 +450,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': [
                 '',
+                'None',
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
@@ -457,6 +468,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': [
                 '',
+                'None',
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
@@ -474,6 +486,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': [
                 '',
+                'None',
                 'Cetuximab',
                 'Cetuximab and Docetaxel',
             ],
@@ -486,6 +499,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': [
                 '',
+                'None',
                 'Cetuximab',
                 'Cetuximab and Docetaxel',
             ],
@@ -496,7 +510,12 @@ class NycuOsccSchema(Schema):
         },
         IMMUNOTHERAPY_DRUG: {
             'type': 'str',
-            'options': ['', 'Pembrolizumab', 'Nivolumab'],
+            'options': [
+                '',
+                'None',
+                'Pembrolizumab',
+                'Nivolumab',
+            ],
         },
         RADIATION_THERAPY: {
             'type': 'str',
@@ -508,19 +527,19 @@ class NycuOsccSchema(Schema):
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%'],
+            'options': ['> 50%', '< 50%', 'NA'],
         },
         IHC_ANTI_PDL1_MAB_22C3_CPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%'],
+            'options': ['> 50%', '< 50%', 'NA'],
         },
         IHC_ANTI_PDL1_MAB_28_8_TPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%'],
+            'options': ['> 50%', '< 50%', 'NA'],
         },
         IHC_ANTI_PDL1_MAB_28_8_CPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%'],
+            'options': ['> 50%', '< 50%', 'NA'],
         },
         LYMPH_NODE_LEVEL_I: {
             'type': 'str',
@@ -571,16 +590,16 @@ class NycuOsccSchema(Schema):
             'options': ['0/0', ''],
         },
         LYMPHOVASCULAR_INVASION_LVI: {
-            'type': 'bool',
-            'options': [False, True],
+            'type': 'str',
+            'options': ['-', '+', 'Suspicious'],
         },
         PERINEURAL_INVASION: {
             'type': 'str',
             'options': ['Negative', 'Positive', 'Extensive'],
         },
         CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
-            'type': 'bool',
-            'options': [False, True],
+            'type': 'str',
+            'options': ['-', '+', 'Suspicious'],
         },
         PATHOLOGICAL_EXTRANODAL_EXTENSION: {
             'type': 'str',
@@ -592,7 +611,7 @@ class NycuOsccSchema(Schema):
         },
         TUMOR_MARGIN: {
             'type': 'str',
-            'options': ['Negative (> 4mm)', 'Negative (> 4mm) with dysplasia', 'Close (≤ 4mm)', 'Close (≤ 4mm)  with dysplasia', 'Positive'],
+            'options': ['Negative', 'Close', 'Positive', '1 mm', '2 mm', '3 mm', '4 mm'],
         },
         CLINICAL_TNM: {
             'type': 'str',

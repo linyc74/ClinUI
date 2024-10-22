@@ -418,78 +418,83 @@ class CalculateLymphNodes(Calculate):
 
     REQUIRED_KEYS = []  # all lymph node records are optional
 
-    level_1_m: int
-    level_1_n: int
-    level_2_m: int
-    level_2_n: int
     total_m: int
     total_n: int
 
     def calculate(self):
         self.total_m, self.total_n = 0, 0
-        self.add_level_1()
-        self.add_level_2()
-        self.add_level_3()
-        self.add_level_4()
-        self.add_level_5()
+        self.add_level_1a_1b()
+        self.add_level_2a_2b()
+        self.add_all_levels()
         self.add_right_left()
-        self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{self.level_1_m}/{self.level_1_n}'
-        self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{self.level_2_m}/{self.level_2_n}'
         self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
 
-    def add_level_1(self):
+    def add_level_1a_1b(self):
         level_1a = self.attributes.get(S.LYMPH_NODE_LEVEL_IA, '')
         level_1b = self.attributes.get(S.LYMPH_NODE_LEVEL_IB, '')
 
-        self.level_1_m, self.level_1_n = 0, 0
+        if level_1a == '' and level_1b == '':
+            return
+
+        level_1_m, level_1_n = 0, 0
 
         if level_1a != '':
             m, n = level_1a.split('/')
-            self.level_1_m += int(m)
-            self.level_1_n += int(n)
-            self.total_m += int(m)
-            self.total_n += int(n)
+            level_1_m += int(m)
+            level_1_n += int(n)
+
         if level_1b != '':
             m, n = level_1b.split('/')
-            self.level_1_m += int(m)
-            self.level_1_n += int(n)
-            self.total_m += int(m)
-            self.total_n += int(n)
+            level_1_m += int(m)
+            level_1_n += int(n)
 
-    def add_level_2(self):
+        self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{level_1_m}/{level_1_n}'
+
+    def add_level_2a_2b(self):
         level_2a = self.attributes.get(S.LYMPH_NODE_LEVEL_IIA, '')
         level_2b = self.attributes.get(S.LYMPH_NODE_LEVEL_IIB, '')
 
-        self.level_2_m, self.level_2_n = 0, 0
+        if level_2a == '' and level_2b == '':
+            return
+
+        level_2_m, level_2_n = 0, 0
 
         if level_2a != '':
             m, n = level_2a.split('/')
-            self.level_2_m += int(m)
-            self.level_2_n += int(n)
-            self.total_m += int(m)
-            self.total_n += int(n)
+            level_2_m += int(m)
+            level_2_n += int(n)
         if level_2b != '':
             m, n = level_2b.split('/')
-            self.level_2_m += int(m)
-            self.level_2_n += int(n)
-            self.total_m += int(m)
-            self.total_n += int(n)
+            level_2_m += int(m)
+            level_2_n += int(n)
 
-    def add_level_3(self):
+        self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{level_2_m}/{level_2_n}'
+
+    def add_all_levels(self):
+        level_1 = self.attributes.get(S.LYMPH_NODE_LEVEL_I, '')
+        if level_1 != '':
+            a, b = level_1.split('/')
+            self.total_m += int(a)
+            self.total_n += int(b)
+
+        level_2 = self.attributes.get(S.LYMPH_NODE_LEVEL_II, '')
+        if level_2 != '':
+            a, b = level_2.split('/')
+            self.total_m += int(a)
+            self.total_n += int(b)
+
         level_3 = self.attributes.get(S.LYMPH_NODE_LEVEL_III, '')
         if level_3 != '':
             a, b = level_3.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
 
-    def add_level_4(self):
         level_4 = self.attributes.get(S.LYMPH_NODE_LEVEL_IV, '')
         if level_4 != '':
             a, b = level_4.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
 
-    def add_level_5(self):
         level_5 = self.attributes.get(S.LYMPH_NODE_LEVEL_V, '')
         if level_5 != '':
             a, b = level_5.split('/')
