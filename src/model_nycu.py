@@ -20,6 +20,7 @@ class CalculateNycuOscc:
         attributes = CalculateICD().main(attributes)
         attributes = CalculateLymphNodes().main(attributes)
         attributes = CalculateStage().main(attributes)
+        attributes = CalculateTherapy().main(attributes)
 
         return attributes
 
@@ -515,3 +516,30 @@ class CalculateLymphNodes(Calculate):
             a, b = left.split('/')
             self.total_m += int(a)
             self.total_n += int(b)
+
+
+class CalculateTherapy(Calculate):
+
+    REQUIRED_KEYS = [
+        S.NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG,
+        S.ADJUVANT_CHEMOTHERAPY_DRUG,
+        S.PALLIATIVE_CHEMOTHERAPY_DRUG,
+        S.ADJUVANT_TARGETED_THERAPY_DRUG,
+        S.PALLIATIVE_TARGETED_THERAPY_DRUG,
+        S.IMMUNOTHERAPY_DRUG,
+    ]
+
+    def calculate(self):
+        for key1, key2 in [
+            (S.NEOADJUVANT_INDUCTION_CHEMOTHERAPY, S.NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG),
+            (S.ADJUVANT_CHEMOTHERAPY, S.ADJUVANT_CHEMOTHERAPY_DRUG),
+            (S.PALLIATIVE_CHEMOTHERAPY, S.PALLIATIVE_CHEMOTHERAPY_DRUG),
+            (S.ADJUVANT_TARGETED_THERAPY, S.ADJUVANT_TARGETED_THERAPY_DRUG),
+            (S.PALLIATIVE_TARGETED_THERAPY, S.PALLIATIVE_TARGETED_THERAPY_DRUG),
+            (S.IMMUNOTHERAPY, S.IMMUNOTHERAPY_DRUG),
+        ]:
+            drug = self.attributes[key2]
+            if drug in ['', 'None']:
+                self.attributes[key1] = 'False'
+            else:
+                self.attributes[key1] = 'True'

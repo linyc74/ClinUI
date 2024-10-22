@@ -1,4 +1,5 @@
-from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, CalculateStage, CalculateLymphNodes
+from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, \
+    CalculateStage, CalculateLymphNodes, CalculateTherapy
 from .setup import TestCase
 
 
@@ -374,5 +375,35 @@ class TestCalculateLymphNodes(TestCase):
         expected = attributes.copy()
         expected.update({
             'Total Lymph Node': '1/2',
+        })
+        self.assertDictEqual(expected, actual)
+
+
+class TestCalculateTherapy(TestCase):
+
+    def setUp(self):
+        self.set_up(py_path=__file__)
+
+    def tearDown(self):
+        self.tear_down()
+
+    def test_main(self):
+        attributes = {
+            'Neoadjuvant/Induction Chemotherapy Drug': 'None',
+            'Adjuvant Chemotherapy Drug': '',
+            'Palliative Chemotherapy Drug': 'Drug A',
+            'Adjuvant Targeted Therapy Drug': 'Drug B',
+            'Palliative Targeted Therapy Drug': 'Drug C',
+            'Immunotherapy Drug': 'Drug D',
+        }
+        actual = CalculateTherapy().main(attributes=attributes)
+        expected = attributes.copy()
+        expected.update({
+            'Neoadjuvant/Induction Chemotherapy': 'False',
+            'Adjuvant Chemotherapy': 'False',
+            'Palliative Chemotherapy': 'True',
+            'Adjuvant Targeted Therapy': 'True',
+            'Palliative Targeted Therapy': 'True',
+            'Immunotherapy': 'True',
         })
         self.assertDictEqual(expected, actual)
