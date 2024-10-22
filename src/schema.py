@@ -591,15 +591,15 @@ class NycuOsccSchema(Schema):
         },
         LYMPHOVASCULAR_INVASION_LVI: {
             'type': 'str',
-            'options': ['-', '+', 'Suspicious'],
+            'options': ['Negative', 'Positive', 'Suspicious'],
         },
         PERINEURAL_INVASION: {
             'type': 'str',
-            'options': ['Negative', 'Positive', 'Extensive'],
+            'options':  ['Negative', 'Positive', 'Extensive'],
         },
         CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
             'type': 'str',
-            'options': ['-', '+', 'Suspicious'],
+            'options': ['Negative', 'Positive'],
         },
         PATHOLOGICAL_EXTRANODAL_EXTENSION: {
             'type': 'str',
