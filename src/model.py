@@ -142,6 +142,22 @@ class Model(BaseModel):
         self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
 
+    def update_cell(self, row: int, column: str, value: str):
+        """
+        Everyting comes in model should be string
+        Data type conversion is done in the model
+        """
+        series = self.dataframe.loc[row].fillna('')  # NaN should be ''
+        attributes = series.to_dict()
+        attributes[column] = value  # update the field with new value
+        attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
+
+        new = self.dataframe.copy()
+        new.loc[row] = attributes
+
+        self.__add_to_undo_cache()  # add to undo cache after successful update
+        self.dataframe = new
+
     def append_sample(self, attributes: Dict[str, str]):
         """
         Everyting comes in model should be string
@@ -152,22 +168,6 @@ class Model(BaseModel):
         new = append(self.dataframe, pd.Series(attributes))
 
         self.__add_to_undo_cache()  # add to undo cache after successful append
-        self.dataframe = new
-
-    def update_cell(self, row: int, column: str, value: str):
-        """
-        Everyting comes in model should be string
-        Data type conversion is done in the model
-        """
-        series = self.dataframe.loc[row].fillna('')  # NaN --> ''
-        attributes = series.to_dict()
-        attributes[column] = value
-        attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
-
-        new = self.dataframe.copy()
-        new.loc[row] = attributes
-
-        self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
 
     def reprocess_table(self):
