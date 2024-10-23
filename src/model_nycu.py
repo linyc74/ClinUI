@@ -452,6 +452,9 @@ class CalculateLymphNodes(Calculate):
         self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
 
     def add_level_1a_1b(self):
+        if self.attributes.get(S.LYMPH_NODE_LEVEL_I, '') != '':  # alread has level I, skip adding Ia and Ib
+            return
+
         level_1a = self.attributes.get(S.LYMPH_NODE_LEVEL_IA, '')
         level_1b = self.attributes.get(S.LYMPH_NODE_LEVEL_IB, '')
 
@@ -473,6 +476,9 @@ class CalculateLymphNodes(Calculate):
         self.attributes[S.LYMPH_NODE_LEVEL_I] = f'{level_1_m}/{level_1_n}'
 
     def add_level_2a_2b(self):
+        if self.attributes.get(S.LYMPH_NODE_LEVEL_II, '') != '':  # alread has level II, skip adding IIa and IIb
+            return
+
         level_2a = self.attributes.get(S.LYMPH_NODE_LEVEL_IIA, '')
         level_2b = self.attributes.get(S.LYMPH_NODE_LEVEL_IIB, '')
 
