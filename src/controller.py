@@ -94,7 +94,7 @@ class ActionFind(Action):
 
     def __call__(self):
         text = self.view.dialog_find()
-        if text == '':
+        if text is None:
             return
 
         selected_cells = self.view.get_selected_cells()
@@ -216,6 +216,9 @@ class ActionEditCell(Action):
             value = self.model.get_value(row=row, column=column)
 
             new_value = self.view.dialog_edit_cell(value=value)
+
+            if new_value is None:
+                return
 
             self.model.update_cell(row=row, column=column, value=new_value)
             self.view.refresh_table()

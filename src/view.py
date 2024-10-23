@@ -477,15 +477,6 @@ class DialogLineEdits:
         self.button_box.rejected.connect(self.dialog.reject)
         self.layout.addWidget(self.button_box)
 
-    def __call__(self) -> Union[str, tuple]:
-
-        if self.dialog.exec_() == QDialog.Accepted:
-            ret = tuple(e.text() for e in self.line_edits)
-        else:
-            ret = tuple('' for _ in self.LINE_DEFAULTS)
-
-        return ret if len(ret) > 1 else ret[0]
-
 
 class DialogFind(DialogLineEdits):
 
@@ -495,6 +486,12 @@ class DialogFind(DialogLineEdits):
     LINE_DEFAULTS = [
         '',
     ]
+
+    def __call__(self) -> Optional[str]:
+        if self.dialog.exec_() == QDialog.Accepted:
+            return self.line_edits[0].text()
+        else:
+            return None
 
 
 class DialogEditCell(DialogLineEdits):
@@ -506,17 +503,12 @@ class DialogEditCell(DialogLineEdits):
         '',
     ]
 
-    def __call__(self, value: Optional[str] = None) -> Union[str, tuple]:
-
-        if value is not None:
-            self.line_edits[0].setText(value)
-
+    def __call__(self, value: str) -> Optional[str]:
+        self.line_edits[0].setText(value)
         if self.dialog.exec_() == QDialog.Accepted:
-            ret = tuple(e.text() for e in self.line_edits)
+            return self.line_edits[0].text()
         else:
-            ret = tuple('' for _ in self.LINE_DEFAULTS)
-
-        return ret if len(ret) > 1 else ret[0]
+            return None
 
 
 def str_(value: Any) -> str:
