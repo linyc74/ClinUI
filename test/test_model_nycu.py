@@ -1,5 +1,5 @@
 from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, \
-    CalculateStage, CalculateLymphNodes, CalculateTherapy
+    CalculateStage, CalculateLymphNodes, CalculateTherapy, find_best_matching_key_val
 from .setup import TestCase
 
 
@@ -218,6 +218,41 @@ class TestCalculateICD(TestCase):
             'ICD-10 Classification': '',
         }
         self.assertDictEqual(expected, actual)
+
+    def test_not_exact_match(self):
+        attributes = {
+            'Tumor Disease Anatomic Site': 'Mouth floor',
+        }
+        actual = CalculateICD().main(attributes=attributes)
+        expected = {
+            'Tumor Disease Anatomic Site': 'Mouth floor',
+            'ICD-O-3 Site Code': 'C04.9',
+            'ICD-10 Classification': 'C04.9',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_find_best_matching_key_val(self):
+        dict_ = {
+            'A B C': 1,
+            'B C': 2,
+            'C': 3,
+        }
+
+        actual = find_best_matching_key_val(dict_=dict_, key='d b a c')
+        expected = ('A B C', 1)
+        self.assertTupleEqual(expected, actual)
+
+        actual = find_best_matching_key_val(dict_=dict_, key='b a c')
+        expected = ('A B C', 1)
+        self.assertTupleEqual(expected, actual)
+
+        actual = find_best_matching_key_val(dict_=dict_, key='c b')
+        expected = ('B C', 2)
+        self.assertTupleEqual(expected, actual)
+
+        actual = find_best_matching_key_val(dict_=dict_, key='c')
+        expected = ('C', 3)
+        self.assertTupleEqual(expected, actual)
 
 
 class TestCalculateStage(TestCase):

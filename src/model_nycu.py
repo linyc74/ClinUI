@@ -4,7 +4,7 @@ Thus there is no need to dynamically pass in the self.schema object
 """
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Union, List
+from typing import Dict, Any, Union, List, Tuple
 from .schema import NycuOsccSchema
 
 
@@ -345,18 +345,39 @@ class CalculateICD(Calculate):
     ]
 
     def calculate(self):
-        self.add_icd_o_3()
-        self.add_icd_10()
-
-    def add_icd_o_3(self):
         site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
-        icd_o_3 = self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE.get(site, '')
+
+        _, icd_o_3 = find_best_matching_key_val(dict_=self.ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE, key=site)
         self.attributes[S.ICD_O_3_SITE_CODE] = icd_o_3
 
-    def add_icd_10(self):
-        site = self.attributes[S.TUMOR_DISEASE_ANATOMIC_SITE]
-        icd_10 = self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION.get(site, '')
+        _, icd_10 = find_best_matching_key_val(dict_=self.ANATOMIC_SITE_TO_ICD_10_CLASSIFICATION, key=site)
         self.attributes[S.ICD_10_CLASSIFICATION] = icd_10
+
+
+def find_best_matching_key_val(dict_: Dict[str, Any], key: str) -> Tuple[str, Any]:
+    for k, v in dict_.items():
+        if k == key:  # need to match case
+            return k, v
+
+    for k, v in dict_.items():
+        if k.lower() == key.lower():  # no need to match case
+            return k, v
+
+    ret = '', ''
+    max_matched, max_fraction = 0, 0.0
+    for k, v in dict_.items():
+        a = set(w.lower() for w in k.split(' '))
+        b = set(w.lower() for w in key.split(' '))
+
+        matched = len(a.intersection(b))
+        fraction = matched / len(a)
+
+        if matched >= max_matched:  # the number of matched words can be just as many as before
+            if fraction > max_fraction:  # if it has greater fraction, it is still better
+                ret = k, v
+                max_matched, max_fraction = matched, fraction
+
+    return ret
 
 
 class CalculateStage(Calculate):
