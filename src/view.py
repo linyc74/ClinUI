@@ -130,6 +130,7 @@ class View(QWidget):
 
         'add_new_sample': 'Add New Sample',
         'edit_sample': 'Edit Sample',
+        'edit_value': 'Edit Value',
         'export_cbioportal_study': 'Export cBioPortal Study',
     }
     BUTTON_NAME_TO_POSITION = {
@@ -148,7 +149,8 @@ class View(QWidget):
 
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
-        'export_cbioportal_study': (3, 2),
+        'edit_value': (2, 2),
+        'export_cbioportal_study': (4, 2),
     }
 
     model: Model
