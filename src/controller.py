@@ -26,6 +26,7 @@ class Controller:
         self.action_reset_table = ActionResetTable(self)
         self.action_add_new_sample = ActionAddNewSample(self)
         self.action_edit_sample = ActionEditSample(self)
+        self.action_edit_cell = ActionEditCell(self)
         self.action_export_cbioportal_study = ActionExportCbioportalStudy(self)
         self.action_find = ActionFind(self)
         self.action_reprocess_table = ActionReprocessTable(self)
@@ -194,6 +195,31 @@ class ActionEditSample(Action):
         try:
             self.model.update_sample(row=row, attributes=attributes)
             self.view.refresh_table()
+        except Exception as e:
+            self.view.message_box_error(msg=repr(e))
+
+
+class ActionEditCell(Action):
+
+    def __call__(self):
+        try:
+            cells = self.view.get_selected_cells()
+
+            if len(cells) == 0:
+                self.view.message_box_error('Please select a cell')
+                return
+            elif len(cells) > 1:
+                self.view.message_box_error('Please select only one cell')
+                return
+
+            row, column = cells[0]
+            value = self.model.get_value(row=row, column=column)
+
+            new_value = self.view.dialog_edit_cell(value=value)
+
+            self.model.update_cell(row=row, column=column, value=new_value)
+            self.view.refresh_table()
+
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
 

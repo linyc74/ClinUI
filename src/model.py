@@ -114,6 +114,18 @@ class Model(BaseModel):
 
         return ret
 
+    def get_value(self, row: int, column: str) -> str:
+        """
+        Everything going out of model should be string to avoid complex type issues
+        NaN should simply be defined as empty string
+        """
+        val = self.dataframe.loc[row, column]
+
+        if pd.isna(val):
+            return ''
+        else:
+            return str(val)
+
     def update_sample(
             self,
             row: int,
@@ -140,6 +152,22 @@ class Model(BaseModel):
         new = append(self.dataframe, pd.Series(attributes))
 
         self.__add_to_undo_cache()  # add to undo cache after successful append
+        self.dataframe = new
+
+    def update_cell(self, row: int, column: str, value: str):
+        """
+        Everyting comes in model should be string
+        Data type conversion is done in the model
+        """
+        series = self.dataframe.loc[row].fillna('')  # NaN --> ''
+        attributes = series.to_dict()
+        attributes[column] = value
+        attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
+
+        new = self.dataframe.copy()
+        new.loc[row] = attributes
+
+        self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
 
     def reprocess_table(self):

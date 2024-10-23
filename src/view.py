@@ -130,7 +130,7 @@ class View(QWidget):
 
         'add_new_sample': 'Add New Sample',
         'edit_sample': 'Edit Sample',
-        'edit_value': 'Edit Value',
+        'edit_cell': 'Edit Cell',
         'export_cbioportal_study': 'Export cBioPortal Study',
     }
     BUTTON_NAME_TO_POSITION = {
@@ -149,7 +149,7 @@ class View(QWidget):
 
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
-        'edit_value': (2, 2),
+        'edit_cell': (2, 2),
         'export_cbioportal_study': (4, 2),
     }
 
@@ -201,6 +201,7 @@ class View(QWidget):
         self.dialog_edit_sample = DialogEditSample(self)
         self.dialog_project_info = DialogStudyInfo(self)
         self.dialog_find = DialogFind(self)
+        self.dialog_edit_cell = DialogEditCell(self)
 
     def refresh_table(self):
         self.table.refresh_table()
@@ -477,6 +478,7 @@ class DialogLineEdits:
         self.layout.addWidget(self.button_box)
 
     def __call__(self) -> Union[str, tuple]:
+
         if self.dialog.exec_() == QDialog.Accepted:
             ret = tuple(e.text() for e in self.line_edits)
         else:
@@ -493,6 +495,28 @@ class DialogFind(DialogLineEdits):
     LINE_DEFAULTS = [
         '',
     ]
+
+
+class DialogEditCell(DialogLineEdits):
+
+    LINE_TITLES = [
+        'Edit Cell:',
+    ]
+    LINE_DEFAULTS = [
+        '',
+    ]
+
+    def __call__(self, value: Optional[str] = None) -> Union[str, tuple]:
+
+        if value is not None:
+            self.line_edits[0].setText(value)
+
+        if self.dialog.exec_() == QDialog.Accepted:
+            ret = tuple(e.text() for e in self.line_edits)
+        else:
+            ret = tuple('' for _ in self.LINE_DEFAULTS)
+
+        return ret if len(ret) > 1 else ret[0]
 
 
 def str_(value: Any) -> str:
