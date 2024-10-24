@@ -370,7 +370,6 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level Ia': '1/1',
             'Lymph Node Level Ib': '0/1',
             'Lymph Node Level I': '1/2',
-            'Total Lymph Node': '1/2',
         }
         self.assertDictEqual(expected, actual)
 
@@ -385,7 +384,6 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level I': '5/5',
             'Lymph Node Level Ia': '1/1',
             'Lymph Node Level Ib': '0/1',
-            'Total Lymph Node': '5/5',
         }
         self.assertDictEqual(expected, actual)
 
@@ -399,7 +397,6 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level IIa': '1/1',
             'Lymph Node Level IIb': '0/1',
             'Lymph Node Level II': '1/2',
-            'Total Lymph Node': '1/2',
         }
         self.assertDictEqual(expected, actual)
 
@@ -414,11 +411,10 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level II': '5/5',
             'Lymph Node Level IIa': '1/1',
             'Lymph Node Level IIb': '0/1',
-            'Total Lymph Node': '5/5',
         }
         self.assertDictEqual(expected, actual)
 
-    def test_add_all_levels(self):
+    def test_do_not_add_levels_1_to_5(self):
         attributes = {
             'Lymph Node Level I': '1/2',
             'Lymph Node Level II': '1/2',
@@ -433,7 +429,6 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node Level III': '1/2',
             'Lymph Node Level IV': '1/2',
             'Lymph Node Level V': '1/2',
-            'Total Lymph Node': '5/10',
         }
         self.assertDictEqual(expected, actual)
 
@@ -447,6 +442,20 @@ class TestCalculateLymphNodes(TestCase):
             'Lymph Node (Right)': '0/1',
             'Lymph Node (Left)': '1/1',
             'Total Lymph Node': '1/2',
+        }
+        self.assertDictEqual(expected, actual)
+
+    def test_should_not_add_right_left(self):
+        attributes = {
+            'Lymph Node (Right)': '0/1',
+            'Lymph Node (Left)': '1/1',
+            'Total Lymph Node': '5/5',
+        }
+        actual = CalculateLymphNodes().main(attributes=attributes)
+        expected = {
+            'Lymph Node (Right)': '0/1',
+            'Lymph Node (Left)': '1/1',
+            'Total Lymph Node': '5/5',
         }
         self.assertDictEqual(expected, actual)
 

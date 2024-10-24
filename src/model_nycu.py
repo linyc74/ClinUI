@@ -440,16 +440,10 @@ class CalculateLymphNodes(Calculate):
 
     REQUIRED_KEYS = []  # all lymph node records are optional
 
-    total_m: int
-    total_n: int
-
     def calculate(self):
-        self.total_m, self.total_n = 0, 0
         self.add_level_1a_1b()
         self.add_level_2a_2b()
-        self.add_all_levels()
         self.add_right_left()
-        self.attributes[S.TOTAL_LYMPH_NODE] = f'{self.total_m}/{self.total_n}'
 
     def add_level_1a_1b(self):
         if self.attributes.get(S.LYMPH_NODE_LEVEL_I, '') != '':  # alread has level I, skip adding Ia and Ib
@@ -498,51 +492,28 @@ class CalculateLymphNodes(Calculate):
 
         self.attributes[S.LYMPH_NODE_LEVEL_II] = f'{level_2_m}/{level_2_n}'
 
-    def add_all_levels(self):
-        level_1 = self.attributes.get(S.LYMPH_NODE_LEVEL_I, '')
-        if level_1 != '':
-            a, b = level_1.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
-
-        level_2 = self.attributes.get(S.LYMPH_NODE_LEVEL_II, '')
-        if level_2 != '':
-            a, b = level_2.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
-
-        level_3 = self.attributes.get(S.LYMPH_NODE_LEVEL_III, '')
-        if level_3 != '':
-            a, b = level_3.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
-
-        level_4 = self.attributes.get(S.LYMPH_NODE_LEVEL_IV, '')
-        if level_4 != '':
-            a, b = level_4.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
-
-        level_5 = self.attributes.get(S.LYMPH_NODE_LEVEL_V, '')
-        if level_5 != '':
-            a, b = level_5.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
-
     def add_right_left(self):
-        if self.total_m + self.total_n > 0:
-            return  # no need to check right and left
+        if self.attributes.get(S.TOTAL_LYMPH_NODE, '') != '':  # alread has total, skip adding right and left
+            return
 
         right = self.attributes.get(S.LYMPH_NODE_RIGHT, '')
         left = self.attributes.get(S.LYMPH_NODE_LEFT, '')
+
+        if right == '' and left == '':
+            return
+
+        total_m, total_n = 0, 0
+
         if right != '':
             a, b = right.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
+            total_m += int(a)
+            total_n += int(b)
         if left != '':
             a, b = left.split('/')
-            self.total_m += int(a)
-            self.total_n += int(b)
+            total_m += int(a)
+            total_n += int(b)
+
+        self.attributes[S.TOTAL_LYMPH_NODE] = f'{total_m}/{total_n}'
 
 
 class CalculateTherapy(Calculate):

@@ -6,7 +6,7 @@ from .controller import Controller
 from .schema import DATA_SCHEMA_DICT
 
 
-VERSION = 'v1.4.1'
+VERSION = 'v1.4.2'
 STARTING_MESSAGE = f'''\
 ClinUI {VERSION}
 College of Dentistry, National Yang Ming Chiao Tung University (NYCU), Taiwan
