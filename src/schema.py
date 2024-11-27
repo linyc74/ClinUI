@@ -46,7 +46,7 @@ class NycuOsccSchema(Schema):
     MEDICAL_RECORD_ID = 'Medical Record ID'
     PATHOLOGICAL_RECORD_ID = 'Pathological Record ID'
     PATIENT_NAME = 'Patient Name'
-    SAMPLE_COLLECTION_DATE = 'Sample Collection Date'
+    SURGICAL_EXCISION_DATE = 'Surgical Excision Date'
     SEX = 'Sex'
     PATIENT_WEIGHT = 'Patient Weight (Kg)'
     PATIENT_HEIGHT = 'Patient Height (cm)'
@@ -139,7 +139,7 @@ class NycuOsccSchema(Schema):
         PATIENT_NAME,
         LAB_ID,
         LAB_SAMPLE_ID,
-        SAMPLE_COLLECTION_DATE,
+        SURGICAL_EXCISION_DATE,
         SEX,
         PATIENT_WEIGHT,
         PATIENT_HEIGHT,
@@ -271,7 +271,7 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': ['000-00000'],
         },
-        SAMPLE_COLLECTION_DATE: {
+        SURGICAL_EXCISION_DATE: {
             'type': 'date',
             'options': ['2020-01-01'],
         },
@@ -522,7 +522,7 @@ class NycuOsccSchema(Schema):
         },
         RADIATION_THERAPY_DOSE: {
             'type': 'float',
-            'options': [0.0],
+            'options': [6600.0],
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
             'type': 'str',

@@ -78,21 +78,21 @@ class TestModel(TestCase):
     def test_find_with_start(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        actual = model.find(text='Lin', start=(1, 'Sample Collection Date'))
+        actual = model.find(text='Lin', start=(1, 'Surgical Excision Date'))
         self.assertTupleEqual((2, 'Lab Sample ID'), actual)
 
     def test_sort_dataframe(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        model.sort_dataframe(by='Sample Collection Date', ascending=False)
-        self.assertEqual('2015-01-06', model.dataframe.loc[0, 'Sample Collection Date'])
+        model.sort_dataframe(by='Surgical Excision Date', ascending=False)
+        self.assertEqual('2015-01-06', model.dataframe.loc[0, 'Surgical Excision Date'])
         self.assertEqual(2, len(model.undo_cache))
 
     def test_drop_column(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        model.drop(columns=['Sample Collection Date'])
-        self.assertTrue('Sample Collection Date' not in model.dataframe.columns)
+        model.drop(columns=['Surgical Excision Date'])
+        self.assertTrue('Surgical Excision Date' not in model.dataframe.columns)
         self.assertEqual(2, len(model.undo_cache))
 
     def test_update_sample(self):
