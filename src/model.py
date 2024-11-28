@@ -11,6 +11,7 @@ class Model(BaseModel):
     MAX_UNDO = 100
 
     dataframe: pd.DataFrame  # this is the main clinical data table
+    clinical_data_file: Optional[str]
 
     undo_cache: List[pd.DataFrame]
     redo_cache: List[pd.DataFrame]
@@ -18,6 +19,7 @@ class Model(BaseModel):
     def __init__(self, schema: Type[Schema]):
         super().__init__(schema=schema)
         self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
+        self.clinical_data_file = None
         self.undo_cache = []
         self.redo_cache = []
 
@@ -48,6 +50,7 @@ class Model(BaseModel):
         new = ImportClinicalDataTable(self.schema).main(
             clinical_data_df=self.dataframe,
             file=file)
+        self.clinical_data_file = file
 
         # When the whole column is NaN, it becomes float64, convert it back to object
         new = new.astype(object)
@@ -68,6 +71,7 @@ class Model(BaseModel):
             self.dataframe.to_excel(file, index=False)
         else:
             self.dataframe.to_csv(file, index=False)
+        self.clinical_data_file = file
 
     def get_dataframe(self) -> pd.DataFrame:
         return self.dataframe.copy()

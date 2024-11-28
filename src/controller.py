@@ -15,6 +15,7 @@ class Controller:
         self.view = view
         self.__init_actions()
         self.__connect_button_actions()
+        self.__connect_short_actions()
 
     def __init_actions(self):
         self.action_import_clinical_data_table = ActionImportClinicalDataTable(self)
@@ -32,6 +33,10 @@ class Controller:
         self.action_reprocess_table = ActionReprocessTable(self)
         self.action_undo = ActionUndo(self)
         self.action_redo = ActionRedo(self)
+        self.action_control_s = ActionControlS(self)
+        self.action_control_f = ActionFind(self)
+        self.action_control_z = ActionUndo(self)
+        self.action_control_y = ActionRedo(self)
 
     def __connect_button_actions(self):
         for name in self.view.BUTTON_NAME_TO_LABEL.keys():
@@ -40,7 +45,16 @@ class Controller:
             if method is not None:
                 button.clicked.connect(method)
             else:
-                print(f'WARNING: method "action_{name}" does not exist in the Controller')
+                print(f'WARNING: Controller method "action_{name}" does not exist for the button "{name}"')
+
+    def __connect_short_actions(self):
+        for name in self.view.SHORTCUT_NAME_TO_KEY_SEQUENCE.keys():
+            shortcut = getattr(self.view, f'shortcut_{name}')
+            method = getattr(self, f'action_{name}', None)
+            if method is not None:
+                shortcut.activated.connect(method)
+            else:
+                print(f'WARNING: Controller method "action_{name}" does not exist for the shortcut "{name}"')
 
 
 class Action:
@@ -326,3 +340,15 @@ class ActionRedo(Action):
             self.view.refresh_table()
         except Exception as e:
             self.view.message_box_error(msg=repr(e))
+
+
+class ActionControlS(Action):
+
+    def __call__(self):
+        if self.model.clinical_data_file is None:
+            file = self.view.file_dialog_save_table(filename='clinical_data_table.csv')
+            if file == '':
+                return
+        else:
+            file = self.model.clinical_data_file
+        self.model.save_clinical_data_table(file=file)

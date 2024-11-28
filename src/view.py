@@ -1,10 +1,11 @@
 import pandas as pd
 from os.path import dirname
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, QFileDialog, \
-    QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, QScrollArea, QLineEdit
-from typing import List, Optional, Any, Dict, Union, Tuple
+    QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, QScrollArea, QLineEdit, \
+    QShortcut
+from typing import List, Optional, Any, Dict, Tuple
 from .model import Model
 from .schema import DATA_SCHEMA_DICT
 
@@ -152,6 +153,12 @@ class View(QWidget):
         'edit_cell': (2, 2),
         'export_cbioportal_study': (4, 2),
     }
+    SHORTCUT_NAME_TO_KEY_SEQUENCE = {
+        'control_s': 'Ctrl+S',
+        'control_f': 'Ctrl+F',
+        'control_z': 'Ctrl+Z',
+        'control_y': 'Ctrl+Y',
+    }
 
     model: Model
     vertical_layout: QVBoxLayout
@@ -170,6 +177,7 @@ class View(QWidget):
         self.__init__vertical_layout()
         self.__init__main_table()
         self.__init__buttons()
+        self.__init__shortcuts()
         self.__init__methods()
         self.show()
 
@@ -190,6 +198,11 @@ class View(QWidget):
             button = getattr(self, f'button_{name}')
             pos = self.BUTTON_NAME_TO_POSITION[name]
             self.button_grid.addWidget(button, *pos)
+
+    def __init__shortcuts(self):
+        for name, key_sequence in self.SHORTCUT_NAME_TO_KEY_SEQUENCE.items():
+            shortcut = QShortcut(QKeySequence(key_sequence), self)
+            setattr(self, f'shortcut_{name}', shortcut)
 
     def __init__methods(self):
         self.file_dialog_open_table = FileDialogOpenTable(self)
