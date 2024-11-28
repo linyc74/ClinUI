@@ -368,7 +368,7 @@ class NycuOsccSchema(Schema):
         },
         ALCOHOL_CONSUMPTION: {
             'type': 'str',
-            'options': ['Current', 'Ex', 'Never'],
+            'options': ['Current', 'Ex', 'Never', 'Denied'],
         },
         ALCOHOL_CONSUMPTION_FREQUENCY: {
             'type': 'str',
@@ -384,7 +384,7 @@ class NycuOsccSchema(Schema):
         },
         BETEL_NUT_CHEWING: {
             'type': 'str',
-            'options': ['Current', 'Ex', 'Never'],
+            'options': ['Current', 'Ex', 'Never', 'Denied'],
         },
         BETEL_NUT_CHEWING_FREQUENCY: {
             'type': 'str',
@@ -400,7 +400,7 @@ class NycuOsccSchema(Schema):
         },
         CIGARETTE_SMOKING: {
             'type': 'str',
-            'options': ['Current', 'Ex', 'Never']
+            'options': ['Current', 'Ex', 'Never', 'Denied']
         },
         CIGARETTE_SMOKING_FREQUENCY: {
             'type': 'sting',
@@ -435,10 +435,10 @@ class NycuOsccSchema(Schema):
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
-                'Cisplatin and 5-FU',
-                'Docetaxel and Cisplatin',
-                'Docetaxel, Cisplatin and 5-FU (TPF)',
-                'Cisplatin, Mitomycin and 5-FU (PMU)',
+                'Cisplatin, 5-FU',
+                'Docetaxel, Cisplatin',
+                'Docetaxel, Cisplatin, 5-FU (TPF)',
+                'Cisplatin, Mitomycin, 5-FU (PMU)',
             ],
         },
         ADJUVANT_CHEMOTHERAPY: {
@@ -448,15 +448,15 @@ class NycuOsccSchema(Schema):
         ADJUVANT_CHEMOTHERAPY_DRUG: {
             'type': 'str',
             'options': [
-                '',
+                'Cisplatin, Mitomycin, 5-FU (PMU)',
+                'Cisplatin, 5-FU, Leucovorin (PFL)',
                 'None',
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
-                'Cisplatin and 5-FU',
-                'Docetaxel and Cisplatin',
-                'Docetaxel, Cisplatin and 5-FU (TPF)',
-                'Cisplatin, Mitomycin and 5-FU (PMU)',
+                'Cisplatin, 5-FU',
+                'Cisplatin, Docetaxel',
+                'Docetaxel, Cisplatin, 5-FU (TPF)',
             ],
         },
         PALLIATIVE_CHEMOTHERAPY: {
@@ -471,10 +471,10 @@ class NycuOsccSchema(Schema):
                 'Cisplatin',
                 '5-FU',
                 'Docetaxel',
-                'Cisplatin and 5-FU',
-                'Docetaxel and Cisplatin',
-                'Docetaxel, Cisplatin and 5-FU (TPF)',
-                'Cisplatin, Mitomycin and 5-FU (PMU)',
+                'Cisplatin, 5-FU',
+                'Docetaxel, Cisplatin',
+                'Docetaxel, Cisplatin, 5-FU (TPF)',
+                'Cisplatin, Mitomycin, 5-FU (PMU)',
             ],
         },
         ADJUVANT_TARGETED_THERAPY: {
@@ -518,11 +518,11 @@ class NycuOsccSchema(Schema):
         },
         RADIATION_THERAPY: {
             'type': 'str',
-            'options': ['Definitive', 'Adjuvant', 'Palliative'],
+            'options': ['Adjuvant', 'None', 'Definitive', 'Palliative'],
         },
         RADIATION_THERAPY_DOSE: {
             'type': 'float',
-            'options': [6600.0],
+            'options': [6600.0, 0.0],
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
             'type': 'str',

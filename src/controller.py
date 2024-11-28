@@ -187,16 +187,18 @@ class ActionEditSample(Action):
         row = rows[0]  # only one row is selected
 
         attributes = self.model.get_sample(row=row)
-        attributes = self.view.dialog_edit_sample(attributes=attributes)
 
-        if attributes is None:
-            return
-
-        try:
-            self.model.update_sample(row=row, attributes=attributes)
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+        success = False
+        while not success:
+            attributes = self.view.dialog_edit_sample(attributes=attributes)
+            if attributes is None:
+                break
+            try:
+                self.model.update_sample(row=row, attributes=attributes)
+                self.view.refresh_table()
+                success = True
+            except Exception as e:
+                self.view.message_box_error(msg=repr(e))
 
 
 class ActionEditCell(Action):
