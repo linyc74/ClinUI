@@ -160,16 +160,18 @@ class ActionResetTable(Action):
 class ActionAddNewSample(Action):
 
     def __call__(self):
-        attributes = self.view.dialog_edit_sample()
-
-        if attributes is None:
-            return
-
-        try:
-            self.model.append_sample(attributes=attributes)
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+        success = False
+        attributes = None
+        while not success:
+            attributes = self.view.dialog_edit_sample(attributes=attributes)
+            if attributes is None:
+                break
+            try:
+                self.model.append_sample(attributes=attributes)
+                self.view.refresh_table()
+                success = True
+            except Exception as e:
+                self.view.message_box_error(msg=repr(e))
 
 
 class ActionEditSample(Action):
