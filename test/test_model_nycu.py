@@ -36,7 +36,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_alive_disease_free(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '2003-01-01',
+            'Initial Treatment Completion Date': '',
             'Last Follow-up Date': '2003-12-27',
             'Recur Date after Initial Treatment': '',
             'Expire Date': '',
@@ -58,7 +59,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_alive_recurred(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '2003-01-01',
+            'Initial Treatment Completion Date': '2003-02-01',  # not used
             'Last Follow-up Date': '2004-01-26',
             'Recur Date after Initial Treatment': '2003-12-27',
             'Expire Date': '',
@@ -80,7 +82,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_recur_and_then_die_of_cancer(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '2003-01-01',
+            'Initial Treatment Completion Date': '2003-02-01',  # not used
             'Last Follow-up Date': '2003-12-27',
             'Recur Date after Initial Treatment': '2003-01-31',
             'Expire Date': '2003-12-27',
@@ -102,7 +105,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_suddenly_die_of_cancer_without_detecting_recurrence(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '',
+            'Initial Treatment Completion Date': '2003-01-01',  # use this as t0
             'Last Follow-up Date': '2003-12-27',
             'Recur Date after Initial Treatment': '',
             'Expire Date': '2003-12-27',
@@ -124,7 +128,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_recur_and_then_die_of_other_disease(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '2003-01-01',
+            'Initial Treatment Completion Date': '',  # not used
             'Last Follow-up Date': '2003-12-27',
             'Recur Date after Initial Treatment': '2003-01-31',
             'Expire Date': '2003-12-27',
@@ -146,7 +151,8 @@ class TestCalculateSurvival(TestCase):
 
     def test_no_recurrence_die_of_other_disease(self):
         attributes = {
-            'Initial Treatment Completion Date': '2003-01-01',
+            'Surgical Excision Date': '',
+            'Initial Treatment Completion Date': '2003-01-01',  # use this as t0
             'Last Follow-up Date': '2003-12-27',
             'Recur Date after Initial Treatment': '',
             'Expire Date': '2003-12-27',
@@ -168,6 +174,7 @@ class TestCalculateSurvival(TestCase):
 
     def test_empty(self):
         attributes = {
+            'Surgical Excision Date': '',
             'Initial Treatment Completion Date': '',
             'Last Follow-up Date': '',
             'Recur Date after Initial Treatment': '',
@@ -184,6 +191,14 @@ class TestCalculateSurvival(TestCase):
             'Overall Survival (Months)': '',
             'Overall Survival Status': '',
         })
+        self.assertDictEqual(expected, actual)
+
+    def test_lack_required_keys(self):
+        attributes = {
+            'Surgical Excision Date': '',
+        }
+        actual = CalculateSurvival().main(attributes=attributes)
+        expected = attributes.copy()  # no calculation at all
         self.assertDictEqual(expected, actual)
 
 

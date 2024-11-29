@@ -4,7 +4,7 @@ Thus there is no need to dynamically pass in the self.schema object
 """
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Union, List, Tuple
+from typing import Dict, Any, Union, List, Tuple, Type
 from .schema import NycuOsccSchema
 
 
@@ -66,6 +66,7 @@ class CalculateDiagnosisAge(Calculate):
 class CalculateSurvival(Calculate):
 
     REQUIRED_KEYS = [
+        S.SURGICAL_EXCISION_DATE,
         S.INITIAL_TREATMENT_COMPLETION_DATE,
         S.LAST_FOLLOW_UP_DATE,
         S.RECUR_DATE_AFTER_INITIAL_TREATMENT,
@@ -73,14 +74,24 @@ class CalculateSurvival(Calculate):
         S.CAUSE_OF_DEATH,
     ]
 
+    t0: Union[str, float]  # np.NAN is float
     alive: bool
 
     def calculate(self):
+        self.set_t0()
         self.set_alive()
         self.check_cause_of_death()
         self.disease_free_survival()
         self.disease_specific_survival()
         self.overall_survival()
+
+    def set_t0(self):
+        attr = self.attributes
+        t0 = attr[S.SURGICAL_EXCISION_DATE]
+
+        if pd.isna(t0) or t0 == '':
+            t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
+        self.t0 = t0
 
     def set_alive(self):
         expire_date = self.attributes[S.EXPIRE_DATE]
@@ -96,17 +107,15 @@ class CalculateSurvival(Calculate):
 
         recurred = attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT] != ''
 
-        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
-
         if recurred:
-            duration = delta_t(start=t0, end=attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT])
+            duration = delta_t(start=self.t0, end=attr[S.RECUR_DATE_AFTER_INITIAL_TREATMENT])
             status = '1:Recurred/Progressed'
         else:
             if self.alive:
-                duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
+                duration = delta_t(start=self.t0, end=attr[S.LAST_FOLLOW_UP_DATE])
                 status = '0:DiseaseFree'
             else:  # died
-                duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
+                duration = delta_t(start=self.t0, end=attr[S.EXPIRE_DATE])
                 if attr[S.CAUSE_OF_DEATH].upper() == 'CANCER':
                     status = '1:Recurred/Progressed'
                 else:
@@ -118,13 +127,11 @@ class CalculateSurvival(Calculate):
     def disease_specific_survival(self):
         attr = self.attributes
 
-        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
-
         if self.alive:
-            duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
+            duration = delta_t(start=self.t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:ALIVE OR DEAD TUMOR FREE'
         else:
-            duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
+            duration = delta_t(start=self.t0, end=attr[S.EXPIRE_DATE])
             if attr[S.CAUSE_OF_DEATH].upper() == 'CANCER':
                 status = '1:DEAD WITH TUMOR'
             else:
@@ -136,13 +143,11 @@ class CalculateSurvival(Calculate):
     def overall_survival(self):
         attr = self.attributes
 
-        t0 = attr[S.INITIAL_TREATMENT_COMPLETION_DATE]
-
         if self.alive:
-            duration = delta_t(start=t0, end=attr[S.LAST_FOLLOW_UP_DATE])
+            duration = delta_t(start=self.t0, end=attr[S.LAST_FOLLOW_UP_DATE])
             status = '0:LIVING'
         else:
-            duration = delta_t(start=t0, end=attr[S.EXPIRE_DATE])
+            duration = delta_t(start=self.t0, end=attr[S.EXPIRE_DATE])
             status = '1:DECEASED'
 
         self.attributes[S.OVERALL_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)

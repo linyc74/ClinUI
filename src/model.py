@@ -170,6 +170,7 @@ class Model(BaseModel):
         attributes = ProcessSampleAttributes(self.schema).main(attributes=attributes)
 
         new = append(self.dataframe, pd.Series(attributes))
+        new = new[self.schema.DISPLAY_COLUMNS]  # make sure the columns are displayed in correct order
 
         self.__add_to_undo_cache()  # add to undo cache after successful append
         self.dataframe = new
