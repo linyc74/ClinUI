@@ -751,7 +751,7 @@ class NycuOsccSchema(Schema):
         },
         CAUSE_OF_DEATH: {
             'type': 'str',
-            'options': ['Cancer', 'Other Disease', 'Other Cancer', 'Uncertain'],
+            'options': ['', 'Cancer', 'Other Disease', 'Other Cancer', 'Uncertain'],
         },
         DISEASE_FREE_SURVIVAL_MONTHS: {
             'type': 'float',
