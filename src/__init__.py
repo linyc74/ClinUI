@@ -1,48 +1,43 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from .model import Model
-from .view import View, SelectDataSchemaDialog
 from .controller import Controller
 from .schema import DATA_SCHEMA_DICT
+from .view import View, SelectDataSchemaDialog
 
 
-VERSION = 'v1.4.4'
-STARTING_MESSAGE = f'''\
-ClinUI {VERSION}
-College of Dentistry, National Yang Ming Chiao Tung University (NYCU), Taiwan
-Yu-Cheng Lin, DDS, MS, PhD (ylin@nycu.edu.tw)
-'''
+VERSION = 'v1.5.0-beta'
 
 
 class Main:
 
-    APP_ID = f'NYCU.Dentistry.ClinUI.{VERSION}'
-
     schema_name: str
 
-    def main(self):
+    def main(self, schema_name: str):
+        self.schema_name = schema_name
         app = QApplication(sys.argv)
-        print(STARTING_MESSAGE, flush=True)
-        self.select_data_schema()
+        self.print_starting_message()
+        self.config_taskbar_icon()
         self.run_app()
         sys.exit(app.exec_())
 
-    def select_data_schema(self):
-        dialog = SelectDataSchemaDialog()
-        result = None
-        while result is None:  # loop until a schema is selected
-            result = dialog.show()
-        self.schema_name = result
+    def print_starting_message(self):
+        msg = f'''\
+ClinUI {VERSION} - {self.schema_name}
+College of Dentistry, National Yang Ming Chiao Tung University (NYCU), Taiwan
+Yu-Cheng Lin, DDS, MS, PhD (ylin@nycu.edu.tw)'''
+        print(msg, flush=True)
+
+    def config_taskbar_icon(self):
+        n = self.schema_name.replace(' ', '_')
+        app_id = f'NYCU.Dentistry.ClinUI.{VERSION}.{n}'
+        try:
+            from ctypes import windll  # only exists on Windows
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+        except ImportError as e:
+            print(e, flush=True)
 
     def run_app(self):
-        self.config_taskbar_icon()
         model = Model(schema=DATA_SCHEMA_DICT[self.schema_name])
         view = View(model=model)
         Controller(model=model, view=view)
-
-    def config_taskbar_icon(self):
-        try:
-            from ctypes import windll  # only exists on Windows
-            windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.APP_ID)
-        except ImportError as e:
-            print(e, flush=True)
