@@ -7,48 +7,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem
     QShortcut
 from typing import List, Optional, Any, Dict, Tuple
 from .model import Model
-from .schema import DATA_SCHEMA_DICT
-
-
-class SelectDataSchemaDialog:
-
-    TITLE = 'Select Data Schema'
-    ICON_FILE = 'icon/logo.ico'
-    WIDTH, HEIGHT = 500, 225
-
-    dialog: QDialog
-    layout: QVBoxLayout
-    result: Optional[str]
-
-    def __init__(self):
-        self.__init__dialog()
-        self.__init__layout()
-        self.schema = None
-        self.result = None
-
-    def __init__dialog(self):
-        self.dialog = QDialog()
-        self.dialog.setWindowTitle(self.TITLE)
-        self.dialog.setWindowIcon(QIcon(f'{dirname(dirname(__file__))}/{self.ICON_FILE}'))
-        self.dialog.resize(self.WIDTH, self.HEIGHT)
-
-    def __init__layout(self):
-        self.layout = QVBoxLayout(self.dialog)
-        for name in DATA_SCHEMA_DICT:
-            button = QPushButton(name)
-            self.layout.addWidget(button)
-            button.clicked.connect(self.button_clicked)
-        self.dialog.setLayout(self.layout)
-
-    def button_clicked(self):
-        sender_button = self.dialog.sender()
-        if sender_button:
-            self.result = sender_button.text()
-            self.dialog.accept()  # accept and close the dialog
-
-    def show(self) -> str:
-        self.dialog.exec_()  # show the dialog in modal state, i.e. the user must choose and close the dialog
-        return self.result
 
 
 class Table(QTableWidget):

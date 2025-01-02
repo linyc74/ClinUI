@@ -7,7 +7,7 @@ from src import VERSION
 
 
 PROG = 'python build_app.py'
-DESCRIPTION = f'Build Windows executable file'
+DESCRIPTION = f'Build MacOS app or Windows exe for ClinUI-{VERSION}'
 REQUIRED = []
 OPTIONAL = [
     {

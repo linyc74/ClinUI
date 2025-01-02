@@ -1,9 +1,9 @@
 import sys
 from PyQt5.QtWidgets import QApplication
+from .view import View
 from .model import Model
 from .controller import Controller
 from .schema import DATA_SCHEMA_DICT
-from .view import View, SelectDataSchemaDialog
 
 
 VERSION = 'v1.5.0-beta'
