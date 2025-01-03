@@ -4,10 +4,12 @@ import platform
 import argparse
 import subprocess
 from src import VERSION
+from os.path import dirname, basename
 
 
 PROG = 'python build_app.py'
-DESCRIPTION = f'Build MacOS app or Windows exe for ClinUI-{VERSION}'
+APP_NAME = basename(dirname(__file__))
+DESCRIPTION = f'Build MacOS app or Windows exe for {APP_NAME}-{VERSION}'
 REQUIRED = []
 OPTIONAL = [
     {
@@ -88,7 +90,7 @@ class BuildApp:
             raise NotImplementedError(f'Unsupported OS: {os_name}')
 
     def write_entrypoint_py(self):
-        self.entrypoint_py = f'ClinUI-{VERSION}-{self.schema_arg}.py'
+        self.entrypoint_py = f'{APP_NAME}-{VERSION}-{self.schema_arg}.py'
         class_name = self.SCHEMA_ARG_TO_CLASS_NAME[self.schema_arg]
         with open(self.entrypoint_py, 'w') as f:
             f.write(f'''\
