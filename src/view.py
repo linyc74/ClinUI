@@ -127,7 +127,7 @@ class View(QWidget):
         super().__init__()
         self.model = model
 
-        self.setWindowTitle(self.TITLE)
+        self.setWindowTitle(f'{self.TITLE} ({self.model.schema.NAME})')
         self.setWindowIcon(QIcon(self.ICON_FILE))
         self.setWindowIcon(QIcon(f'{dirname(dirname(__file__))}/{self.ICON_FILE}'))
         self.resize(self.WIDTH, self.HEIGHT)
