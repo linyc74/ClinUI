@@ -17,7 +17,8 @@ test/*workdir*/
 # PyInstaller / py2app
 build/
 dist/
-ClinUI.spec
+*.spec
+setup.py
 .eggs/
 
 todo.md
