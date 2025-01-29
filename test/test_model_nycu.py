@@ -201,6 +201,29 @@ class TestCalculateSurvival(TestCase):
         expected = attributes.copy()  # no calculation at all
         self.assertDictEqual(expected, actual)
 
+    def test_do_not_allow_negative_duration(self):
+        attributes = {
+            'Surgical Excision Date': '2003-01-01',
+            'Initial Treatment Completion Date': '2003-02-01',  # not used
+            'Last Follow-up Date': '2000-01-01',
+            'Recur Date after Initial Treatment': '2000-01-01',
+            'Expire Date': '',
+            'Cause of Death': ''
+        }
+        actual = CalculateSurvival().main(attributes=attributes)
+
+        expected = attributes.copy()
+        expected.update({
+            'Disease Free (Months)': '',
+            'Disease Free Status': '',
+            'Disease-specific Survival (Months)': '',
+            'Disease-specific Survival Status': '',
+            'Overall Survival (Months)': '',
+            'Overall Survival Status': '',
+        })
+
+        self.assertDictEqual(expected, actual)
+
 
 class TestCalculateICD(TestCase):
 

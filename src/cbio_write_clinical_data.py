@@ -247,7 +247,9 @@ class FormatClinicalData(BaseModel):
             #   1.0 --> 'TRUE'
             #   0.0 --> 'FALSE'
             if datatype == 'bool':
-                self.df[c] = self.df[c].replace(to_replace={True: 'TRUE', False: 'FALSE'})
+                # need to convert to str first,
+                # to make sure True and False are converted to 'TRUE' and 'FALSE'
+                self.df[c] = self.df[c].astype(str).replace({'True': 'TRUE', 'False': 'FALSE'})
 
     def format_columns(self):
 

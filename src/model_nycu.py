@@ -121,8 +121,13 @@ class CalculateSurvival(Calculate):
                 else:
                     status = '0:DiseaseFree'
 
-        self.attributes[S.DISEASE_FREE_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[S.DISEASE_FREE_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        duration = duration / pd.Timedelta(days=30)  # Timedelta -> float
+
+        if pd.isna(duration) or duration < 0.:
+            duration, status = '', ''
+
+        self.attributes[S.DISEASE_FREE_SURVIVAL_MONTHS] = duration
+        self.attributes[S.DISEASE_FREE_SURVIVAL_STATUS] = status
 
     def disease_specific_survival(self):
         attr = self.attributes
@@ -137,8 +142,13 @@ class CalculateSurvival(Calculate):
             else:
                 status = '0:ALIVE OR DEAD TUMOR FREE'
 
-        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        duration = duration / pd.Timedelta(days=30)  # Timedelta -> float
+
+        if pd.isna(duration) or duration < 0.:
+            duration, status = '', ''
+
+        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_MONTHS] = duration
+        self.attributes[S.DISEASE_SPECIFIC_SURVIVAL_STATUS] = status
 
     def overall_survival(self):
         attr = self.attributes
@@ -150,8 +160,13 @@ class CalculateSurvival(Calculate):
             duration = delta_t(start=self.t0, end=attr[S.EXPIRE_DATE])
             status = '1:DECEASED'
 
-        self.attributes[S.OVERALL_SURVIVAL_MONTHS] = '' if pd.isna(duration) else duration / pd.Timedelta(days=30)
-        self.attributes[S.OVERALL_SURVIVAL_STATUS] = '' if pd.isna(duration) else status
+        duration = duration / pd.Timedelta(days=30)  # Timedelta -> float
+
+        if pd.isna(duration) or duration < 0.:
+            duration, status = '', ''
+
+        self.attributes[S.OVERALL_SURVIVAL_MONTHS] = duration
+        self.attributes[S.OVERALL_SURVIVAL_STATUS] = status
 
 
 def delta_t(
