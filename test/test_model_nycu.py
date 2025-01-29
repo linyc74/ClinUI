@@ -378,6 +378,17 @@ class TestCalculateStage(TestCase):
         }
         self.assertDictEqual(expected, actual)
 
+    def test_missing_annotation(self):
+        attributes = {
+            'Clinical TNM (cTNM)': 'T2NxMx',
+        }
+        actual = CalculateStage().main(attributes=attributes)
+        expected = {
+            'Clinical TNM (cTNM)': 'T2NxMx',
+            'Neoplasm Disease Stage American Joint Committee on Cancer Code': 'Stage II',
+        }
+        self.assertDictEqual(expected, actual)
+
     def test_wrong_format(self):
         attributes = {
             'Clinical TNM (cTNM)': 'XXX',

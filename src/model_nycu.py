@@ -420,6 +420,7 @@ class CalculateStage(Calculate):
     def set_tnm(self):
         try:
             tnm = self.attributes[S.CLINICAL_TNM]
+            tnm = tnm.replace('X', '0').replace('x', '0')  # x is unknown, should be treated as 0
             self.t = tnm.split('T')[1].split('N')[0]
             self.n = tnm.split('N')[1].split('M')[0]
             self.m = tnm.split('M')[1]
