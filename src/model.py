@@ -70,7 +70,7 @@ class Model(BaseModel):
         if file.endswith('.xlsx'):
             self.dataframe.to_excel(file, index=False)
         else:
-            self.dataframe.to_csv(file, index=False)
+            self.dataframe.to_csv(file, encoding='utf-8-sig', index=False)
         self.clinical_data_file = file
 
     def get_dataframe(self) -> pd.DataFrame:
