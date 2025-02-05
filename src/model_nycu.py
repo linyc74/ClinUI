@@ -406,7 +406,7 @@ class CalculateStage(Calculate):
     """
 
     REQUIRED_KEYS = [
-        S.CLINICAL_TNM,
+        S.PATHOLOGICAL_TNM,
     ]
 
     t: str
@@ -419,7 +419,7 @@ class CalculateStage(Calculate):
 
     def set_tnm(self):
         try:
-            tnm = self.attributes[S.CLINICAL_TNM]
+            tnm = self.attributes[S.PATHOLOGICAL_TNM]
             tnm = tnm.replace('X', '0').replace('x', '0')  # x is unknown, should be treated as 0
             self.t = tnm.split('T')[1].split('N')[0]
             self.n = tnm.split('N')[1].split('M')[0]
@@ -451,7 +451,7 @@ class CalculateStage(Calculate):
         elif t == 'is' and n == '0' and m == '0':
             stage = 'Stage 0'
         else:
-            print(f'WARNING! Invalid "{S.CLINICAL_TNM}": "{self.attributes[S.CLINICAL_TNM]}" for finding AJCC stage')
+            print(f'WARNING! Invalid "{S.PATHOLOGICAL_TNM}": "{self.attributes[S.PATHOLOGICAL_TNM]}" for finding AJCC stage')
             stage = ''
 
         self.attributes[S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
