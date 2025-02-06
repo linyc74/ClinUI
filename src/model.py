@@ -10,16 +10,18 @@ class Model(BaseModel):
 
     MAX_UNDO = 100
 
-    dataframe: pd.DataFrame  # this is the main clinical data table
     clinical_data_file: Optional[str]
+    dataframe: pd.DataFrame  # this is the main clinical data table
+    file_saved_counter: int  # 0 means file is saved, the counter is increased after each change, decreased after each undo
 
     undo_cache: List[pd.DataFrame]
     redo_cache: List[pd.DataFrame]
 
     def __init__(self, schema: Type[Schema]):
         super().__init__(schema=schema)
-        self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
         self.clinical_data_file = None
+        self.dataframe = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
+        self.file_saved_counter = 0  # empty dataframe, don't care about saving, so view as saved
         self.undo_cache = []
         self.redo_cache = []
 
@@ -28,12 +30,14 @@ class Model(BaseModel):
             return
         self.redo_cache.append(self.dataframe)
         self.dataframe = self.undo_cache.pop()
+        self.file_saved_counter -= 1
 
     def redo(self):
         if len(self.redo_cache) == 0:
             return
         self.undo_cache.append(self.dataframe)
         self.dataframe = self.redo_cache.pop()
+        self.file_saved_counter += 1
 
     def __add_to_undo_cache(self):
         self.undo_cache.append(self.dataframe.copy())
@@ -45,6 +49,7 @@ class Model(BaseModel):
         new = pd.DataFrame(columns=self.schema.DISPLAY_COLUMNS)
         self.__add_to_undo_cache()  # add to undo cache after successful reset
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def import_clinical_data_table(self, file: str):
         new = ImportClinicalDataTable(self.schema).main(
@@ -57,6 +62,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful import
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def import_sequencing_table(self, file: str):
         new = ImportSequencingTable(self.schema).main(
@@ -65,6 +71,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful import
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def save_clinical_data_table(self, file: str):
         if file.endswith('.xlsx'):
@@ -72,6 +79,7 @@ class Model(BaseModel):
         else:
             self.dataframe.to_csv(file, encoding='utf-8-sig', index=False)
         self.clinical_data_file = file
+        self.file_saved_counter = 0
 
     def get_dataframe(self) -> pd.DataFrame:
         return self.dataframe.copy()
@@ -89,6 +97,7 @@ class Model(BaseModel):
         )
         self.__add_to_undo_cache()  # add to undo cache after successful sort
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def drop(
             self,
@@ -102,6 +111,7 @@ class Model(BaseModel):
         )
         self.__add_to_undo_cache()  # add to undo cache after successful drop
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def get_sample(self, row: int) -> Dict[str, str]:
         """
@@ -145,6 +155,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def update_cell(self, row: int, column: str, value: str):
         """
@@ -161,6 +172,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful update
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def append_sample(self, attributes: Dict[str, str]):
         """
@@ -174,6 +186,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful append
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def reprocess_table(self):
         new = self.dataframe.copy()
@@ -185,6 +198,7 @@ class Model(BaseModel):
 
         self.__add_to_undo_cache()  # add to undo cache after successful reprocess
         self.dataframe = new
+        self.file_saved_counter += 1
 
     def find(
             self,
@@ -220,6 +234,9 @@ class Model(BaseModel):
             study_info_dict=study_info_dict,
             tags_dict=tags_dict,
             outdir=outdir)
+
+    def is_file_saved(self) -> bool:
+        return self.file_saved_counter == 0
 
 
 class ImportClinicalDataTable(BaseModel):

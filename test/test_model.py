@@ -115,3 +115,33 @@ class TestModel(TestCase):
         model.reprocess_table()
         self.assertEqual(11, len(model.dataframe))
         self.assertEqual(2, len(model.undo_cache))
+
+    def test_track_file_saved(self):
+        model = Model(NycuOsccSchema)
+
+        # empty dataframe, no need to save
+        self.assertTrue(model.is_file_saved())
+
+        # import a table, not saved
+        model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
+        self.assertFalse(model.is_file_saved())
+
+        # save the table, saved
+        model.save_clinical_data_table(file=f'{self.outdir}/clinical_data.csv')
+        self.assertTrue(model.is_file_saved())
+
+        # reprocess the table, not saved
+        model.reprocess_table()
+        self.assertFalse(model.is_file_saved())
+
+        # undo to the saved state, saved
+        model.undo()
+        self.assertTrue(model.is_file_saved())
+
+        # redo to the unsaved state, not saved
+        model.redo()
+        self.assertFalse(model.is_file_saved())
+
+        # save the table, saved
+        model.save_clinical_data_table(file=f'{self.outdir}/clinical_data.csv')
+        self.assertTrue(model.is_file_saved())
