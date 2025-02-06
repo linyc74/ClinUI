@@ -180,9 +180,9 @@ class View(QWidget):
         suffix = ''
         df = self.model.get_dataframe()
         if len(df) > 0:  # only show suffix if there is data
-            a = f' - {self.model.clinical_data_file}' if self.model.clinical_data_file is not None else ''
-            b = ' (saved)' if self.model.is_file_saved() else ' (unsaved)'
-            suffix = a + b
+            file = f' - {self.model.clinical_data_file}' if self.model.clinical_data_file is not None else ''
+            state = ' (saved)' if self.model.is_file_saved() else ' (unsaved)'
+            suffix = file + state
 
         self.setWindowTitle(f'{self.TITLE} ({self.model.schema.NAME}){suffix}')
 
