@@ -177,6 +177,15 @@ class View(QWidget):
     def refresh_table(self):
         self.table.refresh_table()
 
+        suffix = ''
+        df = self.model.get_dataframe()
+        if len(df) > 0:  # only show suffix if there is data
+            a = f' - {self.model.clinical_data_file}' if self.model.clinical_data_file is not None else ''
+            b = ' (saved)' if self.model.is_file_saved() else ' (unsaved)'
+            suffix = a + b
+
+        self.setWindowTitle(f'{self.TITLE} ({self.model.schema.NAME}){suffix}')
+
     def get_selected_rows(self) -> List[int]:
         return self.table.get_selected_rows()
 
@@ -224,9 +233,14 @@ class FileDialogSaveTable(FileDialog):
         d.selectNameFilter('CSV files (*.csv)')
         d.setOptions(QFileDialog.DontUseNativeDialog)
         d.setAcceptMode(QFileDialog.AcceptSave)
-        d.exec_()
-        selected = d.selectedFiles()
-        return selected[0] if len(selected) > 0 else ''
+
+        ret = ''  # default, no file object selected and accepted
+        accepted = d.exec_()
+        if accepted:
+            selected = d.selectedFiles()
+            if len(selected) > 0:
+                ret = selected[0]
+        return ret
 
 
 class FileDialogOpenDirectory(FileDialog):
