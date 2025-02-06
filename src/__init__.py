@@ -6,7 +6,7 @@ from .controller import Controller
 from .schema import DATA_SCHEMA_DICT
 
 
-VERSION = 'v1.5.2-beta'
+VERSION = 'v1.5.2'
 
 
 class Main:
