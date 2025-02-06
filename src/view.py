@@ -169,6 +169,7 @@ class View(QWidget):
         self.message_box_info = MessageBoxInfo(self)
         self.message_box_error = MessageBoxError(self)
         self.message_box_yes_no = MessageBoxYesNo(self)
+        self.message_box_unsaved_file = MessageBoxUnsavedFile(self)
         self.dialog_edit_sample = DialogEditSample(self)
         self.dialog_project_info = DialogStudyInfo(self)
         self.dialog_find = DialogFind(self)
@@ -197,6 +198,20 @@ class View(QWidget):
 
     def select_cell(self, index: int, column: str):
         self.table.select_cell(index=index, column=column)
+
+    def closeEvent(self, event):
+        if not self.model.is_file_saved():
+            reply = self.message_box_unsaved_file(msg='You have unsaved changes. Do you want to save them?')
+            if reply == QMessageBox.Cancel:
+                event.ignore()
+            elif reply == QMessageBox.No:
+                event.accept()
+            elif reply == QMessageBox.Save:
+                self.shortcut_control_s.activated.emit()
+                event.accept()
+
+
+#
 
 
 class FileDialog:
@@ -256,6 +271,9 @@ class FileDialogOpenDirectory(FileDialog):
         return selected[0] if len(selected) > 0 else ''
 
 
+#
+
+
 class MessageBox:
 
     TITLE: str
@@ -268,15 +286,15 @@ class MessageBox:
         self.box.setWindowTitle(self.TITLE)
         self.box.setIcon(self.ICON)
 
-    def __call__(self, msg: str):
-        self.box.setText(msg)
-        self.box.exec_()
-
 
 class MessageBoxInfo(MessageBox):
 
     TITLE = 'Info'
     ICON = QMessageBox.Information
+
+    def __call__(self, msg: str):
+        self.box.setText(msg)
+        self.box.exec_()
 
 
 class MessageBoxError(MessageBox):
@@ -284,10 +302,14 @@ class MessageBoxError(MessageBox):
     TITLE = 'Error'
     ICON = QMessageBox.Warning
 
+    def __call__(self, msg: str):
+        self.box.setText(msg)
+        self.box.exec_()
+
 
 class MessageBoxYesNo(MessageBox):
 
-    TITLE = ' '
+    TITLE = 'ClinUI'
     ICON = QMessageBox.Question
 
     def __init__(self, view: View):
@@ -298,6 +320,24 @@ class MessageBoxYesNo(MessageBox):
     def __call__(self, msg: str) -> bool:
         self.box.setText(msg)
         return self.box.exec_() == QMessageBox.Yes
+
+
+class MessageBoxUnsavedFile(MessageBox):
+
+    TITLE = 'ClinUI'
+    ICON = QMessageBox.Warning
+
+    def __init__(self, view: View):
+        super().__init__(view=view)
+        self.box.setStandardButtons(QMessageBox.Save | QMessageBox.No | QMessageBox.Cancel)
+        self.box.setDefaultButton(QMessageBox.Cancel)
+
+    def __call__(self, msg: str) -> int:
+        self.box.setText(msg)
+        return self.box.exec_()  # QMessageBox.Save, QMessageBox.No, QMessageBox.Cancel are the returned integers
+
+
+#
 
 
 class DialogComboBoxes:
@@ -423,6 +463,9 @@ class DialogStudyInfo(DialogComboBoxes):
         return self.get_output_dict() if self.dialog.exec_() == QDialog.Accepted else None
 
 
+#
+
+
 class DialogLineEdits:
 
     LINE_TITLES: List[str]
@@ -494,6 +537,9 @@ class DialogEditCell(DialogLineEdits):
             return self.line_edits[0].text()
         else:
             return None
+
+
+#
 
 
 def str_(value: Any) -> str:
