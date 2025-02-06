@@ -102,6 +102,7 @@ class ActionSaveClinicalDataTable(Action):
         if file == '':
             return
         self.model.save_clinical_data_table(file=file)
+        self.view.refresh_table()
 
 
 class ActionFind(Action):
@@ -352,3 +353,4 @@ class ActionControlS(Action):
         else:
             file = self.model.clinical_data_file
         self.model.save_clinical_data_table(file=file)
+        self.view.refresh_table()
