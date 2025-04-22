@@ -3,7 +3,8 @@ import pandas as pd
 from typing import List, Optional, Dict, Any, Union, Tuple, Type
 from .cbio_ingest import cBioIngest
 from .model_nycu import CalculateNycuOscc
-from .schema import BaseModel, Schema, NycuOsccSchema
+from .model_vghtc import CalculateVghtcOscc
+from .schema import BaseModel, Schema, NycuOsccSchema, VghtcOsccSchema
 
 
 class Model(BaseModel):
@@ -401,6 +402,8 @@ class ProcessSampleAttributes(BaseModel):
     def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
         if self.schema is NycuOsccSchema:
             attributes = CalculateNycuOscc().main(attributes=attributes)
+        elif self.schema is VghtcOsccSchema:
+            attributes = CalculateVghtcOscc().main(attributes=attributes)
         attributes = CastDatatypes(self.schema).main(attributes=attributes)
         return attributes
 

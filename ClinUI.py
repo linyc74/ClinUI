@@ -1,6 +1,6 @@
 from src import Main
-from src.schema import NycuOsccSchema
+from src.schema import NycuOsccSchema, VghtcOsccSchema
 
 
 if __name__ == '__main__':
-    Main().main(schema_name=NycuOsccSchema.NAME)
+    Main().main(schema=VghtcOsccSchema)

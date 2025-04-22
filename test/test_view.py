@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from src.view import View
 from src.model import Model
-from src.schema import NycuOsccSchema
+from src.schema import NycuOsccSchema, VghtcOsccSchema
 
 
 class ShowUI:
@@ -12,8 +12,8 @@ class ShowUI:
     def main(self):
         self.config_taskbar_icon()
         app = QApplication(sys.argv)
-        model = Model(NycuOsccSchema)
-        view = View(model)
+        model = Model(schema=VghtcOsccSchema)
+        view = View(model=model)
         view.show()
         sys.exit(app.exec_())
 

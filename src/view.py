@@ -252,9 +252,9 @@ class FileDialogSaveTable(FileDialog):
         ret = ''  # default, no file object selected and accepted
         accepted = d.exec_()
         if accepted:
-            selected = d.selectedFiles()
-            if len(selected) > 0:
-                ret = selected[0]
+            files = d.selectedFiles()
+            if len(files) > 0:
+                ret = files[0]
         return ret
 
 

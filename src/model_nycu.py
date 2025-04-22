@@ -4,7 +4,7 @@ Thus there is no need to dynamically pass in the self.schema object
 """
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Union, List, Tuple, Type
+from typing import Dict, Any, Union, List, Tuple
 from .schema import NycuOsccSchema
 
 
