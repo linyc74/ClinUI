@@ -18,7 +18,7 @@ OPTIONAL = [
             'type': str,
             'required': False,
             'default': 'nycu-oscc',
-            'choices': ['nycu-oscc', 'vghtpe-luad', 'vghtpe-hnscc'],
+            'choices': ['nycu-oscc', 'vghtpe-luad', 'vghtpe-hnscc', 'vghtc-oscc'],
             'help': 'data schema (default: %(default)s)',
         }
     },
@@ -70,6 +70,7 @@ class BuildApp:
         'nycu-oscc': 'NycuOsccSchema',
         'vghtpe-luad': 'VghtpeLuadSchema',
         'vghtpe-hnscc': 'VghtpeHnsccSchema',
+        'vghtc-oscc': 'VghtcOsccSchema',
     }
 
     schema_arg: str
@@ -101,7 +102,7 @@ from src.schema import {class_name}
 
 
 if __name__ == '__main__':
-    Main().main(schema_name={class_name}.NAME)
+    Main().main(schema={class_name})
 ''')
 
     def write_setup_py(self):
