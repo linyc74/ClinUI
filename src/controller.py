@@ -39,7 +39,7 @@ class Controller:
         self.action_control_y = ActionRedo(self)
 
     def __connect_button_actions(self):
-        for name in self.view.BUTTON_NAME_TO_LABEL.keys():
+        for name in self.view.elements.BUTTON_NAME_TO_LABEL.keys():
             button = getattr(self.view, f'button_{name}')
             method = getattr(self, f'action_{name}', None)
             if method is not None:
@@ -48,7 +48,7 @@ class Controller:
                 print(f'WARNING: Controller method "action_{name}" does not exist for the button "{name}"')
 
     def __connect_short_actions(self):
-        for name in self.view.SHORTCUT_NAME_TO_KEY_SEQUENCE.keys():
+        for name in self.view.elements.SHORTCUT_NAME_TO_KEY_SEQUENCE.keys():
             shortcut = getattr(self.view, f'shortcut_{name}')
             method = getattr(self, f'action_{name}', None)
             if method is not None:

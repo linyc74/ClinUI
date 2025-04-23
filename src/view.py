@@ -5,8 +5,132 @@ from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QPushButton, QFileDialog, \
     QMessageBox, QGridLayout, QDialog, QFormLayout, QDialogButtonBox, QComboBox, QScrollArea, QLineEdit, \
     QShortcut
-from typing import List, Optional, Any, Dict, Tuple
+from typing import List, Optional, Any, Dict, Tuple, Type
 from .model import Model
+from .schema import NycuOsccSchema, VghtcOsccSchema
+
+
+class Elements:
+
+    BUTTON_NAME_TO_LABEL: Dict[str, str] = {}
+    BUTTON_NAME_TO_POSITION: Dict[str, Tuple[int, int]] = {}
+    SHORTCUT_NAME_TO_KEY_SEQUENCE: Dict[str, str] = {}
+
+
+class DefaultElements(Elements):
+
+    BUTTON_NAME_TO_LABEL = {
+        'import_clinical_data_table': 'Import Clinical Data Table',
+        'save_clinical_data_table': 'Save Clinical Data Table',
+        'reprocess_table': 'Reprocess Table',
+
+        'undo': 'Undo',
+        'redo': 'Redo',
+        'sort_ascending': 'Sort (A to Z)',
+        'sort_descending': 'Sort (Z to A)',
+        'delete_selected_rows': 'Delete Selected Rows',
+
+        'add_new_sample': 'Add New Sample',
+        'edit_sample': 'Edit Sample',
+        'export_cbioportal_study': 'Export cBioPortal Study',
+    }
+    BUTTON_NAME_TO_POSITION = {
+        'import_clinical_data_table': (0, 0),
+        'save_clinical_data_table': (1, 0),
+        'reprocess_table': (4, 0),
+
+        'undo': (0, 1),
+        'redo': (1, 1),
+        'sort_ascending': (2, 1),
+        'sort_descending': (3, 1),
+        'delete_selected_rows': (4, 1),
+
+        'add_new_sample': (0, 2),
+        'edit_sample': (1, 2),
+        'export_cbioportal_study': (4, 2),
+    }
+
+
+class NycuOsccElements(Elements):
+
+    BUTTON_NAME_TO_LABEL = {
+        'import_clinical_data_table': 'Import Clinical Data Table',
+        'import_sequencing_table': 'Import Sequencing Table',
+        'save_clinical_data_table': 'Save Clinical Data Table',
+        'reprocess_table': 'Reprocess Table',
+
+        'undo': 'Undo',
+        'redo': 'Redo',
+        'find': 'Find',
+        'sort_ascending': 'Sort (A to Z)',
+        'sort_descending': 'Sort (Z to A)',
+        'delete_selected_rows': 'Delete Selected Rows',
+        'reset_table': 'Reset Table',
+
+        'add_new_sample': 'Add New Sample',
+        'edit_sample': 'Edit Sample',
+        'edit_cell': 'Edit Cell',
+        'export_cbioportal_study': 'Export cBioPortal Study',
+    }
+    BUTTON_NAME_TO_POSITION = {
+        'import_clinical_data_table': (0, 0),
+        'import_sequencing_table': (1, 0),
+        'save_clinical_data_table': (2, 0),
+        'reprocess_table': (6, 0),
+
+        'undo': (0, 1),
+        'redo': (1, 1),
+        'find': (2, 1),
+        'sort_ascending': (3, 1),
+        'sort_descending': (4, 1),
+        'delete_selected_rows': (5, 1),
+        'reset_table': (6, 1),
+
+        'add_new_sample': (0, 2),
+        'edit_sample': (1, 2),
+        'edit_cell': (2, 2),
+        'export_cbioportal_study': (6, 2),
+    }
+    SHORTCUT_NAME_TO_KEY_SEQUENCE = {
+        'control_s': 'Ctrl+S',
+        'control_f': 'Ctrl+F',
+        'control_z': 'Ctrl+Z',
+        'control_y': 'Ctrl+Y',
+    }
+
+
+class VghtcOsccElements(Elements):
+
+    BUTTON_NAME_TO_LABEL = {
+        'import_clinical_data_table': 'Import Clinical Data Table',
+        'save_clinical_data_table': 'Save Clinical Data Table',
+        'reprocess_table': 'Reprocess Table',
+
+        'undo': 'Undo',
+        'redo': 'Redo',
+        'find': 'Find',
+        'sort_ascending': 'Sort (A to Z)',
+        'sort_descending': 'Sort (Z to A)',
+        'delete_selected_rows': 'Delete Selected Rows',
+
+        'add_new_sample': 'Add New Sample',
+        'edit_sample': 'Edit Sample',
+    }
+    BUTTON_NAME_TO_POSITION = {
+        'import_clinical_data_table': (0, 0),
+        'save_clinical_data_table': (1, 0),
+        'reprocess_table': (5, 0),
+
+        'undo': (0, 1),
+        'redo': (1, 1),
+        'find': (2, 1),
+        'sort_ascending': (3, 1),
+        'sort_descending': (4, 1),
+        'delete_selected_rows': (5, 1),
+
+        'add_new_sample': (0, 2),
+        'edit_sample': (1, 2),
+    }
 
 
 class Table(QTableWidget):
@@ -73,52 +197,10 @@ class View(QWidget):
     TITLE = 'ClinUI'
     ICON_FILE = 'icon/logo.ico'
     WIDTH, HEIGHT = 1280, 768
-    BUTTON_NAME_TO_LABEL = {
-        'import_clinical_data_table': 'Import Clinical Data Table',
-        'import_sequencing_table': 'Import Sequencing Table',
-        'save_clinical_data_table': 'Save Clinical Data Table',
-        'reprocess_table': 'Reprocess Table',
-
-        'undo': 'Undo',
-        'redo': 'Redo',
-        'find': 'Find',
-        'sort_ascending': 'Sort (A to Z)',
-        'sort_descending': 'Sort (Z to A)',
-        'delete_selected_rows': 'Delete Selected Rows',
-        'reset_table': 'Reset Table',
-
-        'add_new_sample': 'Add New Sample',
-        'edit_sample': 'Edit Sample',
-        'edit_cell': 'Edit Cell',
-        'export_cbioportal_study': 'Export cBioPortal Study',
-    }
-    BUTTON_NAME_TO_POSITION = {
-        'import_clinical_data_table': (0, 0),
-        'import_sequencing_table': (1, 0),
-        'save_clinical_data_table': (2, 0),
-        'reprocess_table': (4, 0),
-
-        'undo': (0, 1),
-        'redo': (1, 1),
-        'find': (2, 1),
-        'sort_ascending': (3, 1),
-        'sort_descending': (4, 1),
-        'delete_selected_rows': (5, 1),
-        'reset_table': (6, 1),
-
-        'add_new_sample': (0, 2),
-        'edit_sample': (1, 2),
-        'edit_cell': (2, 2),
-        'export_cbioportal_study': (4, 2),
-    }
-    SHORTCUT_NAME_TO_KEY_SEQUENCE = {
-        'control_s': 'Ctrl+S',
-        'control_f': 'Ctrl+F',
-        'control_z': 'Ctrl+Z',
-        'control_y': 'Ctrl+Y',
-    }
 
     model: Model
+
+    elements: Type[Elements]
     vertical_layout: QVBoxLayout
     table: Table
     button_grid: QGridLayout
@@ -132,12 +214,21 @@ class View(QWidget):
         self.setWindowIcon(QIcon(f'{dirname(dirname(__file__))}/{self.ICON_FILE}'))
         self.resize(self.WIDTH, self.HEIGHT)
 
+        self.__set_elements()
         self.__init__vertical_layout()
         self.__init__main_table()
         self.__init__buttons()
         self.__init__shortcuts()
         self.__init__methods()
         self.show()
+
+    def __set_elements(self):
+        if self.model.schema is NycuOsccSchema:
+            self.elements = NycuOsccElements
+        elif self.model.schema is VghtcOsccSchema:
+            self.elements = VghtcOsccElements
+        else:
+            self.elements = DefaultElements
 
     def __init__vertical_layout(self):
         self.vertical_layout = QVBoxLayout()
@@ -151,14 +242,14 @@ class View(QWidget):
         self.button_grid = QGridLayout()
         self.vertical_layout.addLayout(self.button_grid)
 
-        for name, label in self.BUTTON_NAME_TO_LABEL.items():
+        for name, label in self.elements.BUTTON_NAME_TO_LABEL.items():
             setattr(self, f'button_{name}', QPushButton(label))
             button = getattr(self, f'button_{name}')
-            pos = self.BUTTON_NAME_TO_POSITION[name]
+            pos = self.elements.BUTTON_NAME_TO_POSITION[name]
             self.button_grid.addWidget(button, *pos)
 
     def __init__shortcuts(self):
-        for name, key_sequence in self.SHORTCUT_NAME_TO_KEY_SEQUENCE.items():
+        for name, key_sequence in self.elements.SHORTCUT_NAME_TO_KEY_SEQUENCE.items():
             shortcut = QShortcut(QKeySequence(key_sequence), self)
             setattr(self, f'shortcut_{name}', shortcut)
 

@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from src.view import View
 from src.model import Model
-from src.schema import NycuOsccSchema, VghtcOsccSchema
+from src.schema import NycuOsccSchema, VghtcOsccSchema, VghtpeHnsccSchema
 
 
 class ShowUI:

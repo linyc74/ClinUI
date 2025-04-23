@@ -1010,19 +1010,19 @@ class VghtcOsccSchema(Schema):
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%'],
+            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
         },
         IHC_ANTI_PDL1_MAB_22C3_CPS: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%'],
+            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
         },
         IHC_ANTI_PDL1_MAB_28_8_TPS: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%'],
+            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
         },
         IHC_ANTI_PDL1_MAB_28_8_CPS: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%'],
+            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
         },
         TUMOR_DISEASE_ANATOMIC_SITE: {
             'type': 'str',
