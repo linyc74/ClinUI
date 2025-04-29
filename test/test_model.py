@@ -40,20 +40,19 @@ class TestModel(TestCase):
             for val in attributes.values():
                 with self.subTest(row=row, val=val):
                     self.assertTrue(type(val) is str)  # everything out of the model should be string
-                    self.assertNotEquals('nan', val)  # 'nan' should be converted to ''
+                    self.assertNotEqual('nan', val)  # 'nan' should be converted to ''
 
-    def test_read_clinical_data_table(self):
+    def test_import_clinical_data_table(self):
         model = Model(NycuOsccSchema)
         model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
         # Do not auto-detect 'NA' as NaN, 'NA' should remain as string
         self.assertEqual('NA', model.dataframe.loc[0, 'Medical Record ID'])
         self.assertEqual(1, len(model.undo_cache))
 
-    def test_wrong_clinical_data_table(self):
+    def test_import_error_clinical_data_table(self):
         model = Model(NycuOsccSchema)
-        with self.assertRaises(AssertionError):
-            model.import_clinical_data_table(file=f'{self.indir}/error_clinical_data.csv')
-        self.assertEqual(0, len(model.undo_cache))  # failed to import, no undo cache
+        model.import_clinical_data_table(file=f'{self.indir}/error_clinical_data.csv')
+        self.assertEqual(1, len(model.undo_cache))
 
     def test_import_sequencing_table(self):
         model = Model(NycuOsccSchema)
@@ -61,13 +60,6 @@ class TestModel(TestCase):
         model.import_sequencing_table(file=f'{self.indir}/sequencing.csv')
         self.assertEqual(12, len(model.dataframe))
         self.assertEqual(2, len(model.undo_cache))
-
-    def test_wrong_sequencing_table(self):
-        model = Model(NycuOsccSchema)
-        model.import_clinical_data_table(file=f'{self.indir}/clinical_data.csv')
-        with self.assertRaises(AssertionError):
-            model.import_sequencing_table(file=f'{self.indir}/error_sequencing.csv')
-        self.assertEqual(1, len(model.undo_cache))
 
     def test_find_without_start(self):
         model = Model(NycuOsccSchema)

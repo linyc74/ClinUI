@@ -245,7 +245,7 @@ class ImportClinicalDataTable(BaseModel):
             file=file,
             columns=self.schema.DISPLAY_COLUMNS)
 
-        id_column = self.clinical_data_df.columns[0]
+        id_column = self.schema.ID_COLUMN
 
         for i, row in df.iterrows():
 
@@ -334,7 +334,7 @@ class ReadTable(BaseModel):
         self.columns = columns
 
         self.read_file()
-        self.assert_columns()
+        self.add_missing_columns()
         self.df = self.df[self.columns]
 
         return self.df
@@ -355,9 +355,10 @@ class ReadTable(BaseModel):
                 dtype=str
             )
 
-    def assert_columns(self):
-        for c in self.columns:
-            assert c in self.df.columns, f'Column "{c}" not found in "{os.path.basename(self.file)}"'
+    def add_missing_columns(self):
+        for column in self.columns:
+            if column not in self.df.columns:
+                self.df[column] = pd.NA
 
 
 class ExportCbioportalStudy(BaseModel):
