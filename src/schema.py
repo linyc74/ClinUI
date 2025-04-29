@@ -844,6 +844,7 @@ class VghtcOsccSchema(Schema):
     PATHOLOGICAL_TNM = 'Pathological TNM (pTNM)'
     AJCC_STAGE = 'AJCC Stage'
     WHO_PATHOLOGY_TYPE = 'WHO Pathology Type'
+    TUMOR_DISEASE_ANATOMIC_SITE = 'Tumor Disease Anatomic Site'
     CANDIDIASIS = 'Candidiasis'
     HPV_P16 = 'HPV (p16)'
     EBV = 'EBV'
@@ -851,7 +852,17 @@ class VghtcOsccSchema(Schema):
     IHC_ANTI_PDL1_MAB_22C3_CPS = 'IHC Anti-PDL1 mAb 22C3 CPS (%)'
     IHC_ANTI_PDL1_MAB_28_8_TPS = 'IHC Anti-PDL1 mAb 28-8 TPS (%)'
     IHC_ANTI_PDL1_MAB_28_8_CPS = 'IHC Anti-PDL1 mAb 28-8 CPS (%)'
-    TUMOR_DISEASE_ANATOMIC_SITE = 'Tumor Disease Anatomic Site'
+    LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
+    LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
+    LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
+    LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
+    LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
+    TOTAL_LYMPH_NODE = 'Total Lymph Node'
+    LYMPHOVASCULAR_INVASION_LVI = 'Lymphovascular Invasion (LVI)'
+    PERINEURAL_INVASION = 'Perineural Invasion (PNI)'
+    CLINICAL_OVERT_EXTRANODAL_EXTENSION = 'Clinical Overt Extranodal Extension'
+    PATHOLOGICAL_EXTRANODAL_EXTENSION = 'Pathological Extranodal Extension'
+    DEPTH_OF_INVASION = 'Depth of Invasion (mm)'
     SURGERY = 'Surgery'
     RADIATION_THERAPY = 'Radiation Therapy'
     RADIATION_THERAPY_DOSE = 'Radiation Therapy Dose (cGY)'
@@ -874,6 +885,7 @@ class VghtcOsccSchema(Schema):
         PATHOLOGICAL_TNM,
         AJCC_STAGE,
         WHO_PATHOLOGY_TYPE,
+        TUMOR_DISEASE_ANATOMIC_SITE,
         CANDIDIASIS,
         HPV_P16,
         EBV,
@@ -881,7 +893,17 @@ class VghtcOsccSchema(Schema):
         IHC_ANTI_PDL1_MAB_22C3_CPS,
         IHC_ANTI_PDL1_MAB_28_8_TPS,
         IHC_ANTI_PDL1_MAB_28_8_CPS,
-        TUMOR_DISEASE_ANATOMIC_SITE,
+        LYMPH_NODE_LEVEL_I,
+        LYMPH_NODE_LEVEL_II,
+        LYMPH_NODE_LEVEL_III,
+        LYMPH_NODE_LEVEL_IV,
+        LYMPH_NODE_LEVEL_V,
+        TOTAL_LYMPH_NODE,
+        LYMPHOVASCULAR_INVASION_LVI,
+        PERINEURAL_INVASION,
+        CLINICAL_OVERT_EXTRANODAL_EXTENSION,
+        PATHOLOGICAL_EXTRANODAL_EXTENSION,
+        DEPTH_OF_INVASION,
         SURGERY,
         RADIATION_THERAPY,
         RADIATION_THERAPY_DOSE,
@@ -996,6 +1018,17 @@ class VghtcOsccSchema(Schema):
             'options': ['Well Differentiated', 'Moderately Differentiated', 'Poorly Differentiated',
                         'Undifferentated Anaplastic'],
         },
+        TUMOR_DISEASE_ANATOMIC_SITE: {
+            'type': 'str',
+            'options': [
+                'Buccal Mucosa',
+                'Tongue',
+                'Gingiva',
+                'Lip',
+                'Retromolar Triangle',
+                'Palate',
+            ],
+        },
         CANDIDIASIS: {
             'type': 'str',
             'options': ['Positive', 'Negative', 'Not Tested'],
@@ -1024,33 +1057,49 @@ class VghtcOsccSchema(Schema):
             'type': 'str',
             'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
         },
-        TUMOR_DISEASE_ANATOMIC_SITE: {
+        LYMPH_NODE_LEVEL_I: {
             'type': 'str',
-            'options': [
-                'Retromolar Triangle',
-                'Right Tongue',
-                'Left Tongue',
-                'Cross Midline (CM) Tongue',
-                'Left Upper Gingiva',
-                'Left Lower Gingiva',
-                'Right Upper Gingiva',
-                'Right Lower Gingiva',
-                'Cross Midline (CM) Left Upper Gingiva',
-                'Cross Midline (CM) Right Lower Gingiva',
-                'Cross Midline (CM) Gingiva',
-                'Left Palate',
-                'Right Palate',
-                'Cross Midline (CM) Palate',
-                'Upper Lip',
-                'Lower Lip',
-                'External Upper Lip',
-                'External Lower Lip',
-                'Upper Lip Inner Aspect',
-                'Lower Lip Inner Aspect',
-                'Cross Midline (CM) Lip',
-                'Left Buccal Mucosa',
-                'Right Buccal Mucosa',
-            ],
+            'options': ['0/0', ''],
+        },
+        LYMPH_NODE_LEVEL_II: {
+            'type': 'str',
+            'options': ['0/0', ''],
+        },
+        LYMPH_NODE_LEVEL_III: {
+            'type': 'str',
+            'options': ['0/0', ''],
+        },
+        LYMPH_NODE_LEVEL_IV: {
+            'type': 'str',
+            'options': ['0/0', ''],
+        },
+        LYMPH_NODE_LEVEL_V: {
+            'type': 'str',
+            'options': ['0/0', ''],
+        },
+        TOTAL_LYMPH_NODE: {
+            'type': 'str',
+            'options': ['0/0', ''],
+        },
+        LYMPHOVASCULAR_INVASION_LVI: {
+            'type': 'str',
+            'options': ['Negative', 'Positive', 'Suspicious'],
+        },
+        PERINEURAL_INVASION: {
+            'type': 'str',
+            'options': ['Negative', 'Positive', 'Extensive'],
+        },
+        CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
+            'type': 'str',
+            'options': ['Negative', 'Positive'],
+        },
+        PATHOLOGICAL_EXTRANODAL_EXTENSION: {
+            'type': 'str',
+            'options': ['Negative', 'Positive'],
+        },
+        DEPTH_OF_INVASION: {
+            'type': 'float',
+            'options': [0.0],
         },
         SURGERY: {
             'type': 'str',
@@ -1081,7 +1130,6 @@ class VghtcOsccSchema(Schema):
         IMMUNOTHERAPY: {
             'type': 'str',
             'options': [
-                '',
                 'Pembrolizumab',
                 'Nivolumab',
                 'None',
@@ -1089,28 +1137,11 @@ class VghtcOsccSchema(Schema):
         },
     }
 
-    CBIO_DROP_COLUMNS = [
-        MEDICAL_RECORD_ID,
-        PATIENT_NAME,
-        BIRTH_DATE,
-    ]
+    CBIO_DROP_COLUMNS = []
 
-    CBIO_PATIENT_LEVEL_COLUMNS = [
-        SEX,
-        ALCOHOL,
-        BETEL_NUT,
-        CIGARETTE,
-    ]
+    CBIO_PATIENT_LEVEL_COLUMNS = []
 
-    CBIO_STUDY_INFO_FIELD_TO_OPTIONS = {
-        'type_of_cancer': ['hnsc'],
-        'cancer_study_identifier': ['hnsc_vghtc_2025'],
-        'name': ['Head and Neck Squamous Cell Carcinomas (VGHTC, 2025)'],
-        'description': ['Whole exome sequencing of oral squamous cell carcinoma (OSCC) tumor/normal pairs'],
-        'groups': ['PUBLIC'],
-        'reference_genome': ['hg38'],
-        'source_data': ['yy_mmdd_dataset'],
-    }
+    CBIO_STUDY_INFO_FIELD_TO_OPTIONS = {}
 
 
 class VghtpeLuadSchema(Schema):
