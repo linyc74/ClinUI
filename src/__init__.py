@@ -7,7 +7,7 @@ from .schema import Schema
 from .controller import Controller
 
 
-VERSION = 'v1.7.0-beta'
+VERSION = 'v1.7.0-beta.2'
 
 
 class Main:

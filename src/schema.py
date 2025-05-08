@@ -721,7 +721,6 @@ class NycuOsccSchema(Schema):
         },
         NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE: {
             'type': 'str',
-            'options': ['Stage I', 'Stage II', 'Stage III', 'Stage IVA', 'Stage IVB', 'Stage IVC'],
         },
         ICD_10_CLASSIFICATION: {
             'type': 'str',
@@ -847,21 +846,23 @@ class VghtcOsccSchema(Schema):
     CANDIDIASIS = 'Candidiasis'
     HPV_P16 = 'HPV (p16)'
     EBV = 'EBV'
-    IHC_ANTI_PDL1_MAB_22C3_TPS = 'IHC Anti-PDL1 mAb 22C3 TPS (%)'
-    IHC_ANTI_PDL1_MAB_22C3_CPS = 'IHC Anti-PDL1 mAb 22C3 CPS (%)'
-    IHC_ANTI_PDL1_MAB_28_8_TPS = 'IHC Anti-PDL1 mAb 28-8 TPS (%)'
-    IHC_ANTI_PDL1_MAB_28_8_CPS = 'IHC Anti-PDL1 mAb 28-8 CPS (%)'
-    LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
-    LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
-    LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
-    LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
-    LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
-    TOTAL_LYMPH_NODE = 'Total Lymph Node'
-    LYMPHOVASCULAR_INVASION_LVI = 'Lymphovascular Invasion (LVI)'
-    PERINEURAL_INVASION = 'Perineural Invasion (PNI)'
-    CLINICAL_OVERT_EXTRANODAL_EXTENSION = 'Clinical Overt Extranodal Extension'
-    PATHOLOGICAL_EXTRANODAL_EXTENSION = 'Pathological Extranodal Extension'
-    DEPTH_OF_INVASION = 'Depth of Invasion (mm)'
+    TPS_ASSESSMENT = '22C3 Tumor Proportion Score (TPS) Assessment'
+    TPS = '22C3 Tumor Proportion Score (TPS) (%)'
+    CPS_ASSESSMENT = '22C3 Combined Positive Score (CPS) Assessment'
+    CPS = '22C3 Combined Positive Score (CPS)'
+    # LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
+    # LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
+    # LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
+    # LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
+    # LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
+    # TOTAL_LYMPH_NODE = 'Total Lymph Node'
+    TUMOR_SIZE = 'Tumor Size'
+    DOI = 'DOI'
+    PI = 'PI'
+    LVI = 'LVI'
+    BI = 'BI'
+    ENE = 'ENE'
+    SURGICAL_MARGIN = 'Surgical Margin'
     SURGERY = 'Surgery'
     RADIATION_THERAPY = 'Radiation Therapy'
     RADIATION_THERAPY_DOSE = 'Radiation Therapy Dose (cGY)'
@@ -890,21 +891,23 @@ class VghtcOsccSchema(Schema):
         CANDIDIASIS,
         HPV_P16,
         EBV,
-        IHC_ANTI_PDL1_MAB_22C3_TPS,
-        IHC_ANTI_PDL1_MAB_22C3_CPS,
-        IHC_ANTI_PDL1_MAB_28_8_TPS,
-        IHC_ANTI_PDL1_MAB_28_8_CPS,
-        LYMPH_NODE_LEVEL_I,
-        LYMPH_NODE_LEVEL_II,
-        LYMPH_NODE_LEVEL_III,
-        LYMPH_NODE_LEVEL_IV,
-        LYMPH_NODE_LEVEL_V,
-        TOTAL_LYMPH_NODE,
-        LYMPHOVASCULAR_INVASION_LVI,
-        PERINEURAL_INVASION,
-        CLINICAL_OVERT_EXTRANODAL_EXTENSION,
-        PATHOLOGICAL_EXTRANODAL_EXTENSION,
-        DEPTH_OF_INVASION,
+        TPS_ASSESSMENT,
+        TPS,
+        CPS_ASSESSMENT,
+        CPS,
+        # LYMPH_NODE_LEVEL_I,
+        # LYMPH_NODE_LEVEL_II,
+        # LYMPH_NODE_LEVEL_III,
+        # LYMPH_NODE_LEVEL_IV,
+        # LYMPH_NODE_LEVEL_V,
+        # TOTAL_LYMPH_NODE,
+        TUMOR_SIZE,
+        DOI,
+        PI,
+        LVI,
+        BI,
+        ENE,
+        SURGICAL_MARGIN,
         SURGERY,
         RADIATION_THERAPY,
         RADIATION_THERAPY_DOSE,
@@ -949,7 +952,8 @@ class VghtcOsccSchema(Schema):
                 'Current',
                 'Former: quit witthin one year',
                 'Quit: quit more than one year',
-                'Nil: never use'
+                'Nil: never use',
+                'NA',
             ],
         },
         BETEL_NUT: {
@@ -958,7 +962,8 @@ class VghtcOsccSchema(Schema):
                 'Current',
                 'Former: quit witthin one year',
                 'Quit: quit more than one year',
-                'Nil: never use'
+                'Nil: never use',
+                'NA',
             ],
         },
         CIGARETTE: {
@@ -967,7 +972,8 @@ class VghtcOsccSchema(Schema):
                 'Current',
                 'Former: quit witthin one year',
                 'Quit: quit more than one year',
-                'Nil: never use'
+                'Nil: never use',
+                'NA',
             ],
         },
         EDENTATE: {
@@ -981,7 +987,7 @@ class VghtcOsccSchema(Schema):
         },
         SALIVARY_FLOW: {
             'type': 'str',
-            'options': ['< 5 cc/ 5 minutes', '≥ 5 cc/ 5 minutes'],
+            'options': ['< 5 cc/ 5 minutes', '≥ 5 cc/ 5 minutes', 'NA'],
         },
         PATHOLOGICAL_TNM: {
             'type': 'str',
@@ -1012,12 +1018,16 @@ class VghtcOsccSchema(Schema):
         },
         AJCC_STAGE: {
             'type': 'str',
-            'options': ['Stage I', 'Stage II', 'Stage III', 'Stage IVA', 'Stage IVB', 'Stage IVC'],
         },
         WHO_PATHOLOGY_TYPE: {
             'type': 'str',
-            'options': ['Well Differentiated', 'Moderately Differentiated', 'Poorly Differentiated',
-                        'Undifferentated Anaplastic'],
+            'options': [
+                'Well Differentiated',
+                'Moderately Differentiated',
+                'Poorly Differentiated',
+                'Undifferentated Anaplastic',
+                'NA',
+            ],
         },
         TUMOR_DISEASE_ANATOMIC_SITE: {
             'type': 'str',
@@ -1025,90 +1035,98 @@ class VghtcOsccSchema(Schema):
                 'Buccal Mucosa',
                 'Tongue',
                 'Gingiva',
-                'Lip',
-                'Retromolar Triangle',
                 'Palate',
+                'RMT (Retromolar Trigone)',
+                'Lip',
             ],
         },
         CANDIDIASIS: {
             'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested'],
+            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
         },
         HPV_P16: {
             'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested'],
+            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
         },
         EBV: {
             'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested'],
+            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
         },
-        IHC_ANTI_PDL1_MAB_22C3_TPS: {
+        TPS_ASSESSMENT: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
+            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested', 'NA'],
         },
-        IHC_ANTI_PDL1_MAB_22C3_CPS: {
+        TPS: {
+            'type': 'float',
+            'options': [0.5, 1., 5., 10., 20., 30., 40., 50., 60., 70., 80.],
+        },
+        CPS_ASSESSMENT: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
+            'options': ['< 1', '≥ 1 and < 10', '≥ 10', 'Not Tested', 'NA'],
         },
-        IHC_ANTI_PDL1_MAB_28_8_TPS: {
+        CPS: {
+            'type': 'float',
+            'options': [0.5, 1., 5., 10., 20., 30., 40., 50., 60., 70., 80.],
+        },
+        # LYMPH_NODE_LEVEL_I: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        # LYMPH_NODE_LEVEL_II: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        # LYMPH_NODE_LEVEL_III: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        # LYMPH_NODE_LEVEL_IV: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        # LYMPH_NODE_LEVEL_V: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        # TOTAL_LYMPH_NODE: {
+        #     'type': 'str',
+        #     'options': ['0/0', 'NA'],
+        # },
+        TUMOR_SIZE: {
+            'type': 'float',
+            'options': [0.0],
+        },
+        DOI: {
+            'type': 'float',
+            'options': [0.0],
+        },
+        PI: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
+            'options': ['Negative', 'Positive', 'Extensive', 'NA'],
         },
-        IHC_ANTI_PDL1_MAB_28_8_CPS: {
+        LVI: {
             'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested'],
+            'options': ['Negative', 'Positive', 'Suspicious', 'NA'],
         },
-        LYMPH_NODE_LEVEL_I: {
+        BI: {
             'type': 'str',
-            'options': ['0/0', ''],
+            'options': ['Negative', 'Positive', 'NA'],
         },
-        LYMPH_NODE_LEVEL_II: {
+        ENE: {
             'type': 'str',
-            'options': ['0/0', ''],
+            'options': ['Negative', 'Positive', 'NA'],
         },
-        LYMPH_NODE_LEVEL_III: {
-            'type': 'str',
-            'options': ['0/0', ''],
-        },
-        LYMPH_NODE_LEVEL_IV: {
-            'type': 'str',
-            'options': ['0/0', ''],
-        },
-        LYMPH_NODE_LEVEL_V: {
-            'type': 'str',
-            'options': ['0/0', ''],
-        },
-        TOTAL_LYMPH_NODE: {
-            'type': 'str',
-            'options': ['0/0', ''],
-        },
-        LYMPHOVASCULAR_INVASION_LVI: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'Suspicious'],
-        },
-        PERINEURAL_INVASION: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'Extensive'],
-        },
-        CLINICAL_OVERT_EXTRANODAL_EXTENSION: {
-            'type': 'str',
-            'options': ['Negative', 'Positive'],
-        },
-        PATHOLOGICAL_EXTRANODAL_EXTENSION: {
-            'type': 'str',
-            'options': ['Negative', 'Positive'],
-        },
-        DEPTH_OF_INVASION: {
+        SURGICAL_MARGIN: {
             'type': 'float',
             'options': [0.0],
         },
         SURGERY: {
             'type': 'str',
-            'options': ['Wide Excision', 'Neck Dissection', 'Wide Excision and Neck Dissection'],
+            'options': ['Wide Excision', 'Neck Dissection', 'Wide Excision and Neck Dissection', 'NA'],
         },
         RADIATION_THERAPY: {
             'type': 'str',
-            'options': ['Adjuvant', 'None', 'Definitive', 'Palliative'],
+            'options': ['Adjuvant', 'None', 'Definitive', 'Palliative', 'NA'],
         },
         RADIATION_THERAPY_DOSE: {
             'type': 'float',
@@ -1126,6 +1144,7 @@ class VghtcOsccSchema(Schema):
                 'Cisplatin, 5-FU',
                 'Cisplatin, Docetaxel',
                 'Docetaxel, Cisplatin, 5-FU (TPF)',
+                'NA',
             ],
         },
         IMMUNOTHERAPY: {
@@ -1134,6 +1153,7 @@ class VghtcOsccSchema(Schema):
                 'Pembrolizumab',
                 'Nivolumab',
                 'None',
+                'NA',
             ],
         },
     }
