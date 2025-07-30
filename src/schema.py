@@ -834,7 +834,7 @@ class VghtcOsccSchema(Schema):
     FECAL_1 = '檢體編碼 Fecal 1'
     SALIVA_2 = '檢體編碼 Saliva 2'
     FECAL_2 = '檢體編碼 Fecal 2'
-    BIRTH_DATE = 'Birth Date'
+    BIRTH_TIME = '出生時間'
     SEX = 'Sex'
     ALCOHOL = 'Alcohol'
     BETEL_NUT = 'Betal Nut'
@@ -870,7 +870,7 @@ class VghtcOsccSchema(Schema):
     PD_L1_CPS = 'PD-L1 (CPS)'
     TUMOR_CELL = 'Tumor Cell (TC %)'
     CHEMOTHERAPY_STOP_TIME = '用藥停止結算時間 (收案時間+3個月)'
-    CHEMOTHERAPY_2 = 'Chemotherapy_2'
+    CHEMOTHERAPY_2 = '化療'
     TARGET_THERAPY = '標靶'
     IMMUNOTHERAPY = '免疫'
     HORMONE_THERAPY = '荷爾蒙'
@@ -886,7 +886,7 @@ class VghtcOsccSchema(Schema):
         FECAL_1,
         SALIVA_2,
         FECAL_2,
-        BIRTH_DATE,
+        BIRTH_TIME,
         SEX,
         ALCOHOL,
         BETEL_NUT,
@@ -941,7 +941,7 @@ class VghtcOsccSchema(Schema):
         },
         RECRUITMENT_DATE: {
             'type': 'str',
-            'options': ['2025-01-01'],
+            'options': ['114/8/1'],
         },
         SALIVA_1: {
             'type': 'str',
@@ -959,9 +959,9 @@ class VghtcOsccSchema(Schema):
             'type': 'str',
             'options': ['LTL-1000-F2'],
         },
-        BIRTH_DATE: {
+        BIRTH_TIME: {
             'type': 'str',
-            'options': ['1960-01-01'],
+            'options': ['60/1/1'],
         },
         SEX: {
             'type': 'str',
