@@ -827,334 +827,302 @@ class VghtcOsccSchema(Schema):
 
     NAME = 'VGHTC OSCC'
 
-    PATIENT_ID = 'Patient ID'
-    MEDICAL_RECORD_ID = 'Medical Record ID'
-    PATIENT_NAME = 'Patient Name'
-    SEX = 'Sex'
+    PATIENT_ID = 'Chart Number'
+    PATIENT_NAME = '姓名'
+    RECRUITMENT_DATE = '收案時間'
+    SALIVA_1 = '檢體編碼 Saliva 1'
+    FECAL_1 = '檢體編碼 Fecal 1'
+    SALIVA_2 = '檢體編碼 Saliva 2'
+    FECAL_2 = '檢體編碼 Fecal 2'
     BIRTH_DATE = 'Birth Date'
-    ORAL_SAMPLING_DATE = 'Oral Sampling Date'
-    FECAL_SAMPLING_DATE = 'Fecal Sampling Date'
+    SEX = 'Sex'
     ALCOHOL = 'Alcohol'
-    BETEL_NUT = 'Betel Nut'
-    CIGARETTE = 'Cigarette'
-    EDENTATE = 'Edentate (pano)'
-    SALIVARY_FLOW = 'Salivary Flow'
-    PATHOLOGICAL_TNM = 'Pathological TNM (pTNM)'
-    AJCC_STAGE = 'AJCC Stage'
-    WHO_PATHOLOGY_TYPE = 'WHO Pathology Type'
-    TUMOR_DISEASE_ANATOMIC_SITE = 'Tumor Disease Anatomic Site'
-    CANDIDIASIS = 'Candidiasis'
-    HPV_P16 = 'HPV (p16)'
-    EBV = 'EBV'
-    TPS_ASSESSMENT = '22C3 Tumor Proportion Score (TPS) Assessment'
-    TPS = '22C3 Tumor Proportion Score (TPS) (%)'
-    CPS_ASSESSMENT = '22C3 Combined Positive Score (CPS) Assessment'
-    CPS = '22C3 Combined Positive Score (CPS)'
-    # LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
-    # LYMPH_NODE_LEVEL_II = 'Lymph Node Level II'
-    # LYMPH_NODE_LEVEL_III = 'Lymph Node Level III'
-    # LYMPH_NODE_LEVEL_IV = 'Lymph Node Level IV'
-    # LYMPH_NODE_LEVEL_V = 'Lymph Node Level V'
-    # TOTAL_LYMPH_NODE = 'Total Lymph Node'
-    TUMOR_SIZE = 'Tumor Size'
-    DOI = 'DOI'
-    PI = 'PI'
-    LVI = 'LVI'
-    BI = 'BI'
-    ENE = 'ENE'
-    SURGICAL_MARGIN = 'Surgical Margin'
+    BETEL_NUT = 'Betal Nut'
+    CIGARETTE = 'Cigarette Smoking'
     SURGERY = 'Surgery'
-    RADIATION_THERAPY = 'Radiation Therapy'
-    RADIATION_THERAPY_DOSE = 'Radiation Therapy Dose (cGY)'
+    RADIOTHERAPY = 'Radiotherapy'
     CHEMOTHERAPY = 'Chemotherapy'
-    IMMUNOTHERAPY = 'Immunotherapy'
+    TUMOR_RECURRENCE = 'Tumor Recurrence'
+    LYMPH_NODE_METASTASIS = 'Lymph Node Metastasis'
+    DISTANT_METASTASIS = 'Distant Metastasis'
+    TUMOR_STAGE = 'Tumor Stage (Final)'
+    T_STAGE = 'T Stage'
+    N_STAGE = 'N Stage'
+    M_STAGE = 'M Stage'
+    TUMOR_SITE = 'Tumor Site'
+    TUMOR_SIZE = 'Tumor Size (Greatest Dimension, mm)'
+    DOI = 'DOI (mm)'
+    TUMOR_FOCALITY = 'Tumor Focality'
+    SURGICAL_MARGIN = 'Surgical Margin'
+    PERINEURAL_INVASION = 'Perineural Invasion'
+    LYMPH_OVASCULAR_INVASION = 'Lymphovascular Invasion'
+    LYMPH_NODE_STATUS_META = 'Lymph Node Status Meta'
+    TOTAL_LYMPH_NODE_STATUS = 'Total Lymph Node Status'
+    LATERALITY = 'Laterality'
+    SIZE_OF_LARGEST_METASTATIC_DEPOSIT = 'Size of Largest Metastatic Deposit (cm)'
+    EXTRANODAL_EXTENSION = 'Extranodal Extension'
+    ENE_MICRO_MACRO = 'ENE micro/macro'
+    BONE_INVASION = 'Bone Invasion'
+    CANDIDIASIS = 'Candidiasis'
+    WHO_PATHOLOGY_TYPE = 'WHO Pathology Type'
+    PATHOLOGICAL_TNM = 'Pathological TNM'
+    PD_L1_TPS = 'PD-L1 (TPS %)'
+    PD_L1_CPS = 'PD-L1 (CPS)'
+    TUMOR_CELL = 'Tumor Cell (TC %)'
+    CHEMOTHERAPY_STOP_TIME = '用藥停止結算時間 (收案時間+3個月)'
+    CHEMOTHERAPY_2 = 'Chemotherapy'
+    TARGET_THERAPY = '標靶'
+    IMMUNOTHERAPY = '免疫'
+    HORMONE_THERAPY = '荷爾蒙'
+    EFFICACY = 'Efficacy'
 
     ID_COLUMN = PATIENT_ID
 
     DISPLAY_COLUMNS = [
         PATIENT_ID,
-        MEDICAL_RECORD_ID,
         PATIENT_NAME,
-        SEX,
+        RECRUITMENT_DATE,
+        SALIVA_1,
+        FECAL_1,
+        SALIVA_2,
+        FECAL_2,
         BIRTH_DATE,
-        ORAL_SAMPLING_DATE,
-        FECAL_SAMPLING_DATE,
+        SEX,
         ALCOHOL,
         BETEL_NUT,
         CIGARETTE,
-        EDENTATE,
-        SALIVARY_FLOW,
-        PATHOLOGICAL_TNM,
-        AJCC_STAGE,
-        WHO_PATHOLOGY_TYPE,
-        TUMOR_DISEASE_ANATOMIC_SITE,
-        CANDIDIASIS,
-        HPV_P16,
-        EBV,
-        TPS_ASSESSMENT,
-        TPS,
-        CPS_ASSESSMENT,
-        CPS,
-        # LYMPH_NODE_LEVEL_I,
-        # LYMPH_NODE_LEVEL_II,
-        # LYMPH_NODE_LEVEL_III,
-        # LYMPH_NODE_LEVEL_IV,
-        # LYMPH_NODE_LEVEL_V,
-        # TOTAL_LYMPH_NODE,
+        SURGERY,
+        RADIOTHERAPY,
+        CHEMOTHERAPY,
+        TUMOR_RECURRENCE,
+        LYMPH_NODE_METASTASIS,
+        DISTANT_METASTASIS,
+        TUMOR_STAGE,
+        T_STAGE,
+        N_STAGE,
+        M_STAGE,
+        TUMOR_SITE,
         TUMOR_SIZE,
         DOI,
-        PI,
-        LVI,
-        BI,
-        ENE,
+        TUMOR_FOCALITY,
         SURGICAL_MARGIN,
-        SURGERY,
-        RADIATION_THERAPY,
-        RADIATION_THERAPY_DOSE,
-        CHEMOTHERAPY,
+        PERINEURAL_INVASION,
+        LYMPH_OVASCULAR_INVASION,
+        LYMPH_NODE_STATUS_META,
+        TOTAL_LYMPH_NODE_STATUS,
+        LATERALITY,
+        SIZE_OF_LARGEST_METASTATIC_DEPOSIT,
+        EXTRANODAL_EXTENSION,
+        ENE_MICRO_MACRO,
+        BONE_INVASION,
+        CANDIDIASIS,
+        WHO_PATHOLOGY_TYPE,
+        PATHOLOGICAL_TNM,
+        PD_L1_TPS,
+        PD_L1_CPS,
+        TUMOR_CELL,
+        CHEMOTHERAPY_STOP_TIME,
+        CHEMOTHERAPY_2,
+        TARGET_THERAPY,
         IMMUNOTHERAPY,
+        HORMONE_THERAPY,
+        EFFICACY,
     ]
 
-    AUTOGENERATED_COLUMNS = [
-        AJCC_STAGE
-    ]
+    AUTOGENERATED_COLUMNS = []
 
     COLUMN_ATTRIBUTES = {
-        MEDICAL_RECORD_ID: {
+        PATIENT_ID: {
             'type': 'str',
+            'options': [''],
         },
         PATIENT_NAME: {
             'type': 'str',
+            'options': [''],
         },
-        PATIENT_ID: {
+        RECRUITMENT_DATE: {
             'type': 'str',
-            'options': ['LTL-1001'],
+            'options': [''],
+        },
+        SALIVA_1: {
+            'type': 'str',
+            'options': [''],
+        },
+        FECAL_1: {
+            'type': 'str',
+            'options': [''],
+        },
+        SALIVA_2: {
+            'type': 'str',
+            'options': [''],
+        },
+        FECAL_2: {
+            'type': 'str',
+            'options': [''],
+        },
+        BIRTH_DATE: {
+            'type': 'str',
+            'options': [''],
         },
         SEX: {
             'type': 'str',
-            'options': ['Male', 'Female'],
-        },
-        BIRTH_DATE: {
-            'type': 'date',
-            'options': ['1900-01-01'],
-        },
-        ORAL_SAMPLING_DATE: {
-            'type': 'date',
-            'options': ['2025-05-01'],
-        },
-        FECAL_SAMPLING_DATE: {
-            'type': 'date',
-            'options': ['2025-05-01'],
+            'options': [''],
         },
         ALCOHOL: {
             'type': 'str',
-            'options': [
-                'Current',
-                'Former: quit witthin one year',
-                'Quit: quit more than one year',
-                'Nil: never use',
-                'NA',
-            ],
+            'options': [''],
         },
         BETEL_NUT: {
             'type': 'str',
-            'options': [
-                'Current',
-                'Former: quit witthin one year',
-                'Quit: quit more than one year',
-                'Nil: never use',
-                'NA',
-            ],
+            'options': [''],
         },
         CIGARETTE: {
             'type': 'str',
-            'options': [
-                'Current',
-                'Former: quit witthin one year',
-                'Quit: quit more than one year',
-                'Nil: never use',
-                'NA',
-            ],
-        },
-        EDENTATE: {
-            'type': 'str',
-            'options': [
-                'No PRD',
-                'With RPD',
-                'Tooth Number < 8',
-                'Tooth Number ≥ 8',
-            ],
-        },
-        SALIVARY_FLOW: {
-            'type': 'str',
-            'options': ['< 5 cc/ 5 minutes', '≥ 5 cc/ 5 minutes', 'NA'],
-        },
-        PATHOLOGICAL_TNM: {
-            'type': 'str',
-            'options': [
-                'T1N0M0',
-                'TisN0M0',
-                'T2N0M0',
-                'T3N0M0',
-                'T1N1M0',
-                'T2N1M0',
-                'T3N1M0',
-                'T4aN0M0',
-                'T4aN1M0',
-                'T1N2M0',
-                'T2N2M0',
-                'T3N2M0',
-                'T4aN2M0',
-                'T1N3M0',
-                'T2N3M0',
-                'T3N3M0',
-                'T4aN3M0',
-                'T4bN0M0',
-                'T4bN1M0',
-                'T4bN2M0',
-                'T4bN3M0',
-                'T4bN3M1',
-            ],
-        },
-        AJCC_STAGE: {
-            'type': 'str',
-        },
-        WHO_PATHOLOGY_TYPE: {
-            'type': 'str',
-            'options': [
-                'Well Differentiated',
-                'Moderately Differentiated',
-                'Poorly Differentiated',
-                'Undifferentated Anaplastic',
-                'NA',
-            ],
-        },
-        TUMOR_DISEASE_ANATOMIC_SITE: {
-            'type': 'str',
-            'options': [
-                'Buccal Mucosa',
-                'Tongue',
-                'Gingiva',
-                'Palate',
-                'RMT (Retromolar Trigone)',
-                'Lip',
-            ],
-        },
-        CANDIDIASIS: {
-            'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
-        },
-        HPV_P16: {
-            'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
-        },
-        EBV: {
-            'type': 'str',
-            'options': ['Positive', 'Negative', 'Not Tested', 'NA'],
-        },
-        TPS_ASSESSMENT: {
-            'type': 'str',
-            'options': ['< 1%', '≥ 1% and < 50%', '≥ 50%', 'Not Tested', 'NA'],
-        },
-        TPS: {
-            'type': 'float',
-            'options': [0.5, 1., 5., 10., 20., 30., 40., 50., 60., 70., 80.],
-        },
-        CPS_ASSESSMENT: {
-            'type': 'str',
-            'options': ['< 1', '≥ 1 and < 10', '≥ 10', 'Not Tested', 'NA'],
-        },
-        CPS: {
-            'type': 'float',
-            'options': [0.5, 1., 5., 10., 20., 30., 40., 50., 60., 70., 80.],
-        },
-        # LYMPH_NODE_LEVEL_I: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        # LYMPH_NODE_LEVEL_II: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        # LYMPH_NODE_LEVEL_III: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        # LYMPH_NODE_LEVEL_IV: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        # LYMPH_NODE_LEVEL_V: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        # TOTAL_LYMPH_NODE: {
-        #     'type': 'str',
-        #     'options': ['0/0', 'NA'],
-        # },
-        TUMOR_SIZE: {
-            'type': 'float',
-            'options': [0.0],
-        },
-        DOI: {
-            'type': 'float',
-            'options': [0.0],
-        },
-        PI: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'Extensive', 'NA'],
-        },
-        LVI: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'Suspicious', 'NA'],
-        },
-        BI: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'NA'],
-        },
-        ENE: {
-            'type': 'str',
-            'options': ['Negative', 'Positive', 'NA'],
-        },
-        SURGICAL_MARGIN: {
-            'type': 'float',
-            'options': [0.0],
+            'options': [''],
         },
         SURGERY: {
             'type': 'str',
-            'options': ['Wide Excision', 'Neck Dissection', 'Wide Excision and Neck Dissection', 'NA'],
+            'options': [''],
         },
-        RADIATION_THERAPY: {
+        RADIOTHERAPY: {
             'type': 'str',
-            'options': ['Adjuvant', 'None', 'Definitive', 'Palliative', 'NA'],
-        },
-        RADIATION_THERAPY_DOSE: {
-            'type': 'float',
-            'options': [6600.0, 0.0],
+            'options': [''],
         },
         CHEMOTHERAPY: {
             'type': 'str',
-            'options': [
-                'Cisplatin, Mitomycin, 5-FU (PMU)',
-                'Cisplatin, 5-FU, Leucovorin (PFL)',
-                'None',
-                'Cisplatin',
-                '5-FU',
-                'Docetaxel',
-                'Cisplatin, 5-FU',
-                'Cisplatin, Docetaxel',
-                'Docetaxel, Cisplatin, 5-FU (TPF)',
-                'NA',
-            ],
+            'options': [''],
+        },
+        TUMOR_RECURRENCE: {
+            'type': 'str',
+            'options': [''],
+        },
+        LYMPH_NODE_METASTASIS: {
+            'type': 'str',
+            'options': [''],
+        },
+        DISTANT_METASTASIS: {
+            'type': 'str',
+            'options': [''],
+        },
+        TUMOR_STAGE: {
+            'type': 'str',
+            'options': [''],
+        },
+        T_STAGE: {
+            'type': 'str',
+            'options': [''],
+        },
+        N_STAGE: {
+            'type': 'str',
+            'options': [''],
+        },
+        M_STAGE: {
+            'type': 'str',
+            'options': [''],
+        },
+        TUMOR_SITE: {
+            'type': 'str',
+            'options': [''],
+        },
+        TUMOR_SIZE: {
+            'type': 'str',
+            'options': [''],
+        },
+        DOI: {
+            'type': 'str',
+            'options': [''],
+        },
+        TUMOR_FOCALITY: {
+            'type': 'str',
+            'options': [''],
+        },
+        SURGICAL_MARGIN: {
+            'type': 'str',
+            'options': [''],
+        },
+        PERINEURAL_INVASION: {
+            'type': 'str',
+            'options': [''],
+        },
+        LYMPH_OVASCULAR_INVASION: {
+            'type': 'str',
+            'options': [''],
+        },
+        LYMPH_NODE_STATUS_META: {
+            'type': 'str',
+            'options': [''],
+        },
+        TOTAL_LYMPH_NODE_STATUS: {
+            'type': 'str',
+            'options': [''],
+        },
+        LATERALITY: {
+            'type': 'str',
+            'options': [''],
+        },
+        SIZE_OF_LARGEST_METASTATIC_DEPOSIT: {
+            'type': 'str',
+            'options': [''],
+        },
+        EXTRANODAL_EXTENSION: {
+            'type': 'str',
+            'options': [''],
+        },
+        ENE_MICRO_MACRO: {
+            'type': 'str',
+            'options': [''],
+        },
+        BONE_INVASION: {
+            'type': 'str',
+            'options': [''],
+        },
+        CANDIDIASIS: {
+            'type': 'str',
+            'options': [''],
+        },
+        WHO_PATHOLOGY_TYPE: {
+            'type': 'str',
+            'options': [''],
+        },
+        PATHOLOGICAL_TNM: {
+            'type': 'str',
+            'options': [''],
+        },
+        PD_L1_TPS: {
+            'type': 'str',
+            'options': [''],
+        },
+        PD_L1_CPS: {
+            'type': 'str',
+            'options': [''],
+        },
+        TUMOR_CELL: {
+            'type': 'str',
+            'options': [''],
+        },
+        CHEMOTHERAPY_STOP_TIME: {
+            'type': 'str',
+            'options': [''],
+        },
+        CHEMOTHERAPY_2: {
+            'type': 'str',
+            'options': [''],
+        },
+        TARGET_THERAPY: {
+            'type': 'str',
+            'options': [''],
         },
         IMMUNOTHERAPY: {
             'type': 'str',
-            'options': [
-                'Pembrolizumab',
-                'Nivolumab',
-                'None',
-                'NA',
-            ],
+            'options': [''],
+        },
+        HORMONE_THERAPY: {
+            'type': 'str',
+            'options': [''],
+        },
+        EFFICACY: {
+            'type': 'str',
+            'options': [''],
         },
     }
 
