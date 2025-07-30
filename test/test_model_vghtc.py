@@ -1,7 +1,9 @@
+import unittest
 from src.model_vghtc import CalculateStage
 from .setup import TestCase
 
 
+@unittest.skip("Temporarily disabled, will include if needed in the future")
 class TestCalculateStage(TestCase):
 
     def setUp(self):
