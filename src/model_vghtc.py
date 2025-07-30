@@ -13,7 +13,7 @@ class CalculateVghtcOscc:
 
     def main(self, attributes: Dict[str, str]) -> Dict[str, Any]:
 
-        attributes = CalculateStage().main(attributes)
+        # attributes = CalculateStage().main(attributes)  # save this for future use
 
         return attributes
 

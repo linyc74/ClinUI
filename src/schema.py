@@ -870,7 +870,7 @@ class VghtcOsccSchema(Schema):
     PD_L1_CPS = 'PD-L1 (CPS)'
     TUMOR_CELL = 'Tumor Cell (TC %)'
     CHEMOTHERAPY_STOP_TIME = '用藥停止結算時間 (收案時間+3個月)'
-    CHEMOTHERAPY_2 = 'Chemotherapy'
+    CHEMOTHERAPY_2 = 'Chemotherapy_2'
     TARGET_THERAPY = '標靶'
     IMMUNOTHERAPY = '免疫'
     HORMONE_THERAPY = '荷爾蒙'
@@ -934,191 +934,193 @@ class VghtcOsccSchema(Schema):
     COLUMN_ATTRIBUTES = {
         PATIENT_ID: {
             'type': 'str',
-            'options': [''],
+            'options': ['LTL-1000', 'LRC-0000'],
         },
         PATIENT_NAME: {
             'type': 'str',
-            'options': [''],
         },
         RECRUITMENT_DATE: {
             'type': 'str',
-            'options': [''],
+            'options': ['2025-01-01'],
         },
         SALIVA_1: {
             'type': 'str',
-            'options': [''],
+            'options': ['LTL-1000-S1'],
         },
         FECAL_1: {
             'type': 'str',
-            'options': [''],
+            'options': ['LTL-1000-F1'],
         },
         SALIVA_2: {
             'type': 'str',
-            'options': [''],
+            'options': ['LTL-1000-S2'],
         },
         FECAL_2: {
             'type': 'str',
-            'options': [''],
+            'options': ['LTL-1000-F2'],
         },
         BIRTH_DATE: {
             'type': 'str',
-            'options': [''],
+            'options': ['1960-01-01'],
         },
         SEX: {
             'type': 'str',
-            'options': [''],
+            'options': ['男', '女'],
         },
         ALCOHOL: {
             'type': 'str',
-            'options': [''],
+            'options': ['Nil (從來沒有)', 'Current (有，未戒)', 'Quit (戒了一年以上)', 'Not Recorded (無記錄)'],
         },
         BETEL_NUT: {
             'type': 'str',
-            'options': [''],
+            'options': ['Nil (從來沒有)', 'Current (有，未戒)', 'Quit (戒了一年以上)', 'Not Recorded (無記錄)'],
         },
         CIGARETTE: {
             'type': 'str',
-            'options': [''],
+            'options': ['Nil (從來沒有)', 'Current (有，未戒)', 'Quit (戒了一年以上)', 'Not Recorded (無記錄)'],
         },
         SURGERY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         RADIOTHERAPY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         CHEMOTHERAPY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         TUMOR_RECURRENCE: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         LYMPH_NODE_METASTASIS: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         DISTANT_METASTASIS: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         TUMOR_STAGE: {
             'type': 'str',
-            'options': [''],
+            'options': ['I', 'II', 'III', 'IV'],
         },
         T_STAGE: {
             'type': 'str',
-            'options': [''],
+            'options': ['1', '2', '3', '4', '4a'],
         },
         N_STAGE: {
             'type': 'str',
-            'options': [''],
+            'options': ['0', '1', '2', '2a', '2b', '3a', '3b', '4'],
         },
         M_STAGE: {
             'type': 'str',
-            'options': [''],
+            'options': ['0', '1'],
         },
         TUMOR_SITE: {
             'type': 'str',
-            'options': [''],
+            'options': ['Buccal Mucosa', 'Tongue', 'Floor of Mouth'],
         },
         TUMOR_SIZE: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [1, 10, 20, 30, 40, 50],
         },
         DOI: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [1, 10],
         },
         TUMOR_FOCALITY: {
             'type': 'str',
-            'options': [''],
+            'options': ['Unifocal', 'Multifocal', 'Two Foci'],
         },
         SURGICAL_MARGIN: {
             'type': 'str',
-            'options': [''],
+            'options': ['Close', 'Uninvolved'],
         },
         PERINEURAL_INVASION: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', 'Present'],
         },
         LYMPH_OVASCULAR_INVASION: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', 'Present'],
         },
         LYMPH_NODE_STATUS_META: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         },
         TOTAL_LYMPH_NODE_STATUS: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [10, 20, 30, 40, 50],
         },
         LATERALITY: {
             'type': 'str',
-            'options': [''],
+            'options': ['Ipsilateral', 'Contralateral', 'Not Identified'],
         },
         SIZE_OF_LARGEST_METASTATIC_DEPOSIT: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', '0.1', '1.0', '2.0', '1.0 x 1.0 x 1.0'],
         },
         EXTRANODAL_EXTENSION: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', 'Present'],
         },
         ENE_MICRO_MACRO: {
             'type': 'str',
-            'options': [''],
+            'options': ['Micro', 'Macro'],
         },
         BONE_INVASION: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', 'Present'],
         },
         CANDIDIASIS: {
             'type': 'str',
-            'options': [''],
+            'options': ['Not Identified', 'Present'],
         },
         WHO_PATHOLOGY_TYPE: {
             'type': 'str',
-            'options': [''],
+            'options': ['2', '3', '2,3'],
         },
         PATHOLOGICAL_TNM: {
             'type': 'str',
-            'options': [''],
+            'options': [
+                'pT2N0',
+                'pT1N2a',
+            ],
         },
         PD_L1_TPS: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [1, 10, 20, 30, 40, 50, 60, 70, 80, 90],
         },
         PD_L1_CPS: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [1, 10, 20, 30, 40, 50, 60, 70, 80, 90],
         },
         TUMOR_CELL: {
-            'type': 'str',
-            'options': [''],
+            'type': 'int',
+            'options': [1, 10, 20, 30, 40, 50, 60, 70, 80, 90],
         },
         CHEMOTHERAPY_STOP_TIME: {
             'type': 'str',
-            'options': [''],
+            'options': ['114/1月-3月', '115/1月-3月'],
         },
         CHEMOTHERAPY_2: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         TARGET_THERAPY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         IMMUNOTHERAPY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         HORMONE_THERAPY: {
             'type': 'str',
-            'options': [''],
+            'options': ['1:有', '0:無'],
         },
         EFFICACY: {
             'type': 'str',
