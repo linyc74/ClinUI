@@ -1021,7 +1021,7 @@ class VghtcOsccSchema(Schema):
         },
         TUMOR_SITE: {
             'type': 'str',
-            'options': ['Buccal Mucosa', 'Tongue', 'Floor of Mouth'],
+            'options': ['Buccal Mucosa', 'Buccal Mucosa and Cheek', 'Tongue', 'Floor of Mouth', 'Floor of Mouth and Tongue'],
         },
         TUMOR_SIZE: {
             'type': 'int',
