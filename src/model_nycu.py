@@ -17,11 +17,11 @@ class CalculateNycuOscc:
 
         attributes = CalculateDiagnosisAge().main(attributes)
         attributes = CalculateSurvival().main(attributes)
-        attributes = CalculateICD().main(attributes)
+        attributes = MatchICD().main(attributes)
         attributes = CalculateLymphNodes().main(attributes)
         attributes = CalculateStage().main(attributes)
         attributes = SplitTNM().main(attributes)
-        attributes = CalculateTherapy().main(attributes)
+        attributes = GetTherapyFlagsFromDrugs().main(attributes)
 
         return attributes
 
@@ -48,7 +48,7 @@ class Calculate:
         return True
 
     def calculate(self):
-        raise NotImplementedError
+        raise NotImplementedError(f'The {self.__class__.__name__}.calculate() method must be implemented')
 
 
 class CalculateDiagnosisAge(Calculate):
@@ -187,7 +187,7 @@ def delta_t(
     return end - start
 
 
-class CalculateICD(Calculate):
+class MatchICD(Calculate):
 
     # https://training.seer.cancer.gov/head-neck/abstract-code-stage/codes.html (2023 edition)
     ANATOMIC_SITE_TO_ICD_O_3_SITE_CODE = {
@@ -574,7 +574,7 @@ class CalculateLymphNodes(Calculate):
         self.attributes[S.TOTAL_LYMPH_NODE] = f'{total_m}/{total_n}'
 
 
-class CalculateTherapy(Calculate):
+class GetTherapyFlagsFromDrugs(Calculate):
 
     REQUIRED_KEYS = [
         S.NEOADJUVANT_INDUCTION_CHEMOTHERAPY_DRUG,
