@@ -65,7 +65,6 @@ class NycuOsccElements(Elements):
         'sort_ascending': 'Sort (A to Z)',
         'sort_descending': 'Sort (Z to A)',
         'delete_selected_rows': 'Delete Selected Rows',
-        'reset_table': 'Reset Table',
 
         'add_new_sample': 'Add New Sample',
         'edit_sample': 'Edit Sample',
@@ -76,7 +75,7 @@ class NycuOsccElements(Elements):
         'import_clinical_data_table': (0, 0),
         'import_sequencing_table': (1, 0),
         'save_clinical_data_table': (2, 0),
-        'reprocess_table': (6, 0),
+        'reprocess_table': (5, 0),
 
         'undo': (0, 1),
         'redo': (1, 1),
@@ -84,12 +83,11 @@ class NycuOsccElements(Elements):
         'sort_ascending': (3, 1),
         'sort_descending': (4, 1),
         'delete_selected_rows': (5, 1),
-        'reset_table': (6, 1),
 
         'add_new_sample': (0, 2),
         'edit_sample': (1, 2),
         'edit_cell': (2, 2),
-        'export_cbioportal_study': (6, 2),
+        'export_cbioportal_study': (5, 2),
     }
     SHORTCUT_NAME_TO_KEY_SEQUENCE = {
         'control_s': 'Ctrl+S',

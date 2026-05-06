@@ -24,7 +24,6 @@ class Controller:
         self.action_sort_ascending = ActionSortAscending(self)
         self.action_sort_descending = ActionSortDescending(self)
         self.action_delete_selected_rows = ActionDeleteSelectedRows(self)
-        self.action_reset_table = ActionResetTable(self)
         self.action_add_new_sample = ActionAddNewSample(self)
         self.action_edit_sample = ActionEditSample(self)
         self.action_edit_cell = ActionEditCell(self)
@@ -159,17 +158,6 @@ class ActionDeleteSelectedRows(Action):
             return
         if self.view.message_box_yes_no(msg='Are you sure you want to delete the selected rows?'):
             self.model.drop(rows=rows)
-            self.view.refresh_table()
-
-
-class ActionResetTable(Action):
-
-    def action(self):
-        if len(self.model.dataframe) == 0:
-            return  # nothing to reset
-
-        if self.view.message_box_yes_no(msg='Are you sure you want to reset the table?'):
-            self.model.reset_dataframe()
             self.view.refresh_table()
 
 
