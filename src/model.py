@@ -249,7 +249,7 @@ class ImportClinicalDataTable(BaseModel):
 
         for i, row in df.iterrows():
 
-            already_exists = row[id_column] in self.clinical_data_df[id_column].values
+            already_exists = row[id_column] in self.clinical_data_df[id_column].values.tolist()
             if already_exists:
                 continue
 
