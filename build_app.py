@@ -18,7 +18,7 @@ OPTIONAL = [
             'type': str,
             'required': False,
             'default': 'nycu-oscc',
-            'choices': ['nycu-oscc', 'vghtpe-luad', 'vghtpe-hnscc', 'vghtc-oscc'],
+            'choices': ['nycu-oscc', 'vghtc-oscc'],
             'help': 'data schema (default: %(default)s)',
         }
     },
@@ -68,8 +68,6 @@ class BuildApp:
 
     SCHEMA_ARG_TO_CLASS_NAME = {
         'nycu-oscc': 'NycuOsccSchema',
-        'vghtpe-luad': 'VghtpeLuadSchema',
-        'vghtpe-hnscc': 'VghtpeHnsccSchema',
         'vghtc-oscc': 'VghtcOsccSchema',
     }
 

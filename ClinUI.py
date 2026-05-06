@@ -1,5 +1,5 @@
 from src import Main
-from src.schema import NycuOsccSchema, VghtcOsccSchema, VghtpeHnsccSchema
+from src.schema import NycuOsccSchema, VghtcOsccSchema
 
 
 if __name__ == '__main__':
