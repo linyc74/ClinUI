@@ -65,39 +65,40 @@ class Action:
     def __init__(self, controller: Controller):
         self.model = controller.model
         self.view = controller.view
+    
+    def __call__(self):
+        try:
+            self.action()
+        except Exception as e:
+            self.view.message_box_error(msg=repr(e))
+    
+    def action(self):
+        raise NotImplementedError('Action method must be implemented')
 
 
 class ActionImportClinicalDataTable(Action):
 
-    def __call__(self):
+    def action(self):
         file = self.view.file_dialog_open_table()
         if file == '':
             return
-
-        try:
-            self.model.import_clinical_data_table(file=file)
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+        self.model.import_clinical_data_table(file=file)
+        self.view.refresh_table()
 
 
 class ActionImportSequencingTable(Action):
 
-    def __call__(self):
+    def action(self):
         file = self.view.file_dialog_open_table()
         if file == '':
             return
-
-        try:
-            self.model.import_sequencing_table(file=file)
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+        self.model.import_sequencing_table(file=file)
+        self.view.refresh_table()
 
 
 class ActionSaveClinicalDataTable(Action):
 
-    def __call__(self):
+    def action(self):
         file = self.view.file_dialog_save_table(filename='clinical_data_table.csv')
         if file == '':
             return
@@ -107,7 +108,7 @@ class ActionSaveClinicalDataTable(Action):
 
 class ActionFind(Action):
 
-    def __call__(self):
+    def action(self):
         text = self.view.dialog_find()
         if text is None:
             return
@@ -129,7 +130,7 @@ class ActionSort(Action):
 
     ASCENDING: bool
 
-    def __call__(self):
+    def action(self):
         columns = self.view.get_selected_columns()
         if len(columns) == 0:
             self.view.message_box_error(msg='Please select a column')
@@ -152,7 +153,7 @@ class ActionSortDescending(ActionSort):
 
 class ActionDeleteSelectedRows(Action):
 
-    def __call__(self):
+    def action(self):
         rows = self.view.get_selected_rows()
         if len(rows) == 0:
             return
@@ -163,7 +164,7 @@ class ActionDeleteSelectedRows(Action):
 
 class ActionResetTable(Action):
 
-    def __call__(self):
+    def action(self):
         if len(self.model.dataframe) == 0:
             return  # nothing to reset
 
@@ -174,7 +175,7 @@ class ActionResetTable(Action):
 
 class ActionAddNewSample(Action):
 
-    def __call__(self):
+    def action(self):
         success = False
         attributes = None
         while not success:
@@ -191,7 +192,7 @@ class ActionAddNewSample(Action):
 
 class ActionEditSample(Action):
 
-    def __call__(self):
+    def action(self):
         rows = self.view.get_selected_rows()
 
         if len(rows) == 0:
@@ -220,30 +221,26 @@ class ActionEditSample(Action):
 
 class ActionEditCell(Action):
 
-    def __call__(self):
-        try:
-            cells = self.view.get_selected_cells()
+    def action(self):
+        cells = self.view.get_selected_cells()
 
-            if len(cells) == 0:
-                self.view.message_box_error('Please select a cell')
-                return
-            elif len(cells) > 1:
-                self.view.message_box_error('Please select only one cell')
-                return
+        if len(cells) == 0:
+            self.view.message_box_error('Please select a cell')
+            return
+        elif len(cells) > 1:
+            self.view.message_box_error('Please select only one cell')
+            return
 
-            row, column = cells[0]
-            value = self.model.get_value(row=row, column=column)
+        row, column = cells[0]
+        value = self.model.get_value(row=row, column=column)
 
-            new_value = self.view.dialog_edit_cell(value=value)
+        new_value = self.view.dialog_edit_cell(value=value)
 
-            if new_value is None:
-                return
+        if new_value is None:
+            return
 
-            self.model.update_cell(row=row, column=column, value=new_value)
-            self.view.refresh_table()
-
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+        self.model.update_cell(row=row, column=column, value=new_value)
+        self.view.refresh_table()
 
 
 class ActionExportCbioportalStudy(Action):
@@ -254,7 +251,7 @@ class ActionExportCbioportalStudy(Action):
     study_info_dict: Dict[str, str]
     tags_dict: Optional[Dict[str, str]]
 
-    def __call__(self):
+    def action(self):
         self.set_maf_dir()
         if self.maf_dir is None:
             return
@@ -315,42 +312,30 @@ class ActionExportCbioportalStudy(Action):
 
 class ActionReprocessTable(Action):
 
-    def __call__(self):
-        try:
-            self.model.reprocess_table()
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+    def action(self):
+        self.model.reprocess_table()
+        self.view.refresh_table()
 
 
 class ActionUndo(Action):
 
-    def __call__(self):
-        try:
-            self.model.undo()
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+    def action(self):
+        self.model.undo()
+        self.view.refresh_table()
 
 
 class ActionRedo(Action):
 
-    def __call__(self):
-        try:
-            self.model.redo()
-            self.view.refresh_table()
-        except Exception as e:
-            self.view.message_box_error(msg=repr(e))
+    def action(self):
+        self.model.redo()
+        self.view.refresh_table()
 
 
 class ActionControlS(Action):
 
-    def __call__(self):
-        if self.model.clinical_data_file is None:
-            file = self.view.file_dialog_save_table(filename='clinical_data_table.csv')
-            if file == '':
-                return
-        else:
-            file = self.model.clinical_data_file
+    def action(self):
+        file = self.view.file_dialog_save_table(filename='clinical_data_table.csv')
+        if file == '':
+            return
         self.model.save_clinical_data_table(file=file)
         self.view.refresh_table()
