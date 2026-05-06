@@ -3,4 +3,4 @@ from src.schema import NycuOsccSchema, VghtcOsccSchema, VghtpeHnsccSchema
 
 
 if __name__ == '__main__':
-    Main().main(schema=VghtcOsccSchema)
+    Main().main(schema=NycuOsccSchema)

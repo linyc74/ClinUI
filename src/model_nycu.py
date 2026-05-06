@@ -20,6 +20,7 @@ class CalculateNycuOscc:
         attributes = CalculateICD().main(attributes)
         attributes = CalculateLymphNodes().main(attributes)
         attributes = CalculateStage().main(attributes)
+        attributes = SplitTNM().main(attributes)
         attributes = CalculateTherapy().main(attributes)
 
         return attributes
@@ -455,6 +456,42 @@ class CalculateStage(Calculate):
             stage = ''
 
         self.attributes[S.NEOPLASM_DISEASE_STAGE_AMERICAN_JOINT_COMMITTEE_ON_CANCER_CODE] = stage
+
+
+class SplitTNM(Calculate):
+
+    REQUIRED_KEYS = [
+        S.CLINICAL_TNM,
+        S.PATHOLOGICAL_TNM,
+    ]
+
+    def calculate(self):
+        self.split_clinical_tnm()
+        self.split_pathological_tnm()
+
+    def split_clinical_tnm(self):
+        tnm = self.attributes[S.CLINICAL_TNM]
+        t, n, m = self._split_tnm(tnm)
+        self.attributes[S.CLINICAL_T] = t
+        self.attributes[S.CLINICAL_N] = n
+        self.attributes[S.CLINICAL_M] = m
+    
+    def split_pathological_tnm(self):
+        tnm = self.attributes[S.PATHOLOGICAL_TNM]
+        t, n, m = self._split_tnm(tnm)
+        self.attributes[S.PATHOLOGICAL_T] = t
+        self.attributes[S.PATHOLOGICAL_N] = n
+        self.attributes[S.PATHOLOGICAL_M] = m
+
+    def _split_tnm(self, tnm: str) -> Tuple[str, str, str]:
+        try:
+            t = tnm.split('T')[1].split('N')[0]
+            n = tnm.split('N')[1].split('M')[0]
+            m = tnm.split('M')[1]
+            return t, n, m
+        except Exception as e:
+            print(e)
+            return '', '', ''
 
 
 class CalculateLymphNodes(Calculate):
