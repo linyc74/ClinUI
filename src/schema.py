@@ -93,9 +93,8 @@ class NycuOsccSchema(Schema):
     RADIATION_THERAPY = 'Radiation Therapy'
     RADIATION_THERAPY_DOSE = 'Radiation Therapy Dose (cGY)'
     IHC_ANTI_PDL1_MAB_22C3_TPS = 'IHC Anti-PDL1 mAb 22C3 TPS (%)'
-    IHC_ANTI_PDL1_MAB_22C3_CPS = 'IHC Anti-PDL1 mAb 22C3 CPS (%)'
-    IHC_ANTI_PDL1_MAB_28_8_TPS = 'IHC Anti-PDL1 mAb 28-8 TPS (%)'
-    IHC_ANTI_PDL1_MAB_28_8_CPS = 'IHC Anti-PDL1 mAb 28-8 CPS (%)'
+    IHC_ANTI_PDL1_MAB_22C3_CPS = 'IHC Anti-PDL1 mAb 22C3 CPS'
+    IHC_ANTI_PDL1_MAB_28_8_TC = 'IHC Anti-PDL1 mAb 28-8 TC (%)'
     LYMPH_NODE_LEVEL_I = 'Lymph Node Level I'
     LYMPH_NODE_LEVEL_IA = 'Lymph Node Level Ia'
     LYMPH_NODE_LEVEL_IB = 'Lymph Node Level Ib'
@@ -228,8 +227,7 @@ class NycuOsccSchema(Schema):
         IMMUNOTHERAPY_DRUG,
         IHC_ANTI_PDL1_MAB_22C3_TPS,
         IHC_ANTI_PDL1_MAB_22C3_CPS,
-        IHC_ANTI_PDL1_MAB_28_8_TPS,
-        IHC_ANTI_PDL1_MAB_28_8_CPS,
+        IHC_ANTI_PDL1_MAB_28_8_TC,
         INITIAL_TREATMENT_COMPLETION_DATE,
         LAST_FOLLOW_UP_DATE,
         RECUR_DATE_AFTER_INITIAL_TREATMENT,
@@ -545,19 +543,15 @@ class NycuOsccSchema(Schema):
         },
         IHC_ANTI_PDL1_MAB_22C3_TPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%', 'NA'],
+            'options': ['< 1%', '≥ 1%', 'NA'],
         },
         IHC_ANTI_PDL1_MAB_22C3_CPS: {
             'type': 'str',
-            'options': ['> 50%', '< 50%', 'NA'],
+            'options': ['< 1', '≥ 1', '≥ 20', 'NA'],
         },
-        IHC_ANTI_PDL1_MAB_28_8_TPS: {
+        IHC_ANTI_PDL1_MAB_28_8_TC: {
             'type': 'str',
-            'options': ['> 50%', '< 50%', 'NA'],
-        },
-        IHC_ANTI_PDL1_MAB_28_8_CPS: {
-            'type': 'str',
-            'options': ['> 50%', '< 50%', 'NA'],
+            'options': ['< 1%', '≥ 1%', 'NA'],
         },
         LYMPH_NODE_LEVEL_I: {
             'type': 'str',
