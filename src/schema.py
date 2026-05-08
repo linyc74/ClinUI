@@ -113,6 +113,9 @@ class NycuOsccSchema(Schema):
     PATHOLOGICAL_EXTRANODAL_EXTENSION = 'Pathological Extranodal Extension'
     DEPTH_OF_INVASION = 'Depth of Invasion (mm)'
     TUMOR_MARGIN = 'Tumor Margin'
+    TUMOR_BUDDING = 'Tumor Budding'
+    WPOI_5 = 'WPOI-5'
+    TUMOR_EMBOLI = 'Tumor Emboli'
     CLINICAL_TNM = 'Clinical TNM (cTNM)'
     CLINICAL_T = 'Clinical T'
     CLINICAL_N = 'Clinical N'
@@ -198,6 +201,9 @@ class NycuOsccSchema(Schema):
         PATHOLOGICAL_EXTRANODAL_EXTENSION,
         DEPTH_OF_INVASION,
         TUMOR_MARGIN,
+        TUMOR_BUDDING,
+        WPOI_5,
+        TUMOR_EMBOLI,
         CLINICAL_TNM,
         CLINICAL_T,
         CLINICAL_N,
@@ -625,6 +631,18 @@ class NycuOsccSchema(Schema):
             'type': 'str',
             'options': ['Negative', 'Close', 'Positive', '1 mm', '2 mm', '3 mm', '4 mm'],
         },
+        TUMOR_BUDDING: {
+            'type': 'str',
+            'options': ['Negative', 'Positive'],
+        },
+        WPOI_5: {
+            'type': 'str',
+            'options': ['Negative', 'Positive'],
+        },
+        TUMOR_EMBOLI: {
+            'type': 'str',
+            'options': ['Negative', 'Positive'],
+        },
         CLINICAL_TNM: {
             'type': 'str',
             'options': [
@@ -881,8 +899,8 @@ class NycuOsccSchema(Schema):
 
     CBIO_STUDY_INFO_FIELD_TO_OPTIONS = {
         'type_of_cancer': ['hnsc'],
-        'cancer_study_identifier': ['hnsc_nycu_2025'],
-        'name': ['Head and Neck Squamous Cell Carcinomas (NYCU, 2025)'],
+        'cancer_study_identifier': ['oscc_nycu_2026'],
+        'name': ['Oral Squamous Cell Carcinomas (NYCU, 2026)'],
         'description': ['Whole exome sequencing of oral squamous cell carcinoma (OSCC) tumor/normal pairs'],
         'groups': ['PUBLIC'],
         'reference_genome': ['hg38'],
