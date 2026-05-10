@@ -1,5 +1,5 @@
-from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, CalculateICD, \
-    CalculateStage, CalculateLymphNodes, CalculateTherapy, find_best_matching_key_val
+from src.model_nycu import CalculateDiagnosisAge, CalculateSurvival, MatchICD, \
+    CalculateStage, CalculateLymphNodes, GetTherapyFlagsFromDrugs, find_best_matching_key_val
 from .setup import TestCase
 
 
@@ -225,7 +225,7 @@ class TestCalculateSurvival(TestCase):
         self.assertDictEqual(expected, actual)
 
 
-class TestCalculateICD(TestCase):
+class TestMatchICD(TestCase):
 
     def setUp(self):
         self.set_up(py_path=__file__)
@@ -237,7 +237,7 @@ class TestCalculateICD(TestCase):
         attributes = {
             'Tumor Disease Anatomic Site': 'External upper lip',
         }
-        actual = CalculateICD().main(attributes=attributes)
+        actual = MatchICD().main(attributes=attributes)
         expected = {
             'Tumor Disease Anatomic Site': 'External upper lip',
             'ICD-O-3 Site Code': 'C00.0',
@@ -249,7 +249,7 @@ class TestCalculateICD(TestCase):
         attributes = {
             'Tumor Disease Anatomic Site': 'Cat leg',
         }
-        actual = CalculateICD().main(attributes=attributes)
+        actual = MatchICD().main(attributes=attributes)
         expected = {
             'Tumor Disease Anatomic Site': 'Cat leg',
             'ICD-O-3 Site Code': '',
@@ -261,7 +261,7 @@ class TestCalculateICD(TestCase):
         attributes = {
             'Tumor Disease Anatomic Site': 'Mouth floor',
         }
-        actual = CalculateICD().main(attributes=attributes)
+        actual = MatchICD().main(attributes=attributes)
         expected = {
             'Tumor Disease Anatomic Site': 'Mouth floor',
             'ICD-O-3 Site Code': 'C04.9',
@@ -509,7 +509,7 @@ class TestCalculateLymphNodes(TestCase):
         self.assertDictEqual(expected, actual)
 
 
-class TestCalculateTherapy(TestCase):
+class TestGetTherapyFlagsFromDrugs(TestCase):
 
     def setUp(self):
         self.set_up(py_path=__file__)
@@ -526,7 +526,7 @@ class TestCalculateTherapy(TestCase):
             'Palliative Targeted Therapy Drug': 'Drug C',
             'Immunotherapy Drug': 'Drug D',
         }
-        actual = CalculateTherapy().main(attributes=attributes)
+        actual = GetTherapyFlagsFromDrugs().main(attributes=attributes)
         expected = attributes.copy()
         expected.update({
             'Neoadjuvant/Induction Chemotherapy': 'False',
