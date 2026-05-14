@@ -111,7 +111,7 @@ class Model(BaseModel):
         Everything going out of model should be string to avoid complex type issues
         NaN should simply be defined as empty string
         """
-        ret = self.dataframe.loc[row, ].to_dict()
+        ret = self.dataframe.loc[row].to_dict()
 
         for key, val in ret.items():
             if pd.isna(val):
