@@ -33,8 +33,8 @@ class PreprocessNormalize(BaseModel):
 
 
 def delta_t(
-        start: Union[pd.Timestamp, str, type(np.NAN)],
-        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
+        start: Union[pd.Timestamp, str, type(np.nan)],
+        end: Union[pd.Timestamp, str, type(np.nan)]) -> pd.Timedelta:
 
     if type(start) is str:
         start = pd.to_datetime(start)

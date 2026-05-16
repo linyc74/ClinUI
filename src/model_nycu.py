@@ -75,7 +75,7 @@ class CalculateSurvival(Calculate):
         S.CAUSE_OF_DEATH,
     ]
 
-    t0: Union[str, float]  # np.NAN is float
+    t0: Union[str, float]  # np.nan is float
     alive: bool
 
     def calculate(self):
@@ -171,8 +171,8 @@ class CalculateSurvival(Calculate):
 
 
 def delta_t(
-        start: Union[pd.Timestamp, str, type(np.NAN)],
-        end: Union[pd.Timestamp, str, type(np.NAN)]) -> pd.Timedelta:
+        start: Union[pd.Timestamp, str, type(np.nan)],
+        end: Union[pd.Timestamp, str, type(np.nan)]) -> pd.Timedelta:
 
     if type(start) is str:
         start = pd.to_datetime(start)
