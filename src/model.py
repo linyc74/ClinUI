@@ -247,13 +247,22 @@ class ImportClinicalDataTable(BaseModel):
 
         id_column = self.schema.ID_COLUMN
 
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
 
-            already_exists = row[id_column] in self.clinical_data_df[id_column].values.tolist()
-            if already_exists:
+            sample_id = row[id_column]
+
+            if pd.isna(sample_id):
+                # cannot tell if the sample already exists, so just include it
+                self.clinical_data_df = append(self.clinical_data_df, row)
+            
+            elif sample_id in self.clinical_data_df[id_column].values.tolist():
+                # sample_id is not np.nan, and it already exists, so skip
+                print(f'WARNING! Sample ID "{sample_id}" already exists, skipping', flush=True)
                 continue
-
-            self.clinical_data_df = append(self.clinical_data_df, row)
+            
+            else:
+                # sample_id is not np.nan, and it does not exist, so append it
+                self.clinical_data_df = append(self.clinical_data_df, row)
 
         return self.clinical_data_df
 
