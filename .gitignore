@@ -23,5 +23,7 @@ dist/
 *.spec
 setup.py
 .eggs/
+*.zip
+*.exe
 
 todo.md
